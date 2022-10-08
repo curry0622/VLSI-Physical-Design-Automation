@@ -1,0 +1,9 @@
+# Version:1.0 MMMC View Definition File
+# Do Not Remove Above Line
+create_rc_corner -name generic_rc_corner -T {25.0} -preRoute_res {1.0} -preRoute_cap {1.0} -preRoute_clkres {0.0} -preRoute_clkcap {0.0} -postRoute_res {1.0 1.0 1.0} -postRoute_cap {1.0 1.0 1.0} -postRoute_xcap {1.0 1.0 1.0} -postRoute_clkres {1.0 1.0 1.0} -postRoute_clkcap {1.0 1.0 1.0}
+create_op_cond -name generic_opcond -library_file {NangateOpenCellLibrary.lib} -P {1.0} -V {1.1} -T {25.0}
+create_library_set -name generic_library_set -timing {NangateOpenCellLibrary.lib}
+create_constraint_mode -name generic_constraints -sdc_files {design.sdc}
+create_delay_corner -name generic_delay_corner -rc_corner {generic_rc_corner} -early_library_set {generic_library_set} -late_library_set {generic_library_set} -early_opcond {generic_opcond} -late_opcond {generic_opcond}
+create_analysis_view -name generic_view -constraint_mode {generic_constraints} -delay_corner {generic_delay_corner}
+set_analysis_view -setup {generic_view} -hold {generic_view}
