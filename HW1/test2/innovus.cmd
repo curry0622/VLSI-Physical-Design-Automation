@@ -1,7 +1,7 @@
 #######################################################
 #                                                     
 #  Innovus Command Logging File                     
-#  Created on Sat Oct  8 20:35:47 2022                
+#  Created on Sat Oct  8 21:56:56 2022                
 #                                                     
 #######################################################
 
@@ -13,6 +13,9 @@
 #@(#)CDS: CPE v20.10-p006
 #@(#)CDS: IQuantus/TQuantus 19.1.3-s155 (64bit) Sun Nov 3 18:26:52 PST 2019 (Linux 2.6.32-431.11.2.el6.x86_64)
 
+set_global _enable_mmmc_by_default_flow      $CTE::mmmc_default
+suppressMessage ENCEXT-2799
+win
 set_global _enable_mmmc_by_default_flow      $CTE::mmmc_default
 suppressMessage ENCEXT-2799
 win
@@ -40,7 +43,7 @@ setNanoRouteMode -quiet -droutePostRouteSpreadWire 1
 setNanoRouteMode -quiet -timingEngine {}
 setUsefulSkewMode -maxSkew false -noBoundary false -useCells {CLKBUF_X3 CLKBUF_X2 CLKBUF_X1 BUF_X32 BUF_X16 BUF_X8 BUF_X4 BUF_X2 BUF_X1 INV_X32 INV_X16 INV_X8 INV_X4 INV_X2 INV_X1} -maxAllowedDelay 1
 setPlaceMode -reset
-setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+setPlaceMode -congEffort low -timingDriven 1 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
 setPlaceMode -fp false
 place_design
 setLayerPreference node_route -isVisible 0
@@ -104,7 +107,6 @@ setNanoRouteMode -quiet -routeWithSiDriven false
 routeDesign -globalDetail
 report_timing
 saveDesign route
-getCTSMode -engine -quiet
 getFillerMode -quiet
 addFiller -cell {FILLCELL_X1 FILLCELL_X2 FILLCELL_X4 FILLCELL_X8 FILLCELL_X16 FILLCELL_X32} -prefix FILL
 saveDesign post_route

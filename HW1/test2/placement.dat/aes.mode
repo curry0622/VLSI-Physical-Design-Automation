@@ -2,6 +2,7 @@ catch { setDesignMode -process 45 }
 catch { setAnalysisMode -analysisType single }
 catch { setAnalysisMode -clkSrcPath true }
 catch { setAnalysisMode -clockPropagation sdcControl }
+catch { setAnalysisMode -virtualIPO false }
 catch { setExtractRCMode  -engine preRoute -total_c_th 5 -relative_c_th 0.03 -coupling_c_th 3 }
 catch {setNanoRouteMode -quiet -droutePostRouteSpreadWire "1"}
 catch {setNanoRouteMode -quiet -extractThirdPartyCompatible false}
@@ -20,7 +21,7 @@ catch { setPlaceMode -place_global_module_aware_spare false }
 catch { setPlaceMode -place_global_place_io_pins true }
 catch { setPlaceMode -place_global_reorder_scan true }
 catch { setPlaceMode -powerDriven false }
-catch { setPlaceMode -timingDriven false }
+catch { setPlaceMode -timingDriven true }
 catch { setIlmMode -keepHighFanoutPorts true -keepLoopBack false -keepFlatten true }
 catch { setUsefulSkewMode -maxAllowedDelay 1 }
 catch { setUsefulSkewMode -maxSkew false }
