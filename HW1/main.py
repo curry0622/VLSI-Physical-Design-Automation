@@ -43,7 +43,7 @@ def run_test(clk, core, congDriv, timeDriv):
   fout.close()
 
   # run innovus
-  subprocess.run(['innovus -files apr.tcl -batch -no_gui'], shell=True)
+  subprocess.run(['innovus -files apr.tcl -batch -no_gui'], shell=True, cwd=f'./tests/{testname}')
 
   # print time log
   time_log(f'Finish running test {testname}')
