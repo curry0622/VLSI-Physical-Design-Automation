@@ -22,7 +22,6 @@ def run_test(clk, core, congDriv, timeDriv):
   # print time log
   time_log('')
   time_log(f'Start running test {testname}')
-  time.sleep(3)
 
   # modify design.sdc
   cmds = []
