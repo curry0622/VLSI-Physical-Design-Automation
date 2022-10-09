@@ -152,3 +152,157 @@
 ||||||||||||||| Test End |||||||||||||||
 ||||||||||||||||||||||||||||||||||||||||
 
+
+||||||||||||||||||||||||||||||||||||||||
+|||||||||||||| Test Start ||||||||||||||
+||||||||||||||||||||||||||||||||||||||||
+
+[2022-10-10 02:07:30] 
+[2022-10-10 02:07:30] Start running test 5ns_0.8_low_off
+[2022-10-10 02:07:30] 5ns_0.8_low_off/design.sdc -> (-) create_clock [get_ports {clk}] -name VCLK -period 20.0 -waveform {0.0 10.0}
+[2022-10-10 02:07:30] 5ns_0.8_low_off/design.sdc -> (+) create_clock [get_ports {clk}] -name VCLK -period 5.0 -waveform {0.0 2.5}
+[2022-10-10 02:07:30] 5ns_0.8_low_off/apr.tcl -> (-) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.7 4.0 4.0 4.0 4.0
+[2022-10-10 02:07:30] 5ns_0.8_low_off/apr.tcl -> (+) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.8 4.0 4.0 4.0 4.0
+[2022-10-10 02:07:30] 5ns_0.8_low_off/apr.tcl -> (-) setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:07:30] 5ns_0.8_low_off/apr.tcl -> (+) setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:07:30] innovus -files apr.tcl -batch -no_gui
+[2022-10-10 02:09:01] Finish running test 5ns_0.8_low_off, elapsed time: 92.21 sec
+[2022-10-10 02:09:01] 
+[2022-10-10 02:09:01] 
+[2022-10-10 02:09:01] Start generating report of 5ns_0.8_low_off
+[2022-10-10 02:09:01] [test]: 5ns_0.8_low_off
+[2022-10-10 02:09:01] [timing]: 5ns
+[2022-10-10 02:09:01] [core_utilization]: 0.8
+[2022-10-10 02:09:01] [congestion-driven]: low
+[2022-10-10 02:09:01] [timing-driven]: off
+[2022-10-10 02:09:01] [slack]: 1.377
+[2022-10-10 02:09:01] [total-wirelength]: 292854.3075 um
+[2022-10-10 02:09:01] [area]: 48115.091 um^2
+[2022-10-10 02:09:01] [violations]: 0
+[2022-10-10 02:09:01] Finish generating report of 5ns_0.8_low_off
+[2022-10-10 02:09:01] 
+[2022-10-10 02:09:02] 
+[2022-10-10 02:09:02] Start running test 5ns_0.8_low_on
+[2022-10-10 02:09:02] 5ns_0.8_low_on/design.sdc -> (-) create_clock [get_ports {clk}] -name VCLK -period 20.0 -waveform {0.0 10.0}
+[2022-10-10 02:09:02] 5ns_0.8_low_on/design.sdc -> (+) create_clock [get_ports {clk}] -name VCLK -period 5.0 -waveform {0.0 2.5}
+[2022-10-10 02:09:02] 5ns_0.8_low_on/apr.tcl -> (-) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.7 4.0 4.0 4.0 4.0
+[2022-10-10 02:09:02] 5ns_0.8_low_on/apr.tcl -> (+) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.8 4.0 4.0 4.0 4.0
+[2022-10-10 02:09:02] 5ns_0.8_low_on/apr.tcl -> (-) setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:09:02] 5ns_0.8_low_on/apr.tcl -> (+) setPlaceMode -congEffort low -timingDriven 1 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:09:02] innovus -files apr.tcl -batch -no_gui
+[2022-10-10 02:10:48] Finish running test 5ns_0.8_low_on, elapsed time: 106.64 sec
+[2022-10-10 02:10:48] 
+[2022-10-10 02:10:48] 
+[2022-10-10 02:10:48] Start generating report of 5ns_0.8_low_on
+[2022-10-10 02:10:48] [test]: 5ns_0.8_low_on
+[2022-10-10 02:10:48] [timing]: 5ns
+[2022-10-10 02:10:48] [core_utilization]: 0.8
+[2022-10-10 02:10:48] [congestion-driven]: low
+[2022-10-10 02:10:48] [timing-driven]: on
+[2022-10-10 02:10:48] [slack]: 1.484
+[2022-10-10 02:10:48] [total-wirelength]: 293720.3675 um
+[2022-10-10 02:10:48] [area]: 48115.091 um^2
+[2022-10-10 02:10:48] [violations]: 0
+[2022-10-10 02:10:48] Finish generating report of 5ns_0.8_low_on
+[2022-10-10 02:10:48] 
+[2022-10-10 02:10:48] 
+[2022-10-10 02:10:48] Start running test 5ns_0.8_medium_off
+[2022-10-10 02:10:48] 5ns_0.8_medium_off/design.sdc -> (-) create_clock [get_ports {clk}] -name VCLK -period 20.0 -waveform {0.0 10.0}
+[2022-10-10 02:10:48] 5ns_0.8_medium_off/design.sdc -> (+) create_clock [get_ports {clk}] -name VCLK -period 5.0 -waveform {0.0 2.5}
+[2022-10-10 02:10:48] 5ns_0.8_medium_off/apr.tcl -> (-) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.7 4.0 4.0 4.0 4.0
+[2022-10-10 02:10:48] 5ns_0.8_medium_off/apr.tcl -> (+) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.8 4.0 4.0 4.0 4.0
+[2022-10-10 02:10:48] 5ns_0.8_medium_off/apr.tcl -> (-) setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:10:48] 5ns_0.8_medium_off/apr.tcl -> (+) setPlaceMode -congEffort medium -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:10:48] innovus -files apr.tcl -batch -no_gui
+[2022-10-10 02:12:21] Finish running test 5ns_0.8_medium_off, elapsed time: 93.40 sec
+[2022-10-10 02:12:21] 
+[2022-10-10 02:12:21] 
+[2022-10-10 02:12:21] Start generating report of 5ns_0.8_medium_off
+[2022-10-10 02:12:21] [test]: 5ns_0.8_medium_off
+[2022-10-10 02:12:21] [timing]: 5ns
+[2022-10-10 02:12:21] [core_utilization]: 0.8
+[2022-10-10 02:12:21] [congestion-driven]: medium
+[2022-10-10 02:12:21] [timing-driven]: off
+[2022-10-10 02:12:21] [slack]: 1.300
+[2022-10-10 02:12:21] [total-wirelength]: 294501.7875 um
+[2022-10-10 02:12:21] [area]: 48115.091 um^2
+[2022-10-10 02:12:21] [violations]: 0
+[2022-10-10 02:12:21] Finish generating report of 5ns_0.8_medium_off
+[2022-10-10 02:12:21] 
+[2022-10-10 02:12:22] 
+[2022-10-10 02:12:22] Start running test 5ns_0.8_medium_on
+[2022-10-10 02:12:22] 5ns_0.8_medium_on/design.sdc -> (-) create_clock [get_ports {clk}] -name VCLK -period 20.0 -waveform {0.0 10.0}
+[2022-10-10 02:12:22] 5ns_0.8_medium_on/design.sdc -> (+) create_clock [get_ports {clk}] -name VCLK -period 5.0 -waveform {0.0 2.5}
+[2022-10-10 02:12:22] 5ns_0.8_medium_on/apr.tcl -> (-) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.7 4.0 4.0 4.0 4.0
+[2022-10-10 02:12:22] 5ns_0.8_medium_on/apr.tcl -> (+) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.8 4.0 4.0 4.0 4.0
+[2022-10-10 02:12:22] 5ns_0.8_medium_on/apr.tcl -> (-) setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:12:22] 5ns_0.8_medium_on/apr.tcl -> (+) setPlaceMode -congEffort medium -timingDriven 1 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:12:22] innovus -files apr.tcl -batch -no_gui
+[2022-10-10 02:14:11] Finish running test 5ns_0.8_medium_on, elapsed time: 109.31 sec
+[2022-10-10 02:14:11] 
+[2022-10-10 02:14:11] 
+[2022-10-10 02:14:11] Start generating report of 5ns_0.8_medium_on
+[2022-10-10 02:14:11] [test]: 5ns_0.8_medium_on
+[2022-10-10 02:14:11] [timing]: 5ns
+[2022-10-10 02:14:11] [core_utilization]: 0.8
+[2022-10-10 02:14:11] [congestion-driven]: medium
+[2022-10-10 02:14:11] [timing-driven]: on
+[2022-10-10 02:14:11] [slack]: 1.516
+[2022-10-10 02:14:11] [total-wirelength]: 294438.7175 um
+[2022-10-10 02:14:11] [area]: 48115.091 um^2
+[2022-10-10 02:14:11] [violations]: 0
+[2022-10-10 02:14:11] Finish generating report of 5ns_0.8_medium_on
+[2022-10-10 02:14:11] 
+[2022-10-10 02:14:11] 
+[2022-10-10 02:14:11] Start running test 5ns_0.8_high_off
+[2022-10-10 02:14:11] 5ns_0.8_high_off/design.sdc -> (-) create_clock [get_ports {clk}] -name VCLK -period 20.0 -waveform {0.0 10.0}
+[2022-10-10 02:14:11] 5ns_0.8_high_off/design.sdc -> (+) create_clock [get_ports {clk}] -name VCLK -period 5.0 -waveform {0.0 2.5}
+[2022-10-10 02:14:11] 5ns_0.8_high_off/apr.tcl -> (-) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.7 4.0 4.0 4.0 4.0
+[2022-10-10 02:14:11] 5ns_0.8_high_off/apr.tcl -> (+) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.8 4.0 4.0 4.0 4.0
+[2022-10-10 02:14:11] 5ns_0.8_high_off/apr.tcl -> (-) setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:14:11] 5ns_0.8_high_off/apr.tcl -> (+) setPlaceMode -congEffort high -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:14:11] innovus -files apr.tcl -batch -no_gui
+[2022-10-10 02:15:43] Finish running test 5ns_0.8_high_off, elapsed time: 92.79 sec
+[2022-10-10 02:15:43] 
+[2022-10-10 02:15:43] 
+[2022-10-10 02:15:43] Start generating report of 5ns_0.8_high_off
+[2022-10-10 02:15:43] [test]: 5ns_0.8_high_off
+[2022-10-10 02:15:43] [timing]: 5ns
+[2022-10-10 02:15:43] [core_utilization]: 0.8
+[2022-10-10 02:15:43] [congestion-driven]: high
+[2022-10-10 02:15:43] [timing-driven]: off
+[2022-10-10 02:15:43] [slack]: 1.300
+[2022-10-10 02:15:43] [total-wirelength]: 294501.7875 um
+[2022-10-10 02:15:43] [area]: 48115.091 um^2
+[2022-10-10 02:15:43] [violations]: 0
+[2022-10-10 02:15:43] Finish generating report of 5ns_0.8_high_off
+[2022-10-10 02:15:43] 
+[2022-10-10 02:15:44] 
+[2022-10-10 02:15:44] Start running test 5ns_0.8_high_on
+[2022-10-10 02:15:44] 5ns_0.8_high_on/design.sdc -> (-) create_clock [get_ports {clk}] -name VCLK -period 20.0 -waveform {0.0 10.0}
+[2022-10-10 02:15:44] 5ns_0.8_high_on/design.sdc -> (+) create_clock [get_ports {clk}] -name VCLK -period 5.0 -waveform {0.0 2.5}
+[2022-10-10 02:15:44] 5ns_0.8_high_on/apr.tcl -> (-) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.7 4.0 4.0 4.0 4.0
+[2022-10-10 02:15:44] 5ns_0.8_high_on/apr.tcl -> (+) floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.8 4.0 4.0 4.0 4.0
+[2022-10-10 02:15:44] 5ns_0.8_high_on/apr.tcl -> (-) setPlaceMode -congEffort low -timingDriven 0 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:15:44] 5ns_0.8_high_on/apr.tcl -> (+) setPlaceMode -congEffort high -timingDriven 1 -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0
+[2022-10-10 02:15:44] innovus -files apr.tcl -batch -no_gui
+[2022-10-10 02:17:33] Finish running test 5ns_0.8_high_on, elapsed time: 109.81 sec
+[2022-10-10 02:17:33] 
+[2022-10-10 02:17:33] 
+[2022-10-10 02:17:33] Start generating report of 5ns_0.8_high_on
+[2022-10-10 02:17:33] [test]: 5ns_0.8_high_on
+[2022-10-10 02:17:33] [timing]: 5ns
+[2022-10-10 02:17:33] [core_utilization]: 0.8
+[2022-10-10 02:17:33] [congestion-driven]: high
+[2022-10-10 02:17:33] [timing-driven]: on
+[2022-10-10 02:17:33] [slack]: 1.516
+[2022-10-10 02:17:33] [total-wirelength]: 294438.7175 um
+[2022-10-10 02:17:33] [area]: 48115.091 um^2
+[2022-10-10 02:17:33] [violations]: 0
+[2022-10-10 02:17:33] Finish generating report of 5ns_0.8_high_on
+[2022-10-10 02:17:33] 
+
+||||||||||||||||||||||||||||||||||||||||
+||||||||||||||| Test End |||||||||||||||
+||||||||||||||||||||||||||||||||||||||||
+

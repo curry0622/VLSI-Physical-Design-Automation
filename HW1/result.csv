@@ -5,3 +5,9 @@ testname,timing,core_utilization,congestion-driven,timing-driven,slack,total-wir
 5ns_0.8_medium_on,5,0.8,medium,on,1.377,292854.3075,48115.091,0
 5ns_0.8_high_off,5,0.8,high,off,1.377,292854.3075,48115.091,0
 5ns_0.8_high_on,5,0.8,high,on,1.377,292854.3075,48115.091,0
+5ns_0.8_low_off,5,0.8,low,off,1.377,292854.3075,48115.091,0
+5ns_0.8_low_on,5,0.8,low,on,1.484,293720.3675,48115.091,0
+5ns_0.8_medium_off,5,0.8,medium,off,1.300,294501.7875,48115.091,0
+5ns_0.8_medium_on,5,0.8,medium,on,1.516,294438.7175,48115.091,0
+5ns_0.8_high_off,5,0.8,high,off,1.300,294501.7875,48115.091,0
+5ns_0.8_high_on,5,0.8,high,on,1.516,294438.7175,48115.091,0
