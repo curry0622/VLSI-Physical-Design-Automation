@@ -164,8 +164,8 @@ if __name__ == '__main__':
   fout.write('\n')
   fout.close()
 
-  test()
-  # auto_test_and_report()
+  # test()
+  auto_test_and_report()
 
   fout = open('./test.log', 'a')
   fout.write('\n')
