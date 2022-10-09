@@ -141,7 +141,7 @@ def file_report(clk, core, congDriv, timeDriv):
 
 def auto_test_and_report():
   for clk in range(1, 11):
-    for core in range(0.1, 1, 0.1):
+    for core in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
       for congDriv in ['low', 'medium', 'high']:
         for timeDriv in ['off', 'on']:
           run_test(clk, core, congDriv, timeDriv)
@@ -149,12 +149,10 @@ def auto_test_and_report():
 
 
 def test():
-  for clk in range(5, 6):
-    for core in range(0.8, 0.9, 0.1):
-      for congDriv in ['low', 'medium', 'high']:
-        for timeDriv in ['off', 'on']:
-          run_test(clk, core, congDriv, timeDriv)
-          file_report(clk, core, congDriv, timeDriv)
+  for congDriv in ['low', 'medium', 'high']:
+    for timeDriv in ['off', 'on']:
+      run_test(5, 0.8, congDriv, timeDriv)
+      file_report(5, 0.8, congDriv, timeDriv)
 
 
 if __name__ == '__main__':
