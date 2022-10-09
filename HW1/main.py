@@ -1,24 +1,39 @@
 import subprocess
+import time
 from datetime import datetime
 
 def time_log(str):
-  print(f'[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] {str}')
+  logStr = f'[{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}] {str}'
+  logStr = logStr.replace('\n', '')
+  print(logStr)
+  fout = open('./test.log', 'a')
+  fout.write(f'{logStr}\n')
+  fout.close()
+
 
 def run_test(clk, core, congDriv, timeDriv):
+  # start time
+  startTime = time.time()
+
   # create base files
   testname = f'{clk}ns_{core}_{congDriv}_{timeDriv}'
   subprocess.run([f'cp -r untar/ tests/{testname}'], shell=True)
 
   # print time log
+  time_log('')
   time_log(f'Start running test {testname}')
+  time.sleep(3)
 
   # modify design.sdc
   cmds = []
   fin = open(f'./tests/{testname}/design.sdc', 'r')
   for line in fin:
     if 'create_clock' in line:
-      line = 'create_clock [get_ports {clk}] -name VCLK -period ' + '%.1f' % float(clk) + ' -waveform {0.0 ' + '%.1f' % (float(clk) / 2) + '}\n'
-      print(line)
+      oldStr = line
+      newStr = f'create_clock [get_ports {{clk}}] -name VCLK -period {float(clk):.1f} -waveform {{0.0 {(float(clk) / 2):.1f}}}\n'
+      line = newStr
+      time_log(f'{testname}/design.sdc -> (-) {oldStr}')
+      time_log(f'{testname}/design.sdc -> (+) {newStr}')
     cmds.append(line)
   fin.close()
 
@@ -30,10 +45,17 @@ def run_test(clk, core, congDriv, timeDriv):
   cmds = []
   fin = open(f'./tests/{testname}/apr.tcl', 'r')
   for line in fin:
-    if 'floorplan' in line:
-      line = f'floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 {core} 4.0 4.0 4.0 4.0\n'
+    if 'floorPlan' in line:
+      oldStr = line
+      newStr = f'floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 {core} 4.0 4.0 4.0 4.0\n'
+      line = newStr
+      time_log(f'{testname}/apr.tcl -> (-) {oldStr}')
+      time_log(f'{testname}/apr.tcl -> (+) {newStr}')
     if 'congEffort' in line and 'timingDriven' in line:
-      line = f'setPlaceMode -congEffort {congDriv} -timingDriven {0 if timeDriv == "off" else 1} -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0\n'
+      oldStr = line
+      newStr = f'setPlaceMode -congEffort {congDriv} -timingDriven {0 if timeDriv == "off" else 1} -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0\n'
+      time_log(f'{testname}/apr.tcl -> (-) {oldStr}')
+      time_log(f'{testname}/apr.tcl -> (+) {newStr}')
     cmds.append(line)
 
   fout = open(f'./tests/{testname}/apr.tcl', 'w')
@@ -41,10 +63,13 @@ def run_test(clk, core, congDriv, timeDriv):
   fout.close()
 
   # run innovus
-  subprocess.run(['innovus -files apr.tcl -batch -no_gui'], shell=True, cwd=f'./tests/{testname}')
+  time_log('innovus -files apr.tcl -batch -no_gui')
+  subprocess.run(['innovus -files apr.tcl -batch -no_gui'], shell=True, cwd=f'./tests/{testname}', stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
   # print time log
-  time_log(f'Finish running test {testname}')
+  time_log(f'Finish running test {testname}, elapsed time: {time.time() - startTime:.2f} sec')
+  time_log('')
+
 
 def file_report(clk, core, congDriv, timeDriv):
   # test info
@@ -52,6 +77,7 @@ def file_report(clk, core, congDriv, timeDriv):
   dirName = f'./tests/{testname}'
 
   # print time log
+  time_log('')
   time_log(f'Start generating report of {testname}')
 
   # get slack
@@ -85,30 +111,68 @@ def file_report(clk, core, congDriv, timeDriv):
   # write file
   fout = open(f'{dirName}/report.txt', 'w')
   fout.write(f'[test]: {testname}\n')
+  time_log(f'[test]: {testname}')
   fout.write(f'[timing]: {clk}ns\n')
+  time_log(str(f'[timing]: {clk}ns'))
   fout.write(f'[core_utilization]: {core}\n')
+  time_log(str(f'[core_utilization]: {core}'))
   fout.write(f'[congestion-driven]: {congDriv}\n')
+  time_log(str(f'[congestion-driven]: {congDriv}'))
   fout.write(f'[timing-driven]: {timeDriv}\n')
+  time_log(str(f'[timing-driven]: {timeDriv}'))
   fout.write(f'[slack]: {slack}\n')
+  time_log(str(f'[slack]: {slack}'))
   fout.write(f'[total-wirelength]: {totalWirelength} um\n')
+  time_log(str(f'[total-wirelength]: {totalWirelength} um'))
   fout.write(f'[area]: {area} um^2\n')
+  time_log(str(f'[area]: {area} um^2'))
   fout.write(f'[violations]: {violations}\n')
+  time_log(str(f'[violations]: {violations}'))
+  fout.close()
+
+  # append report
+  fout = open(f'./result.csv', 'a')
+  fout.write(f'{testname},{clk},{core},{congDriv},{timeDriv},{slack},{totalWirelength},{area},{violations}\n')
   fout.close()
 
   # print time log
   time_log(f'Finish generating report of {testname}')
+  time_log('')
+
+def auto_test_and_report():
+  for clk in range(1, 11):
+    for core in range(0.1, 1, 0.1):
+      for congDriv in ['low', 'medium', 'high']:
+        for timeDriv in ['off', 'on']:
+          run_test(clk, core, congDriv, timeDriv)
+          file_report(clk, core, congDriv, timeDriv)
+
+
+def test():
+  for clk in range(5, 6):
+    for core in range(0.8, 0.9, 0.1):
+      for congDriv in ['low', 'medium', 'high']:
+        for timeDriv in ['off', 'on']:
+          run_test(clk, core, congDriv, timeDriv)
+          file_report(clk, core, congDriv, timeDriv)
+
 
 if __name__ == '__main__':
-  run_test('4', '0.7', 'low', 'off')
-  run_test('4', '0.7', 'low', 'on')
-  run_test('4', '0.7', 'medium', 'off')
-  run_test('4', '0.7', 'medium', 'on')
-  run_test('4', '0.7', 'high', 'off')
-  run_test('4', '0.7', 'high', 'on')
+  fout = open('./test.log', 'a')
+  fout.write('\n')
+  fout.write('||||||||||||||||||||||||||||||||||||||||\n')
+  fout.write('|||||||||||||| Test Start ||||||||||||||\n')
+  fout.write('||||||||||||||||||||||||||||||||||||||||\n')
+  fout.write('\n')
+  fout.close()
 
-  file_report('4', '0.7', 'low', 'off')
-  file_report('4', '0.7', 'low', 'on')
-  file_report('4', '0.7', 'medium', 'off')
-  file_report('4', '0.7', 'medium', 'on')
-  file_report('4', '0.7', 'high', 'off')
-  file_report('4', '0.7', 'high', 'on')
+  test()
+  # auto_test_and_report()
+
+  fout = open('./test.log', 'a')
+  fout.write('\n')
+  fout.write('||||||||||||||||||||||||||||||||||||||||\n')
+  fout.write('||||||||||||||| Test End |||||||||||||||\n')
+  fout.write('||||||||||||||||||||||||||||||||||||||||\n')
+  fout.write('\n')
+  fout.close()
