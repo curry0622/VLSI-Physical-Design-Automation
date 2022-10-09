@@ -53,7 +53,7 @@ def run_test(clk, core, congDriv, timeDriv):
       time_log(f'{testname}/apr.tcl -> (+) {newStr}')
     if 'congEffort' in line and 'timingDriven' in line:
       oldStr = line
-      newStr = f'setPlaceMode -congEffort {congDriv} -timingDriven {0 if timeDriv == "off" else 1} -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0\n'
+      newStr = f'setPlaceMode -congEffort {congDriv} -timingDriven {0 if timeDriv == "off" else 1} -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0 -preserveRouting 1 -rmAffectedRouting 0 -checkRoute 0 -swapEEQ 0\n'
       time_log(f'{testname}/apr.tcl -> (-) {oldStr}')
       time_log(f'{testname}/apr.tcl -> (+) {newStr}')
     cmds.append(line)
