@@ -32,10 +32,8 @@ def run_test(clk, core, congDriv, timeDriv):
   for line in fin:
     if 'floorplan' in line:
       line = f'floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 {core} 4.0 4.0 4.0 4.0\n'
-      print(line)
     if 'congEffort' in line and 'timingDriven' in line:
       line = f'setPlaceMode -congEffort {congDriv} -timingDriven {0 if timeDriv == "off" else 1} -clkGateAware 1 -powerDriven 0 -ignoreScan 1 -reorderScan 1 -ignoreSpare 0 -placeIOPins 1 -moduleAwareSpare 0\n'
-      print(line)
     cmds.append(line)
 
   fout = open(f'./tests/{testname}/apr.tcl', 'w')
