@@ -140,7 +140,7 @@ def file_report(clk, core, congDriv, timeDriv):
   time_log('')
 
 def auto_test_and_report():
-  for clk in range(1, 11):
+  for clk in range(3, 11):
     for core in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
       for congDriv in ['low', 'medium', 'high']:
         for timeDriv in ['off', 'on']:
