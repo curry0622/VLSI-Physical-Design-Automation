@@ -432,3 +432,4 @@ testname,timing,core_utilization,congestion-driven,timing-driven,slack,total-wir
 10ns_0.9_medium_on,10,0.9,medium,on,6.215,288051.4675,42971.076,0
 10ns_0.9_high_off,10,0.9,high,off,6.462,285123.2500,42971.076,0
 10ns_0.9_high_on,10,0.9,high,on,6.215,288051.4675,42971.076,0
+4ns_0.999999_low_off,4,0.999999,low,off,0.115,282273.2700,38823.019,0
