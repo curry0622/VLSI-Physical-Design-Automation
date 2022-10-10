@@ -10,7 +10,6 @@ def time_log(str):
   fout.write(f'{logStr}\n')
   fout.close()
 
-
 def run_test(clk, core, congDriv, timeDriv):
   # start time
   startTime = time.time()
@@ -70,7 +69,6 @@ def run_test(clk, core, congDriv, timeDriv):
   time_log(f'Finish running test {testname}, elapsed time: {time.time() - startTime:.2f} sec')
   time_log('')
 
-
 def file_report(clk, core, congDriv, timeDriv):
   # test info
   testname = f'{clk}ns_{core}_{congDriv}_{timeDriv}'
@@ -111,24 +109,25 @@ def file_report(clk, core, congDriv, timeDriv):
   # write file
   fout = open(f'{dirName}/report.txt', 'w')
   fout.write(f'[test]: {testname}\n')
-  time_log(f'[test]: {testname}')
   fout.write(f'[timing]: {clk}ns\n')
-  time_log(str(f'[timing]: {clk}ns'))
   fout.write(f'[core_utilization]: {core}\n')
-  time_log(str(f'[core_utilization]: {core}'))
   fout.write(f'[congestion-driven]: {congDriv}\n')
-  time_log(str(f'[congestion-driven]: {congDriv}'))
   fout.write(f'[timing-driven]: {timeDriv}\n')
-  time_log(str(f'[timing-driven]: {timeDriv}'))
   fout.write(f'[slack]: {slack}\n')
-  time_log(str(f'[slack]: {slack}'))
   fout.write(f'[total-wirelength]: {totalWirelength} um\n')
-  time_log(str(f'[total-wirelength]: {totalWirelength} um'))
   fout.write(f'[area]: {area} um^2\n')
-  time_log(str(f'[area]: {area} um^2'))
   fout.write(f'[violations]: {violations}\n')
-  time_log(str(f'[violations]: {violations}'))
   fout.close()
+
+  time_log(f'[test]: {testname}')
+  time_log(str(f'[timing]: {clk}ns'))
+  time_log(str(f'[core_utilization]: {core}'))
+  time_log(str(f'[congestion-driven]: {congDriv}'))
+  time_log(str(f'[timing-driven]: {timeDriv}'))
+  time_log(str(f'[slack]: {slack}'))
+  time_log(str(f'[total-wirelength]: {totalWirelength} um'))
+  time_log(str(f'[area]: {area} um^2'))
+  time_log(str(f'[violations]: {violations}'))
 
   # append report
   fout = open(f'./result.csv', 'a')
@@ -147,14 +146,6 @@ def auto_test_and_report():
           run_test(clk, core, congDriv, timeDriv)
           file_report(clk, core, congDriv, timeDriv)
 
-
-def test():
-  for congDriv in ['low', 'medium', 'high']:
-    for timeDriv in ['off', 'on']:
-      run_test(5, 0.8, congDriv, timeDriv)
-      file_report(5, 0.8, congDriv, timeDriv)
-
-
 if __name__ == '__main__':
   fout = open('./test.log', 'a')
   fout.write('\n')
@@ -164,7 +155,6 @@ if __name__ == '__main__':
   fout.write('\n')
   fout.close()
 
-  # test()
   auto_test_and_report()
 
   fout = open('./test.log', 'a')
