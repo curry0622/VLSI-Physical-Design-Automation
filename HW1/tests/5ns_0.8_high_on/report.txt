@@ -1,9 +1,0 @@
-[test]: 5ns_0.8_high_on
-[timing]: 5ns
-[core_utilization]: 0.8
-[congestion-driven]: high
-[timing-driven]: on
-[slack]: 1.377
-[total-wirelength]: 292854.3075 um
-[area]: 48115.091 um^2
-[violations]: 0
