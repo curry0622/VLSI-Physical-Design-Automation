@@ -1,0 +1,7 @@
+Usage:
+    ./verify [.cells file] [.nets file] [.out file]
+    If you encounter "Permission denied" error, please use this command "chmod 500 verify" to fix this error.
+
+Output:
+    If your result file has something wrong, it will print "[Error] ...". 
+    Otherwise, it will print "[Success] Your output file satisfies our basic requirements.".
