@@ -12,7 +12,7 @@ verifyBin=$root/verifier/verify
 chmod 500 $verifyBin
 csvFile=$root/${homeworkName}_grade.csv
 
-function executionCmd ()
+function executionCmd () 
 {
 	local argv="$testcaseDir/$1.cells $testcaseDir/$1.nets $outputDir/$1.out"
 	local log=$( timeout $timeLimit time -p ./$binaryName $argv 2>&1 > /dev/null )
@@ -58,7 +58,7 @@ echo "$csvTitle, status" > $csvFile
 
 cd $studentDir/
 for studentId in *; do
-	if [[ -d $studentId ]]; then
+	if [[ -d $studentId ]]; then 
 		printf "grading on %s:\n" $studentId
 		cd $studentId
 
