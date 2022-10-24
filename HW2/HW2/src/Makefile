@@ -1,10 +1,18 @@
-CXX = g++
-CXXFLAGS = -O3 -lm -march=native -pipe
-TARGETS = main
+all: hw2
 
-.PHONY: all
-all: $(TARGETS)
+CC = g++
+CFLAGS = -std=c++11 -O3 -lm -march=native -pipe
+INCLUDE = /usr/local/include/boost/
 
-.PHONY: clean
+hw2:main.o FM.o Cell.o Net.o
+	$(CC) -o hw2 main.o FM.o Cell.o Net.o
+main.o:main.cpp FM.hpp Cell.hpp Net.hpp
+	$(CC) -I $(INCLUDE) $(CFLAGS) -c main.cpp
+FM.o:FM.cpp FM.hpp
+	$(CC) -I $(INCLUDE) $(CFLAGS) -c FM.cpp
+Cell.o:Cell.cpp Cell.hpp
+	$(CC) -I $(INCLUDE) $(CFLAGS) -c Cell.cpp
+Net.o:Net.cpp Net.hpp
+	$(CC) -I $(INCLUDE) $(CFLAGS) -c Net.cpp
 clean:
-	rm -f $(TARGETS)
+	rm -f *.o hw2
