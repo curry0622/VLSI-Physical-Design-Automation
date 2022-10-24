@@ -4,9 +4,11 @@
 class FM {
 public:
     std::vector<Net> nets;
-    std::vector<Cell> cells;
+    std::map<std::string, Cell> cells;
     FM();
     void read_cells(std::string filename);
     void read_nets(std::string filename);
+    void print_cells();
+    void print_nets();
     void write_result(std::string filename);
 };

@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
     // Dummy check
-    if(argc != 3) {
+    if(argc != 4) {
         std::cout << "Invalid arguments." << std::endl;
         exit(-1);
     }
@@ -12,6 +12,11 @@ int main(int argc, char *argv[]) {
 
     fm.read_cells(argv[1]);
     fm.read_nets(argv[2]);
+
+    fm.print_cells();
+    fm.print_nets();
+
+    fm.write_result(argv[3]);
 
     return 0;
 }
