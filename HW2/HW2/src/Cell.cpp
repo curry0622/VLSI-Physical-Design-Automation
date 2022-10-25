@@ -10,9 +10,8 @@ Cell::Cell(std::string n, int sa, int sb) {
 
 void Cell::print() {
     std::cout << "CELL: " << name << " -> " << sizeA << " " << sizeB << ", NETS: ";
-    for (auto it = nets.begin(); it != nets.end(); it++){
+    for(auto it = nets.begin(); it != nets.end(); it++)
         std::cout << (*it)->name << " ";
-    }
     std::cout << std::endl;
 }
 

@@ -5,6 +5,8 @@ FM::FM(){};
 FM::FM(std::string cellFile, std::string netFile) {
     read_cells(cellFile);
     read_nets(netFile);
+    setA.set_size(maxPinNum);
+    setB.set_size(maxPinNum);
 }
 
 void FM::read_cells(std::string filename){
@@ -32,7 +34,7 @@ void FM::read_nets(std::string filename){
         while(buf != "}") {
             netCells.push_back(&cells[buf]);
             cells[buf].add_net(&nets[name]);
-            if (cells[buf].pinNum > maxPinNum) {
+            if(cells[buf].pinNum > maxPinNum) {
                 maxPinNum = cells[buf].pinNum;
             }
             ss >> buf;
@@ -42,15 +44,11 @@ void FM::read_nets(std::string filename){
 };
 
 void FM::print_cells(){
-    for (auto it = cells.begin(); it != cells.end(); it++){
+    for(auto it = cells.begin(); it != cells.end(); it++)
         it->second.print();
-    }
 };
 
 void FM::print_nets(){
-    for (auto it = nets.begin(); it != nets.end(); it++){
+    for(auto it = nets.begin(); it != nets.end(); it++)
         it->second.print();
-    }
 };
-
-void FM::write_result(std::string filename){};
