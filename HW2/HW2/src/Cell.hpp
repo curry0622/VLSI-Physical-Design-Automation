@@ -6,8 +6,10 @@ public:
     std::vector<std::string> nets;
     int sizeA;
     int sizeB;
+    int pinNum;
 
     Cell();
     Cell(std::string n, int sa, int sb);
     void print();
+    void add_net(std::string net);
 };

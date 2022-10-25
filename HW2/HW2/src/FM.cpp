@@ -2,6 +2,11 @@
 
 FM::FM(){};
 
+FM::FM(std::string cellFile, std::string netFile) {
+    read_cells(cellFile);
+    read_nets(netFile);
+}
+
 void FM::read_cells(std::string filename){
     std::ifstream fin(filename);
     std::string line;
@@ -26,7 +31,11 @@ void FM::read_nets(std::string filename){
         ss >> buf >> name >> buf >> buf;
         while(buf != "}") {
             netCells.push_back(buf);
-            cells[buf].nets.push_back(name);
+            cells[buf].add_net(name);
+            if (cells[buf].pinNum > maxPinNum) {
+                maxPinNum = cells[buf].pinNum;
+                cells[buf].print();
+            }
             ss >> buf;
         }
         nets[name] = Net(name, netCells);

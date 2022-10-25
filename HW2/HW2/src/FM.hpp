@@ -9,9 +9,14 @@ public:
     std::set<std::string> setA, setB;
 
     FM();
-    void read_cells(std::string filename);
-    void read_nets(std::string filename);
+    FM(std::string cellFile, std::string netFile);
     void print_cells();
     void print_nets();
     void write_result(std::string filename);
+
+private:
+    int maxPinNum = INT_MIN;
+
+    void read_cells(std::string filename);
+    void read_nets(std::string filename);
 };

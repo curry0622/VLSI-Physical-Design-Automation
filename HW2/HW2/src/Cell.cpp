@@ -15,3 +15,8 @@ void Cell::print() {
     }
     std::cout << std::endl;
 }
+
+void Cell::add_net(std::string net) {
+    nets.push_back(net);
+    pinNum = nets.size();
+}
