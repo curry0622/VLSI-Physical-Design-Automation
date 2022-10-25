@@ -26,6 +26,7 @@ void FM::read_nets(std::string filename){
         ss >> buf >> name >> buf >> buf;
         while(buf != "}") {
             netCells.push_back(buf);
+            cells[buf].nets.push_back(name);
             ss >> buf;
         }
         nets[name] = Net(name, netCells);
@@ -34,7 +35,11 @@ void FM::read_nets(std::string filename){
 
 void FM::print_cells(){
     for (auto it = cells.begin(); it != cells.end(); it++){
-        std::cout << "CELL: " << it->first << " -> " << it->second.sizeA << " " << it->second.sizeB << std::endl;
+        std::cout << "CELL: " << it->first << " -> " << it->second.sizeA << " " << it->second.sizeB << ", NETS: ";
+        for (auto it2 = it->second.nets.begin(); it2 != it->second.nets.end(); it2++){
+            std::cout << *it2 << " ";
+        }
+        std::cout << std::endl;
     }
 };
 
