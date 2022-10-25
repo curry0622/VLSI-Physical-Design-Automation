@@ -26,15 +26,14 @@ void FM::read_nets(std::string filename){
     while(std::getline(fin, line)) {
         std::stringstream ss(line);
         std::string name;
-        std::vector<std::string> netCells;
+        std::vector<Cell*> netCells;
         std::string buf;
         ss >> buf >> name >> buf >> buf;
         while(buf != "}") {
-            netCells.push_back(buf);
-            cells[buf].add_net(name);
+            netCells.push_back(&cells[buf]);
+            cells[buf].add_net(&nets[name]);
             if (cells[buf].pinNum > maxPinNum) {
                 maxPinNum = cells[buf].pinNum;
-                cells[buf].print();
             }
             ss >> buf;
         }

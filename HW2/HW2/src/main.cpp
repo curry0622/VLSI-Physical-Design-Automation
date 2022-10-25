@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 
     FM fm(argv[1], argv[2]);
 
-    // fm.print_cells();
+    fm.print_cells();
     // fm.print_nets();
 
     // fm.write_result(argv[3]);

@@ -10,6 +10,7 @@ public:
     BucketList(int mpn);
     void insert_cell(std::string cell);
     void remove_cell(std::string cell);
+    void update_cell(std::string cell, int gain);
     void update_max_gain();
     int get_bucket_index(int gain);
 };
