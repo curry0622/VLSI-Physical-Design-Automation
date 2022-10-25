@@ -7,4 +7,5 @@ public:
 
     Net();
     Net(std::string n, std::vector<std::string> cs);
+    void print();
 };

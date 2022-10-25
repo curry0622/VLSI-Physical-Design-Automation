@@ -9,4 +9,5 @@ public:
 
     Cell();
     Cell(std::string n, int sa, int sb);
+    void print();
 };
