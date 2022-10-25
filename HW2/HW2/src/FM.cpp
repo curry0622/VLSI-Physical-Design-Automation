@@ -21,15 +21,14 @@ void FM::read_nets(std::string filename){
     while (std::getline(fin, line)){
         std::stringstream ss(line);
         std::string name;
-        std::vector<Cell> netCells;
+        std::vector<std::string> netCells;
         std::string buf;
         ss >> buf >> name >> buf >> buf;
         while(buf != "}") {
-            netCells.push_back(cells[buf]);
+            netCells.push_back(buf);
             ss >> buf;
         }
-        Net net(name, netCells);
-        nets.push_back(net);
+        nets[name] = Net(name, netCells);
     }
 };
 
@@ -41,9 +40,9 @@ void FM::print_cells(){
 
 void FM::print_nets(){
     for (auto it = nets.begin(); it != nets.end(); it++){
-        std::cout << "NET: " << it->name << " -> ";
-        for (auto it2 = it->cells.begin(); it2 != it->cells.end(); it2++){
-            std::cout << it2->name << " ";
+        std::cout << "NET: " << it->first << " -> ";
+        for (auto it2 = it->second.cells.begin(); it2 != it->second.cells.end(); it2++){
+            std::cout << *it2 << " ";
         }
         std::cout << std::endl;
     }
