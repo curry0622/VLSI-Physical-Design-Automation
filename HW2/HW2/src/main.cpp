@@ -13,9 +13,6 @@ int main(int argc, char *argv[]) {
     // fm.print_cells();
     // fm.print_nets();
 
-    fm.initial_partition();
-    // fm.is_balanced();
-
     // fm.write_result(argv[3]);
 
     return 0;

@@ -7,14 +7,13 @@ public:
     std::unordered_map<Cell*, std::pair<int, int>> cells;
     int maxPinNum;
     int maxGain;
+    int size;
 
     BucketList();
-    void set_size(int mpn);
+    void set_bucket_size(int mpn);
     void insert_cell(Cell* cell);
     void remove_cell(Cell* cell);
-    void update_cell(Cell* cell, int gain);
-    void update_max_gain();
-    int get_bucket_index(int gain);
-    int get_size(bool isSetA);
+    int gain_to_index(int gain);
     void print(char setName);
+    Cell* get_top_kth_cell(int k);
 };

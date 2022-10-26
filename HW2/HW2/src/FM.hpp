@@ -10,6 +10,7 @@ public:
     std::unordered_map<std::string, Cell> cells;
     BucketList setA, setB;
     int maxPinNum = INT_MIN;
+    Cell* baseCell;
 
     FM();
     FM(std::string cellFile, std::string netFile);
@@ -20,5 +21,5 @@ public:
     void read_nets(std::string filename);
     void initial_partition();
     bool is_balanced(int sizeA, int sizeB);
-    int get_set_size(bool isSetA);
+    void select_base_cell();
 };
