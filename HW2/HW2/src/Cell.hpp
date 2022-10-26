@@ -11,10 +11,12 @@ public:
     int sizeA;
     int sizeB;
     int pinNum;
+    int gain;
     bool inSetA;
 
     Cell();
     Cell(std::string n, int sa, int sb);
     void print();
     void add_net(Net* pNet);
+    void init_gain();
 };

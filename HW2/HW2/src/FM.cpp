@@ -52,3 +52,49 @@ void FM::print_nets(){
     for(auto it = nets.begin(); it != nets.end(); it++)
         it->second.print();
 };
+
+bool FM::is_balanced(int sizeA, int sizeB) {
+    return abs(sizeA - sizeB) < 0.1 * abs(sizeA + sizeB);
+}
+
+int FM::get_set_size(bool isSetA) {
+    int size = 0;
+    for(auto it = cells.begin(); it != cells.end(); it++) {
+        if(it->second.inSetA == isSetA)
+            size++;
+    }
+    return size;
+}
+
+void FM::initial_partition() {
+    // Variables declaration
+    int sizeA = 0, sizeB = 0;
+    std::vector<Cell> sortedCells;
+
+    // Push all cells into a vector
+    for(auto it = cells.begin(); it != cells.end(); it++) {
+        sizeA += it->second.sizeA;
+        sortedCells.push_back(it->second);
+    }
+
+    // Sort the vector by sizeB (small to large)
+    std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) {
+        return a.sizeB > b.sizeB;
+    });
+
+    // Assign cell with larger sizeB to setB until balanced
+    while(!is_balanced(sizeA, sizeB)) {
+        Cell c = sortedCells.back();
+        sortedCells.pop_back();
+        cells[c.name].inSetA = false;
+        sizeA -= c.sizeA;
+        sizeB += c.sizeB;
+    }
+    for(auto it = cells.begin(); it != cells.end(); it++) {
+        if(it->second.inSetA)
+            std::cout << "A: ";
+        else
+            std::cout << "B: ";
+        it->second.print();
+    }
+}

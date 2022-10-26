@@ -11,28 +11,23 @@ void BucketList::set_size(int mpn) {
     buckets.resize(2 * mpn + 1);
 }
 
-void BucketList::insert_cell(std::string cell, int gain) {
-    cells[cell] = std::make_pair(0, 0);
-    buckets[get_bucket_index(gain)].push_back(cell);
+void BucketList::insert_cell(Cell* cell, int gain) {
+    int bucketIndex = get_bucket_index(gain);
+    buckets[bucketIndex].push_back(cell);
+    cells[cell] = std::make_pair(bucketIndex, buckets[bucketIndex].size() - 1);
 }
 
-void BucketList::remove_cell(std::string cell) {
-    int gain = cells[cell].first;
-    int index = cells[cell].second;
-    std::vector<std::string> &bucket = buckets[get_bucket_index(gain)];
-    bucket.erase(bucket.begin() + index);
+void BucketList::remove_cell(Cell* cell) {
+    int bucketIndex = cells[cell].first;
+    int cellIndex = cells[cell].second;
+    buckets[bucketIndex][cellIndex] = buckets[bucketIndex].back();
+    buckets[bucketIndex].pop_back();
+    cells[buckets[bucketIndex][cellIndex]] = std::make_pair(bucketIndex, cellIndex);
     cells.erase(cell);
 }
 
-void BucketList::update_cell(std::string cell, int gain) {
-    int oldGain = cells[cell].first;
-    int index = cells[cell].second;
-    std::vector<std::string> &oldBucket = buckets[get_bucket_index(oldGain)];
-    oldBucket.erase(oldBucket.begin() + index);
-    for(int i = index; i < oldBucket.size(); i++)
-        cells[oldBucket[i]].second--;
-    buckets[get_bucket_index(gain)].push_back(cell);
-    cells[cell] = std::make_pair(gain, buckets[get_bucket_index(gain)].size() - 1);
+void BucketList::update_cell(Cell* cell, int gain) {
+
 }
 
 void BucketList::update_max_gain() {
@@ -46,4 +41,16 @@ void BucketList::update_max_gain() {
 
 int BucketList::get_bucket_index(int gain) {
     return gain + maxPinNum;
+}
+
+int BucketList::get_size(bool isSetA) {
+    int size = 0;
+    for(auto it = cells.begin(); it != cells.end(); it++) {
+        if(isSetA) {
+            size += (*it->first).sizeA;
+        } else {
+            size += (*it->first).sizeB;
+        }
+    }
+    return size;
 }
