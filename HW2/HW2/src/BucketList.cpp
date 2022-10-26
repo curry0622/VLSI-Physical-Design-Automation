@@ -62,7 +62,7 @@ Cell* BucketList::get_top_kth_cell(int k) {
     int gain = maxGain;
     int bIndex = gain_to_index(gain);
     int bSize = buckets[bIndex].size();
-    while(k >= 1) {
+    while(k >= 1 && gain >= -maxPinNum) {
         if(bSize >= k) {
             return buckets[bIndex][bSize - k];
         } else {
@@ -72,5 +72,5 @@ Cell* BucketList::get_top_kth_cell(int k) {
             bSize = buckets[bIndex].size();
         }
     }
-    return NULL;
+    return nullptr;
 }

@@ -8,8 +8,7 @@ FM::FM(std::string cellFile, std::string netFile) {
     setA.set_bucket_size(maxPinNum);
     setB.set_bucket_size(maxPinNum);
     initial_partition();
-    setA.print('A');
-    setB.print('B');
+    select_base_cell();
 }
 
 void FM::read_cells(std::string filename){
@@ -109,5 +108,33 @@ void FM::initial_partition() {
 }
 
 void FM::select_base_cell() {
-    
+    int ka = 1, kb = 1;
+    bool found = false;
+    while(!found) {
+        Cell* a = setA.get_top_kth_cell(ka);
+        Cell* b = setB.get_top_kth_cell(kb);
+        if(a && b) {
+            if(a->gain > b->gain) {
+                baseCell = a;
+                ka++;
+                found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeA);
+            } else {
+                baseCell = b;
+                kb++;
+                found = is_balanced(setA.size + baseCell->sizeB, setB.size - baseCell->sizeB);
+            }
+        } else if(a) {
+            baseCell = a;
+            ka++;
+            found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeA);
+        } else if(b) {
+            baseCell = b;
+            kb++;
+            found = is_balanced(setA.size + baseCell->sizeB, setB.size - baseCell->sizeB);
+        } else {
+            std::cout << "No base cell found." << std::endl;
+            baseCell = nullptr;
+            break;
+        }
+    }
 }
