@@ -8,9 +8,11 @@ class FM {
 public:
     std::unordered_map<std::string, Net> nets;
     std::unordered_map<std::string, Cell> cells;
+    std::vector<int> maxGains;
     BucketList setA, setB;
-    int maxPinNum = INT_MIN;
     Cell* baseCell;
+    int maxPinNum = INT_MIN;
+    int maxPartialSum;
 
     FM();
     FM(std::string cellFile, std::string netFile);
@@ -22,4 +24,5 @@ public:
     void initial_partition();
     bool is_balanced(int sizeA, int sizeB);
     void select_base_cell();
+    void calc_max_partial_sum();
 };

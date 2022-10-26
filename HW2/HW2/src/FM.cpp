@@ -138,3 +138,9 @@ void FM::select_base_cell() {
         }
     }
 }
+
+void FM::calc_max_partial_sum() {
+    std::partial_sum(maxGains.begin(), maxGains.end(), maxGains.begin());
+    maxPartialSum = *std::max_element(maxGains.begin(), maxGains.end());
+    std::cout << "Max partial sum: " << maxPartialSum << std::endl;
+}
