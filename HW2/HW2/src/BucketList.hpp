@@ -9,12 +9,12 @@ public:
     int maxGain;
 
     BucketList();
-    BucketList(int mpn);
     void set_size(int mpn);
-    void insert_cell(Cell* cell, int gain);
+    void insert_cell(Cell* cell);
     void remove_cell(Cell* cell);
     void update_cell(Cell* cell, int gain);
     void update_max_gain();
     int get_bucket_index(int gain);
     int get_size(bool isSetA);
+    void print(char setName);
 };

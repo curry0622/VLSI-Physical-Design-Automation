@@ -90,11 +90,23 @@ void FM::initial_partition() {
         sizeA -= c.sizeA;
         sizeB += c.sizeB;
     }
+
+    // Calculate number of cells in each set in each net
+    for(auto it = nets.begin(); it != nets.end(); it++) {
+        it->second.calc_num_in_set();
+    }
+
+    // Initialize gain of each cell
     for(auto it = cells.begin(); it != cells.end(); it++) {
-        if(it->second.inSetA)
-            std::cout << "A: ";
-        else
-            std::cout << "B: ";
-        it->second.print();
+        it->second.init_gain();
+    }
+
+    // Initialize bucket lists
+    for(auto it = cells.begin(); it != cells.end(); it++) {
+        if(it->second.inSetA) {
+            setA.insert_cell(&it->second);
+        } else {
+            setB.insert_cell(&it->second);
+        }
     }
 }

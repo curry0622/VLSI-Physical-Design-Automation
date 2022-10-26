@@ -1,20 +1,22 @@
 #include "BucketList.hpp"
 
-BucketList::BucketList() {};
-
-BucketList::BucketList(int mpn) {
-    set_size(mpn);
-}
+BucketList::BucketList() {
+    maxGain = INT_MIN;
+};
 
 void BucketList::set_size(int mpn) {
     maxPinNum = mpn;
     buckets.resize(2 * mpn + 1);
 }
 
-void BucketList::insert_cell(Cell* cell, int gain) {
+void BucketList::insert_cell(Cell* cell) {
+    int gain = cell->gain;
     int bucketIndex = get_bucket_index(gain);
     buckets[bucketIndex].push_back(cell);
     cells[cell] = std::make_pair(bucketIndex, buckets[bucketIndex].size() - 1);
+    if(gain > maxGain) {
+        maxGain = gain;
+    }
 }
 
 void BucketList::remove_cell(Cell* cell) {
@@ -53,4 +55,16 @@ int BucketList::get_size(bool isSetA) {
         }
     }
     return size;
+}
+
+void BucketList::print(char setName) {
+    std::cout << "Set[" << setName << "]\n";
+    std::cout << "Max gain: " << maxGain << std::endl;
+    for(int i = 0; i < buckets.size(); i++) {
+        std::cout << "gain " << i - maxPinNum << ": ";
+        for(int j = 0; j < buckets[i].size(); j++) {
+            std::cout << buckets[i][j]->name << " ";
+        }
+        std::cout << std::endl;
+    }
 }
