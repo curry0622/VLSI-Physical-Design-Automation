@@ -7,6 +7,7 @@ Cell::Cell(std::string n, int sa, int sb) {
     sizeA = sa;
     sizeB = sb;
     inSetA = true;
+    isLocked = false;
 }
 
 void Cell::print() {

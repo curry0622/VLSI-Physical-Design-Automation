@@ -11,12 +11,17 @@ void BucketList::set_bucket_size(int mpn) {
 }
 
 void BucketList::insert_cell(Cell* cell) {
+    // Inert cell to the bucket list and map
     int gain = cell->gain;
     int bucketIndex = gain_to_index(gain);
     buckets[bucketIndex].push_back(cell);
     cells[cell] = std::make_pair(bucketIndex, buckets[bucketIndex].size() - 1);
+
+    // Update max gain
     if(gain > maxGain)
         maxGain = gain;
+
+    // Update set size
     if(cell->inSetA)
         size += cell->sizeA;
     else
@@ -24,6 +29,7 @@ void BucketList::insert_cell(Cell* cell) {
 }
 
 void BucketList::remove_cell(Cell* cell) {
+    // Remove cell from bucket list and map
     int bucketIndex = cells[cell].first;
     int cellIndex = cells[cell].second;
     Cell* last = buckets[bucketIndex].back();
@@ -31,12 +37,21 @@ void BucketList::remove_cell(Cell* cell) {
     buckets[bucketIndex].pop_back();
     cells[last] = std::make_pair(bucketIndex, cellIndex);
     cells.erase(cell);
+
+    // Update max gain
     while(buckets[gain_to_index(maxGain)].empty())
         maxGain--;
-    // if(cell->inSetA)
-    //     size -= cell->sizeA;
-    // else
-    //     size -= cell->sizeB;
+
+    // Update set size
+    if(cell->inSetA)
+        size -= cell->sizeA;
+    else
+        size -= cell->sizeB;
+}
+
+void BucketList::update_cell(Cell* cell) {
+    remove_cell(cell);
+    insert_cell(cell);
 }
 
 int BucketList::gain_to_index(int gain) {

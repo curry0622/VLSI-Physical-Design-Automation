@@ -8,7 +8,13 @@ FM::FM(std::string cellFile, std::string netFile) {
     setA.set_bucket_size(maxPinNum);
     setB.set_bucket_size(maxPinNum);
     initial_partition();
+    setA.print('A');
+    setB.print('B');
     select_base_cell();
+    std::cout << "Base cell: " << baseCell->name << std::endl;
+    update_cells_gain();
+    setA.print('A');
+    setB.print('B');
 }
 
 void FM::read_cells(std::string filename){
@@ -113,7 +119,7 @@ void FM::select_base_cell() {
     while(!found) {
         Cell* a = setA.get_top_kth_cell(ka);
         Cell* b = setB.get_top_kth_cell(kb);
-        if(a && b) {
+        if(a && b && !a->isLocked && !b->isLocked) {
             if(a->gain > b->gain) {
                 baseCell = a;
                 ka++;
@@ -123,11 +129,11 @@ void FM::select_base_cell() {
                 kb++;
                 found = is_balanced(setA.size + baseCell->sizeB, setB.size - baseCell->sizeB);
             }
-        } else if(a) {
+        } else if(a && !a->isLocked) {
             baseCell = a;
             ka++;
             found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeA);
-        } else if(b) {
+        } else if(b && !b->isLocked) {
             baseCell = b;
             kb++;
             found = is_balanced(setA.size + baseCell->sizeB, setB.size - baseCell->sizeB);
@@ -140,7 +146,128 @@ void FM::select_base_cell() {
 }
 
 void FM::calc_max_partial_sum() {
-    std::partial_sum(maxGains.begin(), maxGains.end(), maxGains.begin());
-    maxPartialSum = *std::max_element(maxGains.begin(), maxGains.end());
-    std::cout << "Max partial sum: " << maxPartialSum << std::endl;
+    int max = 0, sum = 0, index = 0;
+    for(int i = 0; i < maxGains.size(); i++) {
+        sum += maxGains[i];
+        if(sum > max) {
+            max = sum;
+            index = i;
+        }
+    }
+    maxPartialSum = max;
+    maxPartialSumIndex = index;
+}
+
+void FM::update_cells_gain() {
+    if(baseCell->inSetA) {
+        setA.remove_cell(baseCell);
+        setB.insert_cell(baseCell);
+        baseCell->inSetA = false;
+        baseCell->isLocked = true;
+        for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
+            if((*it)->numInSetB == 0) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain++;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            } else if((*it)->numInSetB == 1) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain--;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            }
+            (*it)->numInSetA--;
+            (*it)->numInSetB++;
+            if((*it)->numInSetA == 0) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain--;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            } else if((*it)->numInSetA == 1) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain++;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        setB.remove_cell(baseCell);
+        setA.insert_cell(baseCell);
+        baseCell->inSetA = true;
+        baseCell->isLocked = true;
+        for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
+            if((*it)->numInSetA == 0) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain++;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            } else if((*it)->numInSetA == 1) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain--;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            }
+            (*it)->numInSetB--;
+            (*it)->numInSetA++;
+            if((*it)->numInSetB == 0) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain--;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            } else if((*it)->numInSetB == 1) {
+                for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    if(!(*it2)->isLocked) {
+                        (*it2)->gain++;
+                        if((*it2)->inSetA) {
+                            setA.update_cell(*it2);
+                        } else {
+                            setB.update_cell(*it2);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -13,6 +13,7 @@ public:
     Cell* baseCell;
     int maxPinNum = INT_MIN;
     int maxPartialSum;
+    int maxPartialSumIndex;
 
     FM();
     FM(std::string cellFile, std::string netFile);
@@ -25,4 +26,5 @@ public:
     bool is_balanced(int sizeA, int sizeB);
     void select_base_cell();
     void calc_max_partial_sum();
+    void update_cells_gain();
 };

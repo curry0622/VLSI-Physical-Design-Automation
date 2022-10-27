@@ -13,6 +13,7 @@ public:
     int pinNum;
     int gain;
     bool inSetA;
+    bool isLocked;
 
     Cell();
     Cell(std::string n, int sa, int sb);
