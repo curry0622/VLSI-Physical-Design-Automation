@@ -33,4 +33,5 @@ public:
     void print_sets();
     void pause();
     void print_selected_base_cells();
+    void roll_back_from(int index);
 };

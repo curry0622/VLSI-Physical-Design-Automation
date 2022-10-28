@@ -8,14 +8,13 @@ FM::FM(std::string cellFile, std::string netFile) {
     read_nets(netFile);
     setA.set_bucket_size(maxPinNum);
     setB.set_bucket_size(maxPinNum);
+    // std::cout << "Bucket set done." << std::endl;
     initial_partition();
+    // std::cout << "Initial Partition done. " << std::endl;
     while(maxPartialSum > 0) {
         run_pass();
         pause();
     }
-    // std::cout << "Final result: " << std::endl;
-    // setA.print('A');
-    // setB.print('B');
 }
 
 void FM::read_cells(std::string filename){
@@ -68,7 +67,7 @@ void FM::print_sets() {
 }
 
 void FM::print_selected_base_cells() {
-    std::cout << "Selected base cells: ";
+    std::cout << "Selected base cells(" << selectedBaseCells.size() << "): ";
     for(int i = 0; i < selectedBaseCells.size(); i++) {
         std::cout << selectedBaseCells[i]->name << "[" << maxGains[i] << "] ";
     }
@@ -76,8 +75,8 @@ void FM::print_selected_base_cells() {
 }
 
 void FM::pause() {
-    std::cout << "----------------------Press Enter to continue---------------------" << std::endl;
-    std::cin.ignore();
+    // std::cout << "----------------------Press Enter to continue---------------------" << std::endl;
+    // std::cin.ignore();
 }
 
 bool FM::is_balanced(int sizeA, int sizeB) {
@@ -88,26 +87,32 @@ void FM::initial_partition() {
     // Variables declaration
     int sizeA = 0, sizeB = 0;
     std::vector<Cell> sortedCells;
+    // std::cout << "Variables declaration done." << std::endl;
 
     // Push all cells into a vector
     for(auto it = cells.begin(); it != cells.end(); it++) {
         sizeA += it->second.sizeA;
         sortedCells.push_back(it->second);
     }
+    // std::cout << "Push all cells into a vector done." << std::endl;
 
     // Sort the vector by sizeB (small to large)
     std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) {
         return a.sizeB > b.sizeB;
     });
+    // std::cout << "Sort the vector by sizeB (small to large) done." << std::endl;
 
     // Assign cell with larger sizeB to setB until balanced
+    // int it = 1;
     while(!is_balanced(sizeA, sizeB)) {
+        // std::cout << it++ << std::endl;
         Cell c = sortedCells.back();
         sortedCells.pop_back();
         cells[c.name].inSetA = false;
         sizeA -= c.sizeA;
         sizeB += c.sizeB;
     }
+    // std::cout << "Assign cell with larger sizeB to setB until balanced done." << std::endl;
 
     // Calculate number of cells in each set in each net
     for(auto it = nets.begin(); it != nets.end(); it++) {
@@ -185,6 +190,10 @@ bool FM::select_base_cell() {
             std::cout << "No base cell found" << std::endl;
         }
     }
+    if(!found)
+        std::cout << "No base cell found" << std::endl;
+    else
+        std::cout << "Base cell found: " << baseCell->name << std::endl;
     return found;
 }
 
@@ -203,16 +212,20 @@ void FM::calc_max_partial_sum() {
 
 void FM::update_cells_gain() {
     if(baseCell->inSetA) {
-        setA.remove_cell(baseCell);
-        baseCell->inSetA = false;
-        baseCell->calc_gain();
+        // setA.remove_cell(baseCell);
+        // baseCell->inSetA = false;
+        // baseCell->calc_gain();
         baseCell->isLocked = true;
-        setB.insert_cell(baseCell);
+        // setB.insert_cell(baseCell);
         for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
+            (*it)->print();
             if((*it)->numInSetB == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
                     if(!(*it2)->isLocked) {
-                        (*it2)->gain++;
+                        (*it2)->add_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
                         } else {
@@ -222,8 +235,11 @@ void FM::update_cells_gain() {
                 }
             } else if((*it)->numInSetB == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked) {
-                        (*it2)->gain--;
+                    if(!(*it2)->isLocked && !(*it2)->inSetA) {
+                        (*it2)->sub_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
                         } else {
@@ -234,21 +250,36 @@ void FM::update_cells_gain() {
             }
             (*it)->numInSetA--;
             (*it)->numInSetB++;
+            // std::cout << "Net " << (*it)->name << " now has " << (*it)->numInSetA << " cells in set A and " << (*it)->numInSetB << " cells in set B" << std::endl;
             if((*it)->numInSetA == 0) {
+                std::cout << "Net " << (*it)->name << " is now empty in set A" << std::endl;
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
+                    std::cout << "Cell1 " << (*it2)->name << std::endl;
                     if(!(*it2)->isLocked) {
-                        (*it2)->gain--;
+                        (*it2)->sub_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
+                            std::cout << "Cell " << (*it2)->name << " is in set A" << std::endl;
                             setA.update_cell(*it2);
+                            std::cout << "Cell " << (*it2)->name << " updated in set A" << std::endl;
                         } else {
+                            std::cout << "Cell " << (*it2)->name << " is in set B" << std::endl;
                             setB.update_cell(*it2);
+                            std::cout << "Cell " << (*it2)->name << " updated in set B" << std::endl;
                         }
                     }
+                    std::cout << "Cell2 " << (*it2)->name << std::endl;
                 }
             } else if((*it)->numInSetA == 1) {
+                std::cout << "Net " << (*it)->name << " now has only one cell in set A" << std::endl;
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked) {
-                        (*it2)->gain++;
+                    if(!(*it2)->isLocked && (*it2)->inSetA) {
+                        (*it2)->add_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
                         } else {
@@ -258,18 +289,26 @@ void FM::update_cells_gain() {
                 }
             }
         }
-    } else {
-        setB.remove_cell(baseCell);
-        baseCell->inSetA = true;
+        setA.remove_cell(baseCell);
+        baseCell->inSetA = false;
         baseCell->calc_gain();
         baseCell->isLocked = true;
-        setA.insert_cell(baseCell);
-        // std::cout << "Move " << baseCell->name << " from B to A" << std::endl;
+        setB.insert_cell(baseCell);
+    } else {
+        // setB.remove_cell(baseCell);
+        // baseCell->inSetA = true;
+        // baseCell->calc_gain();
+        baseCell->isLocked = true;
+        // setA.insert_cell(baseCell);
         for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
+            // (*it)->print();
             if((*it)->numInSetA == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
                     if(!(*it2)->isLocked) {
-                        (*it2)->gain++;
+                        (*it2)->add_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
                         } else {
@@ -279,8 +318,11 @@ void FM::update_cells_gain() {
                 }
             } else if((*it)->numInSetA == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked) {
-                        (*it2)->gain--;
+                    if(!(*it2)->isLocked && (*it2)->inSetA) {
+                        (*it2)->sub_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
                         } else {
@@ -294,7 +336,10 @@ void FM::update_cells_gain() {
             if((*it)->numInSetB == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
                     if(!(*it2)->isLocked) {
-                        (*it2)->gain--;
+                        (*it2)->sub_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
                         } else {
@@ -304,8 +349,11 @@ void FM::update_cells_gain() {
                 }
             } else if((*it)->numInSetB == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked) {
-                        (*it2)->gain++;
+                    if(!(*it2)->isLocked && !(*it2)->inSetA) {
+                        (*it2)->add_gain();
+                        // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
+                        // (*it2)->calc_gain();
+                        // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
                         } else {
@@ -315,6 +363,11 @@ void FM::update_cells_gain() {
                 }
             }
         }
+        setB.remove_cell(baseCell);
+        baseCell->inSetA = true;
+        baseCell->calc_gain();
+        baseCell->isLocked = true;
+        setA.insert_cell(baseCell);
     }
 }
 
@@ -325,8 +378,20 @@ void FM::reset_lock() {
     }
 }
 
+void FM::roll_back_from(int index) {
+    std::cout << "Roll back from " << index << " to " << selectedBaseCells.size() - 1 <<  std::endl;
+    for(int i = selectedBaseCells.size() - 1; i >= index; i--) {
+        baseCell = selectedBaseCells[i];
+        std::cout << "Roll back base[" << i << "]: " << baseCell->name << std::endl;
+        update_cells_gain();
+        print_sets();
+        pause();
+    }
+}
+
 bool FM::run_pass() {
     std::cout << "Running pass" << std::endl;
+    int it = 1;
     while(select_base_cell()) {
         maxGains.push_back(baseCell->gain);
         print_sets();
@@ -334,30 +399,19 @@ bool FM::run_pass() {
         print_selected_base_cells();
         update_cells_gain();
         pause();
+        std::cout << "===============================Iteration " << it++ << std::endl;
     }
     calc_max_partial_sum();
     std::cout << "maxPartialSum: " << maxPartialSum << ", index: " << maxPartialSumIndex << std::endl;
     reset_lock();
     if(maxPartialSum <= 0) {
-        std::cout << "Roll back" << std::endl;
         print_sets();
-        for(int i = selectedBaseCells.size() - 1; i >= 0; i--) {
-            baseCell = selectedBaseCells[i];
-            update_cells_gain();
-            print_sets();
-            pause();
-        }
+        roll_back_from(0);
         return false;
     }
     if(maxPartialSumIndex < selectedBaseCells.size() - 1) {
-        std::cout << "Roll back" << std::endl;
         print_sets();
-        for(int i = selectedBaseCells.size() - 1; i >= maxPartialSumIndex + 1; i--) {
-            baseCell = selectedBaseCells[i];
-            update_cells_gain();
-            print_sets();
-            pause();
-        }
+        roll_back_from(maxPartialSumIndex + 1);
     }
     reset_lock();
     std::cout << "Clear base cells" << std::endl;

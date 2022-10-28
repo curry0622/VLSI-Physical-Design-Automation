@@ -20,4 +20,6 @@ public:
     void print();
     void add_net(Net* pNet);
     void calc_gain();
+    void add_gain();
+    void sub_gain();
 };

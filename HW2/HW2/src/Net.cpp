@@ -8,9 +8,14 @@ Net::Net(std::string n, std::vector<Cell*> cs) {
 }
 
 void Net::print() {
-    std::cout << "NET: " << name << ", CELLS: ";
+    std::cout << "NET: " << name << std::endl;
     for(auto it = cells.begin(); it != cells.end(); it++)
-        std::cout << (*it)->name << " ";
+        if((*it)->inSetA)
+            std::cout << "A: " << (*it)->name << ", ";
+    std::cout << std::endl;
+    for(auto it = cells.begin(); it != cells.end(); it++)
+        if(!(*it)->inSetA)
+            std::cout << "B: " << (*it)->name << ", ";
     std::cout << std::endl;
 }
 
