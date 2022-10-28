@@ -1,4 +1,30 @@
-NET n1 { c1 c2 c3 }
-NET n2 { c2 c3 c4 }
-NET n3 { c2 c5 }
-NET n4 { c2 c6 }
+NET n1 { c6 c7 c14 c16 c21 }
+NET n2 { c2 c20 c5 c11 c30 }
+NET n3 { c26 c8 }
+NET n4 { c24 c22 c11 c3 c23 }
+NET n5 { c3 c19 }
+NET n6 { c6 c19 }
+NET n7 { c18 c21 }
+NET n8 { c19 c11 }
+NET n9 { c14 c13 }
+NET n10 { c20 c27 }
+NET n11 { c8 c15 }
+NET n12 { c13 c12 c10 }
+NET n13 { c6 c13 }
+NET n14 { c10 c7 c17 c24 c3 }
+NET n15 { c25 c5 c12 c7 c9 }
+NET n16 { c18 c23 c16 }
+NET n17 { c13 c6 }
+NET n18 { c2 c23 }
+NET n19 { c15 c17 c24 c14 c29 }
+NET n20 { c10 c26 c9 c24 c15 }
+NET n21 { c22 c1 c28 }
+NET n22 { c3 c6 c22 c30 c16 }
+NET n23 { c20 c28 c13 c14 c26 }
+NET n24 { c7 c28 }
+NET n25 { c30 c21 c6 c3 }
+NET n26 { c7 c2 c27 }
+NET n27 { c13 c21 c16 }
+NET n28 { c29 c9 c2 c14 c22 }
+NET n29 { c7 c2 }
+NET n30 { c7 c6 }

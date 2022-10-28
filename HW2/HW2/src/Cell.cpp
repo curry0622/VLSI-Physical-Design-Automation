@@ -22,7 +22,7 @@ void Cell::add_net(Net* pNet) {
     pinNum = nets.size();
 }
 
-void Cell::init_gain() {
+void Cell::calc_gain() {
     gain = 0;
     for(auto it = nets.begin(); it != nets.end(); it++) {
         if(inSetA) {

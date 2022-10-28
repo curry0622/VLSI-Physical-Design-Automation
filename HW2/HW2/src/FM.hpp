@@ -8,6 +8,7 @@ class FM {
 public:
     std::unordered_map<std::string, Net> nets;
     std::unordered_map<std::string, Cell> cells;
+    std::vector<Cell*> selectedBaseCells;
     std::vector<int> maxGains;
     BucketList setA, setB;
     Cell* baseCell;
@@ -24,7 +25,12 @@ public:
     void read_nets(std::string filename);
     void initial_partition();
     bool is_balanced(int sizeA, int sizeB);
-    void select_base_cell();
+    bool select_base_cell();
     void calc_max_partial_sum();
     void update_cells_gain();
+    bool run_pass();
+    void reset_lock();
+    void print_sets();
+    void pause();
+    void print_selected_base_cells();
 };

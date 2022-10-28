@@ -19,5 +19,5 @@ public:
     Cell(std::string n, int sa, int sb);
     void print();
     void add_net(Net* pNet);
-    void init_gain();
+    void calc_gain();
 };
