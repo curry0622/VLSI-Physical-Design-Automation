@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    FM fm(argv[1], argv[2]);
+    FM fm(argv[1], argv[2], argv[3]);
 
     // fm.print_cells();
     // fm.print_nets();

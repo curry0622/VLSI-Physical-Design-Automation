@@ -61,18 +61,18 @@ int BucketList::gain_to_index(int gain) {
 }
 
 void BucketList::print(char setName) {
-    std::cout << std::endl;
-    std::cout << "Set[" << setName << "]" << std::endl;
-    std::cout << "size: " << size << std::endl;
-    std::cout << "Max gain: " << maxGain << std::endl;
-    for(int i = 0; i < buckets.size(); i++) {
-        std::cout << "gain " << i - maxPinNum << ": ";
-        for(int j = 0; j < buckets[i].size(); j++) {
-            std::cout << buckets[i][j]->name << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
+    // std::cout << std::endl;
+    // std::cout << "Set[" << setName << "]" << std::endl;
+    // std::cout << "size: " << size << std::endl;
+    // std::cout << "Max gain: " << maxGain << std::endl;
+    // for(int i = 0; i < buckets.size(); i++) {
+    //     std::cout << "gain " << i - maxPinNum << ": ";
+    //     for(int j = 0; j < buckets[i].size(); j++) {
+    //         std::cout << buckets[i][j]->name << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // std::cout << std::endl;
 }
 
 Cell* BucketList::get_top_kth_cell(int k) {

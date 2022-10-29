@@ -2,7 +2,7 @@
 
 FM::FM(){};
 
-FM::FM(std::string cellFile, std::string netFile) {
+FM::FM(std::string cellFile, std::string netFile, std::string outFile) {
     maxPartialSum = 1;
     read_cells(cellFile);
     read_nets(netFile);
@@ -13,6 +13,7 @@ FM::FM(std::string cellFile, std::string netFile) {
         run_pass();
         pause();
     }
+    write_result(outFile);
 }
 
 void FM::read_cells(std::string filename){
@@ -50,26 +51,26 @@ void FM::read_nets(std::string filename){
 };
 
 void FM::print_cells(){
-    for(auto it = cells.begin(); it != cells.end(); it++)
-        it->second.print();
+    // for(auto it = cells.begin(); it != cells.end(); it++)
+    //     it->second.print();
 };
 
 void FM::print_nets(){
-    for(auto it = nets.begin(); it != nets.end(); it++)
-        it->second.print();
+    // for(auto it = nets.begin(); it != nets.end(); it++)
+    //     it->second.print();
 };
 
 void FM::print_sets() {
-    setA.print('A');
-    setB.print('B');
+    // setA.print('A');
+    // setB.print('B');
 }
 
 void FM::print_selected_base_cells() {
-    std::cout << "Selected base cells(" << selectedBaseCells.size() << "): ";
-    for(int i = 0; i < selectedBaseCells.size(); i++) {
-        std::cout << selectedBaseCells[i]->name << "[" << maxGains[i] << "] ";
-    }
-    std::cout << std::endl;
+    // std::cout << "Selected base cells(" << selectedBaseCells.size() << "): ";
+    // for(int i = 0; i < selectedBaseCells.size(); i++) {
+    //     std::cout << selectedBaseCells[i]->name << "[" << maxGains[i] << "] ";
+    // }
+    // std::cout << std::endl;
 }
 
 void FM::pause() {
@@ -95,9 +96,10 @@ void FM::initial_partition() {
     // std::cout << "Push all cells into a vector done." << std::endl;
 
     // Sort the vector by sizeB (small to large)
-    std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) {
-        return a.sizeB > b.sizeB;
-    });
+    boost::sort::pdqsort(sortedCells.begin(), sortedCells.end(), [](const Cell& a, const Cell& b) { return a.sizeB > b.sizeB; });
+    // std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) {
+    //     return a.sizeB > b.sizeB;
+    // });
     // std::cout << "Sort the vector by sizeB (small to large) done." << std::endl;
 
     // Assign cell with larger sizeB to setB until balanced
@@ -145,14 +147,14 @@ bool FM::select_base_cell() {
             b = setB.get_top_kth_cell(kb);
         else
             b = nullptr;
-        if(a)
-            std::cout << "Top " << ka << " cell in set A: " << a->name << "[" << a->gain << "]" << std::endl;
-        else
-            std::cout << "Top " << ka << " cell in set A: NULL" << std::endl;
-        if(b)
-            std::cout << "Top " << kb << " cell in set B: " << b->name << "[" << b->gain << "]" << std::endl;
-        else    
-            std::cout << "Top " << kb << " cell in set B: NULL" << std::endl;
+        // if(a)
+        //     std::cout << "Top " << ka << " cell in set A: " << a->name << "[" << a->gain << "]" << std::endl;
+        // else
+        //     std::cout << "Top " << ka << " cell in set A: NULL" << std::endl;
+        // if(b)
+        //     std::cout << "Top " << kb << " cell in set B: " << b->name << "[" << b->gain << "]" << std::endl;
+        // else    
+        //     std::cout << "Top " << kb << " cell in set B: NULL" << std::endl;
         if(a && a->isLocked) {
             a = nullptr;
         }
@@ -163,35 +165,35 @@ bool FM::select_base_cell() {
             if(a->gain > b->gain) {
                 baseCell = a;
                 ka++;
-                std::cout << baseCell->name << std::endl;
+                // std::cout << baseCell->name << std::endl;
                 found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
             } else {
                 baseCell = b;
                 kb++;
-                std::cout << baseCell->name << std::endl;
+                // std::cout << baseCell->name << std::endl;
                 found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
             }
         } else if(a) {
             baseCell = a;
             ka++;
-            std::cout << baseCell->name << std::endl;
+            // std::cout << baseCell->name << std::endl;
             found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
         } else if(b) {
             baseCell = b;
             kb++;
-            std::cout << baseCell->name << std::endl;
+            // std::cout << baseCell->name << std::endl;
             found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
         } else {
             baseCell = nullptr;
             ka++;
             kb++;
-            std::cout << "No base cell found" << std::endl;
+            // std::cout << "No base cell found" << std::endl;
         }
     }
-    if(!found)
-        std::cout << "No base cell found" << std::endl;
-    else
-        std::cout << "Base cell found: " << baseCell->name << std::endl;
+    // if(!found)
+    //     std::cout << "No base cell found" << std::endl;
+    // else
+    //     std::cout << "Base cell found: " << baseCell->name << std::endl;
     return found;
 }
 
@@ -370,17 +372,17 @@ void FM::update_cells_gain() {
 }
 
 void FM::reset_lock() {
-    std::cout << "Reset lock" << std::endl;
+    // std::cout << "Reset lock" << std::endl;
     for(auto it = selectedBaseCells.begin(); it != selectedBaseCells.end(); it++) {
         (*it)->isLocked = false;
     }
 }
 
 void FM::roll_back_from(int index) {
-    std::cout << "Roll back from " << index << " to " << selectedBaseCells.size() - 1 <<  std::endl;
+    // std::cout << "Roll back from " << index << " to " << selectedBaseCells.size() - 1 <<  std::endl;
     for(int i = selectedBaseCells.size() - 1; i >= index; i--) {
         baseCell = selectedBaseCells[i];
-        std::cout << "Roll back base[" << i << "]: " << baseCell->name << std::endl;
+        // std::cout << "Roll back base[" << i << "]: " << baseCell->name << std::endl;
         update_cells_gain();
         print_sets();
         pause();
@@ -388,8 +390,7 @@ void FM::roll_back_from(int index) {
 }
 
 bool FM::run_pass() {
-    std::cout << "Running pass" << std::endl;
-    int it = 1;
+    // std::cout << "Running pass" << std::endl;
     while(select_base_cell()) {
         maxGains.push_back(baseCell->gain);
         print_sets();
@@ -397,10 +398,9 @@ bool FM::run_pass() {
         print_selected_base_cells();
         update_cells_gain();
         pause();
-        std::cout << "===============================Iteration " << it++ << std::endl;
     }
     calc_max_partial_sum();
-    std::cout << "maxPartialSum: " << maxPartialSum << ", index: " << maxPartialSumIndex << std::endl;
+    // std::cout << "maxPartialSum: " << maxPartialSum << ", index: " << maxPartialSumIndex << std::endl;
     reset_lock();
     if(maxPartialSum <= 0) {
         // print_sets();
@@ -412,9 +412,29 @@ bool FM::run_pass() {
         roll_back_from(maxPartialSumIndex + 1);
     }
     reset_lock();
-    std::cout << "Clear base cells" << std::endl;
+    // std::cout << "Clear base cells" << std::endl;
     maxGains.clear();
     selectedBaseCells.clear();
     print_sets();
     return true;
+}
+
+void FM::write_result(std::string filename) {
+    std::ofstream fout;
+    fout.open(filename);
+    int cutSize = 0;
+    for(auto n: nets) {
+        if(n.second.numInSetA > 0 && n.second.numInSetB > 0) {
+            cutSize++;
+        }
+    }
+    fout << "cut_size " << cutSize << std::endl;
+    fout << "A " << setA.cells.size() << std::endl;
+    for(auto s: setA.cells) {
+        fout << s.first->name << std::endl;
+    }
+    fout << "B " << setB.cells.size() << std::endl;
+    for(auto s: setB.cells) {
+        fout << s.first->name << std::endl;
+    }
 }

@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-// #include <boost/sort/sort.hpp>
+#include <boost/sort/sort.hpp>
 #include "Net.hpp"
 #include "Cell.hpp"
 #include "BucketList.hpp"
@@ -17,7 +17,7 @@ public:
     int maxPartialSumIndex;
 
     FM();
-    FM(std::string cellFile, std::string netFile);
+    FM(std::string cellFile, std::string netFile, std::string outFile);
     void print_cells();
     void print_nets();
     void write_result(std::string filename);
