@@ -14,7 +14,7 @@ void BucketList::insert_cell(Cell* cell) {
     // Inert cell to the bucket list and map
     int gain = cell->gain;
     int bucketIndex = gain_to_index(gain);
-    std::cout << "Insert cell " << cell->name << " to bucket " << bucketIndex << std::endl;
+    // std::cout << "Insert cell " << cell->name << " to bucket " << bucketIndex << std::endl;
     buckets[bucketIndex].push_back(cell);
     cells[cell] = std::make_pair(bucketIndex, buckets[bucketIndex].size() - 1);
 
@@ -30,7 +30,7 @@ void BucketList::insert_cell(Cell* cell) {
 }
 
 void BucketList::remove_cell(Cell* cell) {
-    std::cout << "Remove cell " << cell->name << std::endl;
+    // std::cout << "Remove cell " << cell->name << std::endl;
     // Remove cell from bucket list and map
     int bucketIndex = cells[cell].first;
     int cellIndex = cells[cell].second;

@@ -8,9 +8,7 @@ FM::FM(std::string cellFile, std::string netFile) {
     read_nets(netFile);
     setA.set_bucket_size(maxPinNum);
     setB.set_bucket_size(maxPinNum);
-    // std::cout << "Bucket set done." << std::endl;
     initial_partition();
-    // std::cout << "Initial Partition done. " << std::endl;
     while(maxPartialSum > 0) {
         run_pass();
         pause();
@@ -218,10 +216,10 @@ void FM::update_cells_gain() {
         baseCell->isLocked = true;
         // setB.insert_cell(baseCell);
         for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
-            (*it)->print();
+            // (*it)->print();
             if((*it)->numInSetB == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked) {
+                    if(true) {
                         (*it2)->add_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
@@ -235,7 +233,7 @@ void FM::update_cells_gain() {
                 }
             } else if((*it)->numInSetB == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked && !(*it2)->inSetA) {
+                    if(true && !(*it2)->inSetA) {
                         (*it2)->sub_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
@@ -252,30 +250,30 @@ void FM::update_cells_gain() {
             (*it)->numInSetB++;
             // std::cout << "Net " << (*it)->name << " now has " << (*it)->numInSetA << " cells in set A and " << (*it)->numInSetB << " cells in set B" << std::endl;
             if((*it)->numInSetA == 0) {
-                std::cout << "Net " << (*it)->name << " is now empty in set A" << std::endl;
+                // std::cout << "Net " << (*it)->name << " is now empty in set A" << std::endl;
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    std::cout << "Cell1 " << (*it2)->name << std::endl;
-                    if(!(*it2)->isLocked) {
+                    // std::cout << "Cell1 " << (*it2)->name << std::endl;
+                    if(true) {
                         (*it2)->sub_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
                         // std::cout << "Actual gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         if((*it2)->inSetA) {
-                            std::cout << "Cell " << (*it2)->name << " is in set A" << std::endl;
+                            // std::cout << "Cell " << (*it2)->name << " is in set A" << std::endl;
                             setA.update_cell(*it2);
-                            std::cout << "Cell " << (*it2)->name << " updated in set A" << std::endl;
+                            // std::cout << "Cell " << (*it2)->name << " updated in set A" << std::endl;
                         } else {
-                            std::cout << "Cell " << (*it2)->name << " is in set B" << std::endl;
+                            // std::cout << "Cell " << (*it2)->name << " is in set B" << std::endl;
                             setB.update_cell(*it2);
-                            std::cout << "Cell " << (*it2)->name << " updated in set B" << std::endl;
+                            // std::cout << "Cell " << (*it2)->name << " updated in set B" << std::endl;
                         }
                     }
-                    std::cout << "Cell2 " << (*it2)->name << std::endl;
+                    // std::cout << "Cell2 " << (*it2)->name << std::endl;
                 }
             } else if((*it)->numInSetA == 1) {
-                std::cout << "Net " << (*it)->name << " now has only one cell in set A" << std::endl;
+                // std::cout << "Net " << (*it)->name << " now has only one cell in set A" << std::endl;
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked && (*it2)->inSetA) {
+                    if(true && (*it2)->inSetA) {
                         (*it2)->add_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
@@ -304,7 +302,7 @@ void FM::update_cells_gain() {
             // (*it)->print();
             if((*it)->numInSetA == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked) {
+                    if(true) {
                         (*it2)->add_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
@@ -318,7 +316,7 @@ void FM::update_cells_gain() {
                 }
             } else if((*it)->numInSetA == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked && (*it2)->inSetA) {
+                    if(true && (*it2)->inSetA) {
                         (*it2)->sub_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
@@ -335,7 +333,7 @@ void FM::update_cells_gain() {
             (*it)->numInSetA++;
             if((*it)->numInSetB == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked) {
+                    if(true) {
                         (*it2)->sub_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
@@ -349,7 +347,7 @@ void FM::update_cells_gain() {
                 }
             } else if((*it)->numInSetB == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(!(*it2)->isLocked && !(*it2)->inSetA) {
+                    if(true && !(*it2)->inSetA) {
                         (*it2)->add_gain();
                         // std::cout << "Predicted gain of " << (*it2)->name << ": " << (*it2)->gain << std::endl;
                         // (*it2)->calc_gain();
@@ -405,12 +403,12 @@ bool FM::run_pass() {
     std::cout << "maxPartialSum: " << maxPartialSum << ", index: " << maxPartialSumIndex << std::endl;
     reset_lock();
     if(maxPartialSum <= 0) {
-        print_sets();
+        // print_sets();
         roll_back_from(0);
         return false;
     }
     if(maxPartialSumIndex < selectedBaseCells.size() - 1) {
-        print_sets();
+        // print_sets();
         roll_back_from(maxPartialSumIndex + 1);
     }
     reset_lock();

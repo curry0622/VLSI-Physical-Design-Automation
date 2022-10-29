@@ -26,7 +26,6 @@ void Cell::calc_gain() {
     // std::cout << "---Calc gain of " << name << "---" << std::endl;
     gain = 0;
     for(auto it = nets.begin(); it != nets.end(); it++) {
-        (*it)->print();
         if(inSetA) {
             if((*it)->numInSetA == 1) {
                 add_gain();
