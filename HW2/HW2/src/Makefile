@@ -17,3 +17,6 @@ $(EXEC): $(OBJS)
 
 clean:
 	rm -rf $(EXEC) $(OBJS)
+
+test:
+	./test.sh
