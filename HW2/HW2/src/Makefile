@@ -17,4 +17,4 @@ Cell.o:Cell.cpp Cell.hpp
 Net.o:Net.cpp Net.hpp
 	$(CC) -I $(INCLUDE) $(CFLAGS) -c Net.cpp
 clean:
-	rm -f *.o hw2
+	rm -f *.o *.out hw2 out
