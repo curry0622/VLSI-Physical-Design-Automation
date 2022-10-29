@@ -30,15 +30,19 @@ void Cell::calc_gain() {
     gain = 0;
     for(auto net : nets) {
         if(inSetA) {
-            if(net->numInSetA == 1)
+            if(net->numInSetA == 1) {
                 add_gain();
-            if(net->numInSetB == 0)
+            }
+            if(net->numInSetB == 0) {
                 sub_gain();
+            }
         } else {
-            if(net->numInSetB == 1)
+            if(net->numInSetB == 1) {
                 add_gain();
-            if(net->numInSetA == 0)
+            }
+            if(net->numInSetA == 0) {
                 sub_gain();
+            }
         }
     }
 }

@@ -5,27 +5,34 @@ Net::Net(){};
 Net::Net(std::string n, std::vector<Cell*> cs) {
     name = n;
     cells = cs;
-}
-
-void Net::print() {
-    std::cout << "NET: " << name << std::endl;
-    for(auto it = cells.begin(); it != cells.end(); it++)
-        if((*it)->inSetA)
-            std::cout << "A: " << (*it)->name << ", ";
-    std::cout << std::endl;
-    for(auto it = cells.begin(); it != cells.end(); it++)
-        if(!(*it)->inSetA)
-            std::cout << "B: " << (*it)->name << ", ";
-    std::cout << std::endl;
+    numInSetA = 0;
+    numInSetB = 0;
 }
 
 void Net::calc_num_in_set() {
     numInSetA = 0;
     numInSetB = 0;
-    for(auto it = cells.begin(); it != cells.end(); it++) {
-        if((*it)->inSetA)
+    for(auto cell : cells) {
+        if(cell->inSetA) {
             numInSetA++;
-        else
+        } else {
             numInSetB++;
+        }
     }
+}
+
+void Net::print() {
+    std::cout << "NET: " << name << std::endl;
+    for(auto cell : cells) {
+        if(cell->inSetA) {
+            std::cout << "A: " << cell->name << " ";
+        }
+    }
+    std::cout << std::endl;
+    for(auto cell : cells) {
+        if(!cell->inSetA) {
+            std::cout << "B: " << cell->name << " ";
+        }
+    }
+    std::cout << std::endl;
 }
