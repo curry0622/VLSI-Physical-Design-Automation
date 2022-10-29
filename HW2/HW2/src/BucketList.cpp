@@ -14,7 +14,6 @@ void BucketList::insert_cell(Cell* cell) {
     // Inert cell to the bucket list and map
     int gain = cell->gain;
     int bucketIndex = gain_to_index(gain);
-    // std::cout << "Insert cell " << cell->name << " to bucket " << bucketIndex << std::endl;
     buckets[bucketIndex].push_back(cell);
     cells[cell] = std::make_pair(bucketIndex, buckets[bucketIndex].size() - 1);
 
@@ -30,7 +29,6 @@ void BucketList::insert_cell(Cell* cell) {
 }
 
 void BucketList::remove_cell(Cell* cell) {
-    // std::cout << "Remove cell " << cell->name << std::endl;
     // Remove cell from bucket list and map
     int bucketIndex = cells[cell].first;
     int cellIndex = cells[cell].second;
@@ -61,18 +59,18 @@ int BucketList::gain_to_index(int gain) {
 }
 
 void BucketList::print(char setName) {
-    // std::cout << std::endl;
-    // std::cout << "Set[" << setName << "]" << std::endl;
-    // std::cout << "size: " << size << std::endl;
-    // std::cout << "Max gain: " << maxGain << std::endl;
-    // for(int i = 0; i < buckets.size(); i++) {
-    //     std::cout << "gain " << i - maxPinNum << ": ";
-    //     for(int j = 0; j < buckets[i].size(); j++) {
-    //         std::cout << buckets[i][j]->name << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << "Set[" << setName << "]" << std::endl;
+    std::cout << "size: " << size << std::endl;
+    std::cout << "Max gain: " << maxGain << std::endl;
+    for(int i = 0; i < buckets.size(); i++) {
+        std::cout << "gain " << i - maxPinNum << ": ";
+        for(int j = 0; j < buckets[i].size(); j++) {
+            std::cout << buckets[i][j]->name << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 Cell* BucketList::get_top_kth_cell(int k) {

@@ -8,12 +8,8 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
+    // Fiduccia-Mattheyses algorithm
     FM fm(argv[1], argv[2], argv[3]);
-
-    // fm.print_cells();
-    // fm.print_nets();
-
-    // fm.write_result(argv[3]);
 
     return 0;
 }
