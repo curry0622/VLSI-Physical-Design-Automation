@@ -1,6 +1,9 @@
 #include "BucketList.hpp"
 
 BucketList::BucketList() {
+    buckets = std::vector<std::vector<Cell*>>{};
+    cells = std::unordered_map<Cell*, std::pair<int, int>>{};
+    maxPinNum = 0;
     maxGain = INT_MIN;
     size = 0;
 };
@@ -11,13 +14,14 @@ void BucketList::set_bucket_size(int mpn) {
 }
 
 void BucketList::insert_cell(Cell* cell) {
-    // Inert cell to the bucket list and map
+    // Insert cell to the bucket list and map
     int gain = cell->gain;
-    int bucketIndex = gain_to_index(gain);
-    buckets[bucketIndex].push_back(cell);
-    cells[cell] = std::make_pair(bucketIndex, buckets[bucketIndex].size() - 1);
+    int bIndex = gain_to_index(gain);
+    buckets[bIndex].push_back(cell);
+    cells[cell] = std::make_pair(bIndex, buckets[bIndex].size() - 1);
 
     // Update max gain
+    // TODO: check if it's locked
     if(gain > maxGain)
         maxGain = gain;
 
@@ -30,12 +34,12 @@ void BucketList::insert_cell(Cell* cell) {
 
 void BucketList::remove_cell(Cell* cell) {
     // Remove cell from bucket list and map
-    int bucketIndex = cells[cell].first;
-    int cellIndex = cells[cell].second;
-    Cell* last = buckets[bucketIndex].back();
-    buckets[bucketIndex][cellIndex] = last;
-    buckets[bucketIndex].pop_back();
-    cells[last] = std::make_pair(bucketIndex, cellIndex);
+    int bIndex = cells[cell].first;
+    int cIndex = cells[cell].second;
+    Cell* lastCell = buckets[bIndex].back();
+    buckets[bIndex][cIndex] = lastCell;
+    buckets[bIndex].pop_back();
+    cells[lastCell] = std::make_pair(bIndex, cIndex);
     cells.erase(cell);
 
     // Update max gain
