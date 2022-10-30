@@ -28,7 +28,7 @@ public:
     bool select_base_cell();
     void calc_max_partial_sum();
     void update_cells_gain();
-    bool run_pass();
+    void run_pass();
     void reset_lock();
     void print_sets();
     void pause();

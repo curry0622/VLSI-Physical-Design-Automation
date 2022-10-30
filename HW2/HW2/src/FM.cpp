@@ -50,13 +50,15 @@ void FM::read_nets(std::string filename){
 };
 
 void FM::print_cells(){
-    for(auto it = cells.begin(); it != cells.end(); it++)
-        it->second.print();
+    for(auto cell : cells) {
+        cell.second.print();
+    }
 };
 
 void FM::print_nets(){
-    for(auto it = nets.begin(); it != nets.end(); it++)
-        it->second.print();
+    for(auto net : nets) {
+        net.second.print();
+    }
 };
 
 void FM::print_sets() {
@@ -87,9 +89,9 @@ void FM::initial_partition() {
     std::vector<Cell> sortedCells;
 
     // Push all cells into a vector
-    for(auto it = cells.begin(); it != cells.end(); it++) {
-        sizeA += it->second.sizeA;
-        sortedCells.push_back(it->second);
+    for(auto cell : cells) {
+        sizeA += cell.second.sizeA;
+        sortedCells.push_back(cell.second);
     }
 
     // Sort the vector by sizeB (small to large)
@@ -97,6 +99,7 @@ void FM::initial_partition() {
     std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) { return a.sizeB > b.sizeB; });
 
     // Assign cell with larger sizeB to setB until balanced
+    // TODO: don't use pop back
     while(!is_balanced(sizeA, sizeB)) {
         Cell c = sortedCells.back();
         sortedCells.pop_back();
@@ -106,25 +109,26 @@ void FM::initial_partition() {
     }
 
     // Calculate number of cells in each set in each net
-    for(auto it = nets.begin(); it != nets.end(); it++) {
-        it->second.calc_num_in_set();
+    for(auto& net : nets) {
+        net.second.calc_num_in_set();
     }
 
     // Initialize gain of each cell
-    for(auto it = cells.begin(); it != cells.end(); it++) {
-        it->second.calc_gain();
+    for(auto& cell : cells) {
+        cell.second.calc_gain();
     }
 
     // Initialize bucket lists
-    for(auto it = cells.begin(); it != cells.end(); it++) {
-        if(it->second.inSetA) {
-            setA.insert_cell(&it->second);
+    for(auto& cell : cells) {
+        if(cell.second.inSetA) {
+            setA.insert_cell(&cell.second);
         } else {
-            setB.insert_cell(&it->second);
+            setB.insert_cell(&cell.second);
         }
     }
 }
 
+// TODO: speedup
 bool FM::select_base_cell() {
     int ka = 1, kb = 1;
     bool found = false;
@@ -190,18 +194,16 @@ void FM::update_cells_gain() {
         for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
             if((*it)->numInSetB == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true) {
-                        (*it2)->add_gain();
-                        if((*it2)->inSetA) {
-                            setA.update_cell(*it2);
-                        } else {
-                            setB.update_cell(*it2);
-                        }
+                    (*it2)->add_gain();
+                    if((*it2)->inSetA) {
+                        setA.update_cell(*it2);
+                    } else {
+                        setB.update_cell(*it2);
                     }
                 }
             } else if((*it)->numInSetB == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true && !(*it2)->inSetA) {
+                    if(!(*it2)->inSetA) {
                         (*it2)->sub_gain();
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
@@ -215,18 +217,16 @@ void FM::update_cells_gain() {
             (*it)->numInSetB++;
             if((*it)->numInSetA == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true) {
-                        (*it2)->sub_gain();
-                        if((*it2)->inSetA) {
-                            setA.update_cell(*it2);
-                        } else {
-                            setB.update_cell(*it2);
-                        }
+                    (*it2)->sub_gain();
+                    if((*it2)->inSetA) {
+                        setA.update_cell(*it2);
+                    } else {
+                        setB.update_cell(*it2);
                     }
                 }
             } else if((*it)->numInSetA == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true && (*it2)->inSetA) {
+                    if((*it2)->inSetA) {
                         (*it2)->add_gain();
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
@@ -247,18 +247,16 @@ void FM::update_cells_gain() {
         for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
             if((*it)->numInSetA == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true) {
-                        (*it2)->add_gain();
-                        if((*it2)->inSetA) {
-                            setA.update_cell(*it2);
-                        } else {
-                            setB.update_cell(*it2);
-                        }
+                    (*it2)->add_gain();
+                    if((*it2)->inSetA) {
+                        setA.update_cell(*it2);
+                    } else {
+                        setB.update_cell(*it2);
                     }
                 }
             } else if((*it)->numInSetA == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true && (*it2)->inSetA) {
+                    if((*it2)->inSetA) {
                         (*it2)->sub_gain();
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
@@ -272,18 +270,16 @@ void FM::update_cells_gain() {
             (*it)->numInSetA++;
             if((*it)->numInSetB == 0) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true) {
-                        (*it2)->sub_gain();
-                        if((*it2)->inSetA) {
-                            setA.update_cell(*it2);
-                        } else {
-                            setB.update_cell(*it2);
-                        }
+                    (*it2)->sub_gain();
+                    if((*it2)->inSetA) {
+                        setA.update_cell(*it2);
+                    } else {
+                        setB.update_cell(*it2);
                     }
                 }
             } else if((*it)->numInSetB == 1) {
                 for(auto it2 = (*it)->cells.begin(); it2 != (*it)->cells.end(); it2++) {
-                    if(true && !(*it2)->inSetA) {
+                    if(!(*it2)->inSetA) {
                         (*it2)->add_gain();
                         if((*it2)->inSetA) {
                             setA.update_cell(*it2);
@@ -303,8 +299,8 @@ void FM::update_cells_gain() {
 }
 
 void FM::reset_lock() {
-    for(auto it = selectedBaseCells.begin(); it != selectedBaseCells.end(); it++) {
-        (*it)->isLocked = false;
+    for(auto& cell : selectedBaseCells) {
+        cell->isLocked = false;
     }
 }
 
@@ -315,7 +311,7 @@ void FM::roll_back_from(int index) {
     }
 }
 
-bool FM::run_pass() {
+void FM::run_pass() {
     while(select_base_cell()) {
         maxGains.push_back(baseCell->gain);
         selectedBaseCells.push_back(baseCell);
@@ -325,15 +321,12 @@ bool FM::run_pass() {
     reset_lock();
     if(maxPartialSum <= 0) {
         roll_back_from(0);
-        return false;
-    }
-    if(maxPartialSumIndex < selectedBaseCells.size() - 1) {
+    } else if(maxPartialSumIndex < selectedBaseCells.size() - 1) {
         roll_back_from(maxPartialSumIndex + 1);
     }
     reset_lock();
     maxGains.clear();
     selectedBaseCells.clear();
-    return true;
 }
 
 void FM::write_result(std::string filename) {
