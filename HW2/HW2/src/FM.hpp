@@ -26,6 +26,7 @@ public:
     void initial_partition();
     bool is_balanced(int sizeA, int sizeB);
     bool select_base_cell();
+    bool select_base_cell_v2();
     void calc_max_partial_sum();
     void update_cells_gain();
     void run_pass();

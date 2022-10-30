@@ -22,7 +22,7 @@ void BucketList::insert_cell(Cell* cell) {
 
     // Update max gain
     // TODO: check if it's locked
-    if(gain > maxGain)
+    if(!cell->isLocked && gain > maxGain)
         maxGain = gain;
 
     // Update set size

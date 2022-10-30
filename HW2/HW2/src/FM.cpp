@@ -175,6 +175,65 @@ bool FM::select_base_cell() {
     return found;
 }
 
+bool FM::select_base_cell_v2() {
+    // Reset base cell
+    baseCell = nullptr;
+
+    // Variables declaration
+    int ka = 1, kb = 1;
+    Cell *ca = nullptr, *cb = nullptr;
+    bool found = false;
+
+    // Find max gain cell of setA
+    while(ka <= setA.size) {
+        ca = setA.get_top_kth_cell(ka);
+        if(ca && ca->isLocked)
+            ka++;
+        else
+            break;
+    }
+
+    // Find max gain cell of setB
+    while(kb <= setB.size) {
+        cb = setB.get_top_kth_cell(kb);
+        if(cb && cb->isLocked)
+            kb++;
+        else
+            break;
+    }
+
+    // Determine base cell
+    if(ca && cb) {
+        if(ca->gain > cb->gain) {
+            baseCell = ca;
+            found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+            if(!found) {
+                baseCell = cb;
+                found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+            }
+        } else {
+            baseCell = cb;
+            found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+            if(!found) {
+                baseCell = ca;
+                found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+            }
+        }
+    } else if(ca) {
+        baseCell = ca;
+        found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+    } else if(cb) {
+        baseCell = cb;
+        found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+    } else {
+        baseCell = nullptr;
+        found = false;
+    }
+
+    // Return found
+    return found;
+}
+
 void FM::calc_max_partial_sum() {
     int max = INT_MIN, sum = 0, index = -1;
     for(int i = 0; i < maxGains.size(); i++) {
@@ -312,7 +371,7 @@ void FM::roll_back_from(int index) {
 }
 
 void FM::run_pass() {
-    while(select_base_cell()) {
+    while(select_base_cell_v2()) {
         maxGains.push_back(baseCell->gain);
         selectedBaseCells.push_back(baseCell);
         update_cells_gain();
