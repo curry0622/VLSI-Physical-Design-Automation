@@ -1,7 +1,7 @@
 CXX := g++
 CXXFLAGS := -std=c++11 -O3 -march=native -pipe
 LIBS := -lm
-EXEC := hw2
+EXEC := ../bin/hw2
 SRC_DIRS := .
 SRCS := main.cpp $(wildcard $(SRC_DIRS:=/*.cpp))
 OBJS := $(SRCS:.cpp=.o)
@@ -19,3 +19,6 @@ clean:
 
 test:
 	./test.sh
+
+judge:
+	./judge.sh
