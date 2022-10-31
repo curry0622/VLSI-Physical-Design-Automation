@@ -18,13 +18,9 @@ FM::FM(std::string cellFile, std::string netFile, std::string outFile) {
     initial_partition();
     std::cout << "Initial partition: " << (float)(clock() - t)/CLOCKS_PER_SEC << " secs" << std::endl;
 
-    t = clock();
     while(maxPartialSum > 0) {
         run_pass();
     }
-    std::cout << "Running passes: " << (float)(clock() - t)/CLOCKS_PER_SEC << " secs" << std::endl;
-    std::cout << "Select base cells: " << selectBaseCellTime << " secs" << std::endl;
-    std::cout << "Update cells gain: " << updateCellsGainTime << " secs" << std::endl;
 
     write_result(outFile);
     std::cout << "[Total time] " << (float)(clock() - start)/CLOCKS_PER_SEC << " secs" << std::endl;
@@ -189,68 +185,62 @@ bool FM::select_base_cell() {
     return found;
 }
 
-bool FM::select_base_cell_v2(int iteration) {
-    clock_t t = clock();
+bool FM::select_base_cell_v2() {
+    // Reset base cell
+    baseCell = nullptr;
+
+    // Variables declaration
+    int ka = 1, kb = 1;
+    Cell *ca = nullptr, *cb = nullptr;
     bool found = false;
 
-    if(iteration < 99999999) {
-        // Reset base cell
-        baseCell = nullptr;
+    // Find max gain cell of setA
+    while(ka <= setA.size) {
+        ca = setA.get_top_kth_cell(ka);
+        if(ca && ca->isLocked)
+            ka++;
+        else
+            break;
+    }
 
-        // Variables declaration
-        int ka = 1, kb = 1;
-        Cell *ca = nullptr, *cb = nullptr;
-        // bool found = false;
+    // Find max gain cell of setB
+    while(kb <= setB.size) {
+        cb = setB.get_top_kth_cell(kb);
+        if(cb && cb->isLocked)
+            kb++;
+        else
+            break;
+    }
 
-        // Find max gain cell of setA
-        while(ka <= setA.size) {
-            ca = setA.get_top_kth_cell(ka);
-            if(ca && ca->isLocked)
-                ka++;
-            else
-                break;
-        }
-
-        // Find max gain cell of setB
-        while(kb <= setB.size) {
-            cb = setB.get_top_kth_cell(kb);
-            if(cb && cb->isLocked)
-                kb++;
-            else
-                break;
-        }
-
-        // Determine base cell
-        if(ca && cb) {
-            if(ca->gain > cb->gain) {
-                baseCell = ca;
-                found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
-                if(!found) {
-                    baseCell = cb;
-                    found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
-                }
-            } else {
-                baseCell = cb;
-                found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
-                if(!found) {
-                    baseCell = ca;
-                    found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
-                }
-            }
-        } else if(ca) {
+    // Determine base cell
+    if(ca && cb) {
+        if(ca->gain > cb->gain) {
             baseCell = ca;
             found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
-        } else if(cb) {
+            if(!found) {
+                baseCell = cb;
+                found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+            }
+        } else {
             baseCell = cb;
             found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
-        } else {
-            baseCell = nullptr;
-            found = false;
+            if(!found) {
+                baseCell = ca;
+                found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+            }
         }
+    } else if(ca) {
+        baseCell = ca;
+        found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+    } else if(cb) {
+        baseCell = cb;
+        found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+    } else {
+        baseCell = nullptr;
+        found = false;
     }
 
     // Return found
-    selectBaseCellTime += (clock() - t) / (double) CLOCKS_PER_SEC;
     return found;
 }
 
@@ -393,13 +383,14 @@ void FM::roll_back_from(int index) {
 }
 
 void FM::run_pass() {
-    int iteration = 1;
+    int iteration = 0;
     bool terminate = false;
-    while(select_base_cell_v2(iteration++)) {
+    while(select_base_cell()) {
+        iteration++;
         maxGains.push_back(baseCell->gain);
         selectedBaseCells.push_back(baseCell);
         update_cells_gain();
-        if(300.0 - (clock() - start) / (double) CLOCKS_PER_SEC < 10.0) {
+        if(300.0 - (clock() - start) / (double) CLOCKS_PER_SEC < 5.0) {
             terminate = true;
             break;
         }
@@ -449,4 +440,6 @@ void FM::write_result(std::string filename) {
 
     std::cout << "Writing result: " << (float)(clock() - t)/CLOCKS_PER_SEC << " secs" << std::endl;
     std::cout << "[Cut size] " << cutSize << std::endl;
+    std::cout << "[A size] " << setA.cells.size() << std::endl;
+    std::cout << "[B size] " << setB.cells.size() << std::endl;
 }
