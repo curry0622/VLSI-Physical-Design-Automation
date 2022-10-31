@@ -32,7 +32,7 @@ def gen_nets(args):
   f = open(f'{args.fn}.nets', 'w')
   for n in nets:
     f.write(f'NET n{n} {{ ')
-    deg = random.randint(1, args.md)
+    deg = random.randint(2, args.md)
     cells = random.sample(range(1, args.cn + 1), deg)
     for c in cells:
       f.write(f'c{c} ')

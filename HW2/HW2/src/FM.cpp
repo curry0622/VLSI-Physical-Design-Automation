@@ -394,10 +394,15 @@ void FM::roll_back_from(int index) {
 
 void FM::run_pass() {
     int iteration = 1;
+    bool terminate = false;
     while(select_base_cell_v2(iteration++)) {
         maxGains.push_back(baseCell->gain);
         selectedBaseCells.push_back(baseCell);
         update_cells_gain();
+        if(300.0 - (clock() - start) / (double) CLOCKS_PER_SEC < 10.0) {
+            terminate = true;
+            break;
+        }
     }
     std::cout << "Iteration: " << iteration << std::endl;
     calc_max_partial_sum();
@@ -412,6 +417,8 @@ void FM::run_pass() {
     selectedBaseCells.clear();
     std::cout << "cut size: " << calc_cut_size() << std::endl;
     std::cout << "[Curr time] " << (clock() - start) / (double) CLOCKS_PER_SEC << std::endl;
+    if(terminate)
+        maxPartialSum = INT_MIN;
 }
 
 int FM::calc_cut_size() {
