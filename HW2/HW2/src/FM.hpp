@@ -14,8 +14,6 @@ public:
     int maxPinNum = INT_MIN;
     int maxPartialSum;
     int maxPartialSumIndex;
-    double selectBaseCellTime;
-    double updateCellsGainTime;
     clock_t start;
 
     FM();
@@ -29,6 +27,8 @@ public:
     bool is_balanced(int sizeA, int sizeB);
     bool select_base_cell();
     bool select_base_cell_v2();
+    bool select_base_cell_v3();
+    bool select_base_cell_v4();
     void calc_max_partial_sum();
     void update_cells_gain();
     void run_pass();

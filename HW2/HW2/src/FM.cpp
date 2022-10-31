@@ -105,8 +105,8 @@ void FM::initial_partition() {
         sortedCells.push_back(cell.second);
     }
 
-    // Sort the vector by sizeB (small to large)
-    std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) { return a.sizeB > b.sizeB; });
+    // Sort the vector by sizeB (large to small)
+    std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) { return a.sizeB < b.sizeB; });
 
     // Assign cell with larger sizeB to setB until balanced
     // TODO: don't use pop back
@@ -144,20 +144,25 @@ bool FM::select_base_cell() {
     bool found = false;
     while(!found && (ka <= setA.cells.size() || kb <= setB.cells.size())) {
         Cell* a, *b;
-        if(ka <= setA.cells.size())
+
+        if(ka <= setA.cells.size()) {
             a = setA.get_top_kth_cell(ka);
-        else
+        } else {
             a = nullptr;
-        if(kb <= setB.cells.size())
+        }
+        if(kb <= setB.cells.size()) {
             b = setB.get_top_kth_cell(kb);
-        else
+        } else {
             b = nullptr;
+        }
+
         if(a && a->isLocked) {
             a = nullptr;
         }
         if(b && b->isLocked) {
             b = nullptr;
         }
+
         if(a && b) {
             if(a->gain > b->gain) {
                 baseCell = a;
@@ -244,6 +249,108 @@ bool FM::select_base_cell_v2() {
     return found;
 }
 
+bool FM::select_base_cell_v3() {
+    // Reset base cell
+    baseCell = nullptr;
+
+    // Variables declaration
+    Cell *ca = nullptr, *cb = nullptr;
+    int ka = 1, kb = 1;
+    bool found = false;
+    
+    // Find base cell
+    while(!found && (ka <= setA.size || kb <= setB.size)) {
+        // Find max gain cell of setA
+        while(ka <= setA.size) {
+            ca = setA.get_top_kth_cell(ka);
+            if(ca && ca->isLocked)
+                ka++;
+            else
+                break;
+        }
+
+        // Find max gain cell of setB
+        while(kb <= setB.size) {
+            cb = setB.get_top_kth_cell(kb);
+            if(cb && cb->isLocked)
+                kb++;
+            else
+                break;
+        }
+
+        // Determine base cell
+        if(ca && cb) {
+            if(ca->gain > cb->gain) {
+                baseCell = ca;
+                found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+                ka++;
+                if(!found) {
+                    baseCell = cb;
+                    found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+                    kb++;
+                }
+            } else {
+                baseCell = cb;
+                found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+                kb++;
+                if(!found) {
+                    baseCell = ca;
+                    found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+                    ka++;
+                }
+            }
+        } else if(ca) {
+            baseCell = ca;
+            found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+            ka++;
+        } else if(cb) {
+            baseCell = cb;
+            found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+            kb++;
+        } else {
+            ka++;
+            kb++;
+            baseCell = nullptr;
+            found = false;
+        }
+    }
+
+    // Return found
+    return found;
+}
+
+bool FM::select_base_cell_v4() {
+    // Reset base cell
+    baseCell = nullptr;
+
+    // Variables declaration
+    Cell *ca = nullptr, *cb = nullptr;
+    int ka = 1, kb = 1;
+    bool found = false;
+    bool fromA = true;
+
+    // Find base cell
+    while(!found && (ka <= setA.size || kb <= setB.size)) {
+        if(fromA) {
+            ca = setA.get_top_kth_cell(ka++);
+            if(ca && !ca->isLocked) {
+                baseCell = ca;
+                found = is_balanced(setA.size - baseCell->sizeA, setB.size + baseCell->sizeB);
+            }
+        } else {
+            cb = setB.get_top_kth_cell(kb++);
+            if(cb && !cb->isLocked) {
+                baseCell = cb;
+                found = is_balanced(setA.size + baseCell->sizeA, setB.size - baseCell->sizeB);
+            }
+        }
+        fromA = !fromA;
+    }
+
+    // Return found
+    return found;
+}
+
 void FM::calc_max_partial_sum() {
     int max = INT_MIN, sum = 0, index = -1;
     for(int i = 0; i < maxGains.size(); i++) {
@@ -258,7 +365,6 @@ void FM::calc_max_partial_sum() {
 }
 
 void FM::update_cells_gain() {
-    clock_t t = clock();
     if(baseCell->inSetA) {
         baseCell->isLocked = true;
         for(auto it = baseCell->nets.begin(); it != baseCell->nets.end(); it++) {
@@ -366,7 +472,6 @@ void FM::update_cells_gain() {
         baseCell->isLocked = true;
         setA.insert_cell(baseCell);
     }
-    updateCellsGainTime += (clock() - t) / (double) CLOCKS_PER_SEC;
 }
 
 void FM::reset_lock() {
