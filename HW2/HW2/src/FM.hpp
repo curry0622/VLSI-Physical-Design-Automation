@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-// #include <boost/sort/sort.hpp>
 #include "Net.hpp"
 #include "Cell.hpp"
 #include "BucketList.hpp"
@@ -15,6 +14,9 @@ public:
     int maxPinNum = INT_MIN;
     int maxPartialSum;
     int maxPartialSumIndex;
+    double selectBaseCellTime;
+    double updateCellsGainTime;
+    clock_t start;
 
     FM();
     FM(std::string cellFile, std::string netFile, std::string outFile);
@@ -26,7 +28,7 @@ public:
     void initial_partition();
     bool is_balanced(int sizeA, int sizeB);
     bool select_base_cell();
-    bool select_base_cell_v2();
+    bool select_base_cell_v2(int iteration);
     void calc_max_partial_sum();
     void update_cells_gain();
     void run_pass();
@@ -35,4 +37,5 @@ public:
     void pause();
     void print_selected_base_cells();
     void roll_back_from(int index);
+    int calc_cut_size();
 };
