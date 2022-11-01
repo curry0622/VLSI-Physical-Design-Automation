@@ -2,7 +2,7 @@ import argparse
 import random
 
 def parse_args():
-  # Ex: python3 gen.py -fn test -cn 100 -ms 100 -nn 50 -md 10
+  # Ex: python3 gen_test.py -fn test -cn 100 -ms 100 -nn 50 -md 10
   parser = argparse.ArgumentParser()
   parser.add_argument('-fn', default='test', help='Input file name', type=str)
   parser.add_argument('-cn', default=10, help='Input cells num', type=int)

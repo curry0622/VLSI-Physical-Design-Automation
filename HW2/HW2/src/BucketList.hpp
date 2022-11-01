@@ -7,7 +7,7 @@ public:
     std::unordered_map<Cell*, std::pair<int, int>> cells;
     int maxPinNum;
     int maxGain;
-    int size;
+    long size;
 
     BucketList();
     void set_bucket_size(int mpn);

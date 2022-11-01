@@ -21,7 +21,6 @@ void BucketList::insert_cell(Cell* cell) {
     cells[cell] = std::make_pair(bIndex, buckets[bIndex].size() - 1);
 
     // Update max gain
-    // TODO: check if it's locked
     if(!cell->isLocked && gain > maxGain)
         maxGain = gain;
 
