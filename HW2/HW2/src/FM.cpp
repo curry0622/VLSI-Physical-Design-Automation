@@ -153,6 +153,67 @@ void FM::initial_partition() {
             setB.insert_cell(&cp.second);
         }
     }
+
+    std::cout << "INITIAL PARTITION CUT SIZE: " << calc_cut_size() << std::endl << std::endl;
+}
+
+void FM::initial_partition_v2() {
+    // Variables declaration
+    long sizeA = 0, sizeB = 0;
+    std::vector<Cell> sortedCells;
+
+    // Push all cells into a vector
+    for(auto cp : cells) {
+        sortedCells.push_back(cp.second);
+        sizeA += cp.second.sizeA;
+    }
+
+    // Sort the vector by sizeB (large to small)
+    std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) { return a.sizeB < b.sizeB; });
+
+    // Assign cell with smaller sizeB to setB until balanced
+    while(!is_balanced(sizeA, sizeB)) {
+        Cell c = sortedCells.back();
+        sortedCells.pop_back();
+        cells[c.name].inSetA = false;
+        sizeA -= c.sizeA;
+        sizeB += c.sizeB;
+    }
+    srand(time(NULL));
+    for(int i = 0; i < cells.size(); i++) {
+        Cell c = sortedCells.back();
+        sortedCells.pop_back();
+        cells[c.name].inSetA = false;
+        sizeA -= c.sizeA;
+        sizeB += c.sizeB;
+        if(!is_balanced(sizeA, sizeB)) {
+            cells[c.name].inSetA = true;
+            sizeA += c.sizeA;
+            sizeB -= c.sizeB;
+            break;
+        }
+    }
+
+    // Calculate number of cells in each set in each net
+    for(auto& np : nets) {
+        np.second.calc_num_in_set();
+    }
+
+    // Initialize gain of each cell
+    for(auto& cp : cells) {
+        cp.second.calc_gain();
+    }
+
+    // Initialize bucket lists
+    for(auto& cp : cells) {
+        if(cp.second.inSetA) {
+            setA.insert_cell(&cp.second);
+        } else {
+            setB.insert_cell(&cp.second);
+        }
+    }
+
+    std::cout << "INITIAL PARTITION CUT SIZE: " << calc_cut_size() << std::endl << std::endl;
 }
 
 bool FM::select_base_cell() {

@@ -28,6 +28,7 @@ private:
     void read_inputs(std::string cellFile, std::string netFile);
     void write_result(std::string filename);
     void initial_partition();
+    void initial_partition_v2();
     bool is_balanced(long sizeA, long sizeB);
     bool select_base_cell();
     bool select_base_cell_v2();
