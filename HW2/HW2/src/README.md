@@ -27,3 +27,11 @@ e.g.
 ```shell
 ../bin/hw2 ../testcases/p2-1.cells ../testcases/p2-1.nets ../output/p2-1.out
 ```
+
+## How to judge
+
+In this directory, enter the following command to judge.
+
+```shell
+make judge
+```
