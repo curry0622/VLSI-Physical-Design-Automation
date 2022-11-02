@@ -15,7 +15,7 @@ FM::FM(std::string cellFile, std::string netFile, std::string outFile) {
     setB.set_bucket_size(maxPinNum);
 
     // Initial partition
-    initial_partition();
+    initial_partition_v2();
 
     // Run FM
     maxPartialSum = 1;
@@ -179,7 +179,6 @@ void FM::initial_partition_v2() {
         sizeA -= c.sizeA;
         sizeB += c.sizeB;
     }
-    srand(time(NULL));
     for(int i = 0; i < cells.size(); i++) {
         Cell c = sortedCells.back();
         sortedCells.pop_back();
