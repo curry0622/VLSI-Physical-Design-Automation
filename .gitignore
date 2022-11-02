@@ -1,7 +1,6 @@
 .DS_store
 .vscode
 *.o
-*.out
 out
 test.cells
 test.nets
