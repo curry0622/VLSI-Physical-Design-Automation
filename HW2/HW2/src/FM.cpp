@@ -17,6 +17,9 @@ FM::FM(std::string cellFile, std::string netFile, std::string outFile) {
     // Initial partition
     initial_partition_v2();
 
+    // Set runtime
+    set_runtime();
+
     // Run FM
     maxPartialSum = 1;
     while(maxPartialSum > 0) {
@@ -163,6 +166,7 @@ void FM::initial_partition_v2() {
     std::vector<Cell> sortedCells;
 
     // Push all cells into a vector
+    std::cout << "CELL NUM: " << cells.size() << std::endl;
     for(auto cp : cells) {
         sortedCells.push_back(cp.second);
         sizeA += cp.second.sizeA;
@@ -574,7 +578,7 @@ void FM::run_pass() {
         maxGains.push_back(baseCell->gain);
         selectedBaseCells.push_back(baseCell);
         update_cells_gain();
-        if(((clock() - startAll) / (double) CLOCKS_PER_SEC) > 290.0) {
+        if(((clock() - startAll) / (double) CLOCKS_PER_SEC) > runtime) {
             terminate = true;
             break;
         }
@@ -583,6 +587,8 @@ void FM::run_pass() {
 
     // Calculate max partial sum
     calc_max_partial_sum();
+    std::cout << "Max partial sum index: " << maxPartialSumIndex << std::endl;
+    std::cout << "Base cells size: " << selectedBaseCells.size() << std::endl;
 
     // Reset lock
     reset_lock();
@@ -658,4 +664,14 @@ void FM::print_time_info() {
     std::cout << "-------------------------" << std::endl;
     std::cout << "[Total time] " << timeTotal << " secs" << std::endl;
     std::cout << std::endl;
+}
+
+void FM::set_runtime() {
+    if(cells.size() <= 100000) {
+        runtime = 2.0;
+    } else if(cells.size() <= 200000) {
+        runtime = 5.5;
+    } else {
+        runtime = 18.5;
+    }
 }

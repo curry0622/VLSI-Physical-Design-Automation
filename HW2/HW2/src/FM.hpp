@@ -20,6 +20,7 @@ private:
     int maxPartialSumIndex;
     clock_t startAll, startIO;
     double timeTotal, timeCPU, timeIO;
+    double runtime;
 
     void print_cells();
     void print_nets();
@@ -44,4 +45,5 @@ private:
     void roll_back_from(int index);
     int calc_cut_size();
     void print_time_info();
+    void set_runtime();
 };
