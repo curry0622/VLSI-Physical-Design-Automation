@@ -21,6 +21,7 @@ private:
     clock_t startAll, startIO;
     double timeTotal, timeCPU, timeIO;
     double runtime;
+    int pass_num;
 
     void print_cells();
     void print_nets();

@@ -22,8 +22,10 @@ FM::FM(std::string cellFile, std::string netFile, std::string outFile) {
 
     // Run FM
     maxPartialSum = 1;
+    pass_num = 1;
     while(maxPartialSum > 0) {
         run_pass();
+        pass_num++;
     }
 
     // Write result
@@ -578,6 +580,15 @@ void FM::run_pass() {
         maxGains.push_back(baseCell->gain);
         selectedBaseCells.push_back(baseCell);
         update_cells_gain();
+        if(pass_num == 1) {
+            if(iteration >= cells.size() / 2) {
+                break;
+            }
+        } else {
+            if(iteration >= cells.size() / 40) {
+                break;
+            }
+        }
         if(((clock() - startAll) / (double) CLOCKS_PER_SEC) > runtime) {
             terminate = true;
             break;
