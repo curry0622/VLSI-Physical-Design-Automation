@@ -667,11 +667,12 @@ void FM::print_time_info() {
 }
 
 void FM::set_runtime() {
-    if(cells.size() <= 100000) {
-        runtime = 2.0;
-    } else if(cells.size() <= 200000) {
-        runtime = 5.5;
-    } else {
-        runtime = 18.5;
-    }
+    // if(cells.size() <= 100000) {
+    //     runtime = 2.0;
+    // } else if(cells.size() <= 200000) {
+    //     runtime = 5.5;
+    // } else {
+    //     runtime = 18.5;
+    // }
+    runtime = 285.0;
 }
