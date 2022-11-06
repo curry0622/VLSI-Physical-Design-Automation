@@ -174,10 +174,10 @@ void FM::initial_partition_v2() {
         sizeA += cp.second.sizeA;
     }
 
-    // Sort the vector by sizeB (large to small)
+    // Sort the vector by sizeB (small to large)
     std::sort(sortedCells.begin(), sortedCells.end(), [](Cell a, Cell b) { return a.sizeB < b.sizeB; });
 
-    // Assign cell with smaller sizeB to setB until balanced
+    // Assign cell with bigger sizeB to setB until balanced
     while(!is_balanced(sizeA, sizeB)) {
         Cell c = sortedCells.back();
         sortedCells.pop_back();
