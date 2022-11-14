@@ -1,9 +1,0 @@
-[test]: 4ns_0.999999_low_off
-[timing]: 4ns
-[core_utilization]: 0.999999
-[congestion-driven]: low
-[timing-driven]: off
-[slack]: 0.115
-[total-wirelength]: 282273.2700 um
-[area]: 38823.019 um^2
-[violations]: 0
