@@ -1,18 +1,5 @@
 #include <bits/stdc++.h>
-#include "Pin.hpp"
-
-void read_pins(std::string filename) {
-    std::ifstream fin(filename);
-    std::string line;
-    while(std::getline(fin, line)) {
-        std::stringstream ss(line);
-        std::string name;
-        int x_cord, y_cord;
-        ss >> name >> x_cord >> y_cord;
-        Pin p = Pin(name, x_cord, y_cord);
-        p.print();
-    }
-}
+#include "Floorplan.hpp"
 
 int main(int argc, char *argv[]) {
     // Dummy check
@@ -21,8 +8,8 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    // Read pins
-    read_pins(argv[3]);
+    // Floorplan
+    Floorplan floorplan(argv[1], argv[2], argv[3], argv[4], std::stod(argv[5]));
 
     return 0;
 }
