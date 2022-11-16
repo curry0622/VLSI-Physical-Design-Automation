@@ -57,8 +57,8 @@ void Floorplan::read_hardblocks(std::string filename) {
                 y = std::stoi(buffer);
                 cord[i] = Cord(x, y);
             }
-            Hardblock hardblock = Hardblock(name, cord);
-            // hardblock.print();
+            Hardblock hardblock = Hardblock(name, cord[0], cord[2].x - cord[0].x, cord[2].y - cord[0].y);
+            hardblock.print();
         } else {
             break;
         }

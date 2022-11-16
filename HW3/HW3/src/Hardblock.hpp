@@ -9,12 +9,13 @@ class Hardblock {
 public:
     // Variables
     std::string name;
-    Cord cord[4];
+    Cord cord;
+    int width, height;
     int rotated;
 
     // Constructors
     Hardblock();
-    Hardblock(std::string name, Cord cord[]);
+    Hardblock(std::string name, Cord cord, int width, int height);
 
     // Functions
     Cord get_center();
