@@ -2,15 +2,20 @@
 
 Floorplan::Floorplan() {
     dead_space_ratio = -1;
+    num_hardblocks = -1;
+    num_terminals = -1;
 }
 
 Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio) {
-    dead_space_ratio = ratio;
+    // Read inputs
     read_hardblocks(hardblocks_file);
     read_nets(nets_file);
     read_pins(pins_file);
-    output_file = output;
-    // print();
+    dead_space_ratio = ratio;
+
+    // Write output
+    write_floorplan(output);
+    print();
 }
 
 void Floorplan::read_hardblocks(std::string filename) {
@@ -19,12 +24,12 @@ void Floorplan::read_hardblocks(std::string filename) {
     std::string line, buffer;
     std::stringstream ss;
 
-    // Read the first line
+    // Read num of hardblocks
     std::getline(file, line);
     ss = std::stringstream(line);
     ss >> buffer >> buffer >> num_hardblocks;
 
-    // Read the second line
+    // Read num of terminals
     std::getline(file, line);
     ss = std::stringstream(line);
     ss >> buffer >> buffer >> num_terminals;
@@ -75,8 +80,12 @@ void Floorplan::read_pins(std::string filename) {
     }
 }
 
+void Floorplan::write_floorplan(std::string filename) {}
+
 void Floorplan::print() {
     std::cout << "---" << std::endl;
     std::cout << "Floorplan dead_space_ratio: " << dead_space_ratio << std::endl;
+    std::cout << "Floorplan num_hardblocks: " << num_hardblocks << std::endl;
+    std::cout << "Floorplan num_terminals: " << num_terminals << std::endl;
     std::cout << "---" << std::endl;
 }

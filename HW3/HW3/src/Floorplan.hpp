@@ -5,10 +5,9 @@
 class Floorplan {
 public:
     // Variables
-    std::string output_file;
-    double dead_space_ratio;
     int num_hardblocks;
     int num_terminals;
+    double dead_space_ratio;
 
     // Constructors
     Floorplan();
@@ -18,5 +17,6 @@ public:
     void read_hardblocks(std::string filename);
     void read_nets(std::string filename);
     void read_pins(std::string filename);
+    void write_floorplan(std::string filename);
     void print();
 };

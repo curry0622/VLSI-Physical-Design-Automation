@@ -10,11 +10,14 @@ public:
     // Variables
     std::string name;
     Cord cord[4];
+    int rotated;
 
     // Constructors
     Hardblock();
     Hardblock(std::string name, Cord cord[]);
 
     // Functions
+    Cord get_center();
+    void rotate();
     void print();
 };

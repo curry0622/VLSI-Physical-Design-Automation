@@ -13,7 +13,7 @@ Pin::Pin(std::string n, int x, int y) {
 void Pin::print() {
     std::cout << "---" << std::endl;
     std::cout << "Pin name: " << name << std::endl;
-    std::cout << "Pin x: " << cord.x << std::endl;
-    std::cout << "Pin y: " << cord.y << std::endl;
+    std::cout << "Pin cord: ";
+    cord.print();
     std::cout << "---" << std::endl;
 }
