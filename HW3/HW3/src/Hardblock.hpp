@@ -5,15 +5,15 @@
 #include "Cord.hpp"
 #endif
 
-class Pin {
+class Hardblock {
 public:
     // Variables
     std::string name;
-    Cord cord;
+    Cord cord[4];
 
     // Constructors
-    Pin();
-    Pin(std::string n, int x, int y);
+    Hardblock();
+    Hardblock(std::string name, Cord cord[]);
 
     // Functions
     void print();

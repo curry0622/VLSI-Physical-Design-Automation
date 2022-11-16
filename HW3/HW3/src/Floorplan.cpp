@@ -9,10 +9,56 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     read_hardblocks(hardblocks_file);
     read_nets(nets_file);
     read_pins(pins_file);
+    output_file = output;
     // print();
 }
 
-void Floorplan::read_hardblocks(std::string filename) {}
+void Floorplan::read_hardblocks(std::string filename) {
+    // Variables
+    std::ifstream file(filename);
+    std::string line, buffer;
+    std::stringstream ss;
+
+    // Read the first line
+    std::getline(file, line);
+    ss = std::stringstream(line);
+    ss >> buffer >> buffer >> num_hardblocks;
+
+    // Read the second line
+    std::getline(file, line);
+    ss = std::stringstream(line);
+    ss >> buffer >> buffer >> num_terminals;
+
+    // Read the third line
+    std::getline(file, line);
+    ss = std::stringstream(line);
+    ss >> buffer;
+
+    // Read the hardblocks
+    while(std::getline(file, line)) {
+        if(line.length() > 0) {
+            std::string name;
+            Cord cord[4];
+            ss = std::stringstream(line);
+            ss >> name >> buffer >> buffer;
+            for(int i = 0; i < 4; i++) {
+                int x, y;
+                ss >> buffer;
+                buffer.erase(buffer.begin());
+                buffer.erase(buffer.end() - 1);
+                x = std::stoi(buffer);
+                ss >> buffer;
+                buffer.erase(buffer.end() - 1);
+                y = std::stoi(buffer);
+                cord[i] = Cord(x, y);
+            }
+            Hardblock hardblock = Hardblock(name, cord);
+            // hardblock.print();
+        } else {
+            break;
+        }
+    }
+}
 
 void Floorplan::read_nets(std::string filename) {}
 

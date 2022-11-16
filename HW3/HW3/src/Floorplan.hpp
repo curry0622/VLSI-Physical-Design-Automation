@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include "Hardblock.hpp"
 #include "Pin.hpp"
 
 class Floorplan {
@@ -6,6 +7,8 @@ public:
     // Variables
     std::string output_file;
     double dead_space_ratio;
+    int num_hardblocks;
+    int num_terminals;
 
     // Constructors
     Floorplan();
