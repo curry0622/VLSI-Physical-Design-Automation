@@ -1,15 +1,15 @@
-#include "Cord.hpp"
+#include "Coord.hpp"
 
-Cord::Cord() {
+Coord::Coord() {
     x = -1;
     y = -1;
 }
 
-Cord::Cord(int x, int y) {
+Coord::Coord(int x, int y) {
     this->x = x;
     this->y = y;
 }
 
-void Cord::print() {
+void Coord::print() {
     std::cout << "(x, y) = (" << x << ", " << y << ")" << std::endl;
 }

@@ -1,15 +1,15 @@
 #include <bits/stdc++.h>
 
-#ifndef CORD_HPP
-#define CORD_HPP
-#include "Cord.hpp"
+#ifndef COORD_HPP
+#define COORD_HPP
+#include "Coord.hpp"
 #endif
 
 class Pin {
 public:
     // Variables
     std::string name;
-    Cord cord;
+    Coord coord;
 
     // Constructors
     Pin();

@@ -1,24 +1,24 @@
 #include <bits/stdc++.h>
 
-#ifndef CORD_HPP
-#define CORD_HPP
-#include "Cord.hpp"
+#ifndef COORD_HPP
+#define COORD_HPP
+#include "Coord.hpp"
 #endif
 
 class Hardblock {
 public:
     // Variables
     std::string name;
-    Cord cord;
+    Coord coord;
     int width, height;
     int rotated;
 
     // Constructors
     Hardblock();
-    Hardblock(std::string name, Cord cord, int width, int height);
+    Hardblock(std::string name, Coord coord, int width, int height);
 
     // Functions
-    Cord get_center();
+    Coord get_center();
     void rotate();
     void print();
 };

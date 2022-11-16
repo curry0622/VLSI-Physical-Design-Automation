@@ -1,14 +1,14 @@
 #include <bits/stdc++.h>
 
-class Cord {
+class Coord {
 public:
     // Variables
     int x;
     int y;
 
     // Constructors
-    Cord();
-    Cord(int x, int y);
+    Coord();
+    Coord(int x, int y);
 
     // Functions
     void print();

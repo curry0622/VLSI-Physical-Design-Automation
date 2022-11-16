@@ -43,7 +43,7 @@ void Floorplan::read_hardblocks(std::string filename) {
     while(std::getline(file, line)) {
         if(line.length() > 0) {
             std::string name;
-            Cord cord[4];
+            Coord coord[4];
             ss = std::stringstream(line);
             ss >> name >> buffer >> buffer;
             for(int i = 0; i < 4; i++) {
@@ -55,9 +55,9 @@ void Floorplan::read_hardblocks(std::string filename) {
                 ss >> buffer;
                 buffer.erase(buffer.end() - 1);
                 y = std::stoi(buffer);
-                cord[i] = Cord(x, y);
+                coord[i] = Coord(x, y);
             }
-            Hardblock hardblock = Hardblock(name, cord[0], cord[2].x - cord[0].x, cord[2].y - cord[0].y);
+            Hardblock hardblock = Hardblock(name, coord[0], coord[2].x - coord[0].x, coord[2].y - coord[0].y);
             hardblock.print();
         } else {
             break;
@@ -73,9 +73,9 @@ void Floorplan::read_pins(std::string filename) {
     while(std::getline(fin, line)) {
         std::stringstream ss(line);
         std::string name;
-        int x_cord, y_cord;
-        ss >> name >> x_cord >> y_cord;
-        Pin p = Pin(name, x_cord, y_cord);
+        int x, y;
+        ss >> name >> x >> y;
+        Pin p = Pin(name, x, y);
         // p.print();
     }
 }
