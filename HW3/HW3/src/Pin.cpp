@@ -5,9 +5,9 @@ Pin::Pin() {
     coord = Coord();
 }
 
-Pin::Pin(std::string n, int x, int y) {
+Pin::Pin(std::string n, Coord coord) {
     name = n;
-    coord = Coord(x, y);
+    this->coord = coord;
 }
 
 void Pin::print() {

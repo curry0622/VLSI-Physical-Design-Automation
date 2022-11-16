@@ -8,6 +8,8 @@ public:
     int num_hardblocks;
     int num_terminals;
     double dead_space_ratio;
+    std::unordered_map<std::string, Hardblock> hardblocks;
+    std::unordered_map<std::string, Pin> pins;
 
     // Constructors
     Floorplan();
@@ -19,4 +21,6 @@ public:
     void read_pins(std::string filename);
     void write_floorplan(std::string filename);
     void print();
+    void print_hardblocks();
+    void print_pins();
 };

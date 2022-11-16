@@ -3,9 +3,9 @@
 Hardblock::Hardblock() {
     name = "default";
     coord = Coord();
-    width = 0;
-    height = 0;
-    rotated = 0;
+    width = -1;
+    height = -1;
+    rotated = -1;
 }
 
 Hardblock::Hardblock(std::string name, Coord coord, int width, int height) {

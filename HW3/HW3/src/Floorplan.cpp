@@ -16,6 +16,8 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     // Write output
     write_floorplan(output);
     print();
+    // print_hardblocks();
+    // print_pins();
 }
 
 void Floorplan::read_hardblocks(std::string filename) {
@@ -57,8 +59,7 @@ void Floorplan::read_hardblocks(std::string filename) {
                 y = std::stoi(buffer);
                 coord[i] = Coord(x, y);
             }
-            Hardblock hardblock = Hardblock(name, coord[0], coord[2].x - coord[0].x, coord[2].y - coord[0].y);
-            hardblock.print();
+            hardblocks[name] = Hardblock(name, coord[0], coord[2].x - coord[0].x, coord[2].y - coord[0].y);
         } else {
             break;
         }
@@ -75,8 +76,7 @@ void Floorplan::read_pins(std::string filename) {
         std::string name;
         int x, y;
         ss >> name >> x >> y;
-        Pin p = Pin(name, x, y);
-        // p.print();
+        pins[name] = Pin(name, Coord(x, y));
     }
 }
 
@@ -88,4 +88,16 @@ void Floorplan::print() {
     std::cout << "Floorplan num_hardblocks: " << num_hardblocks << std::endl;
     std::cout << "Floorplan num_terminals: " << num_terminals << std::endl;
     std::cout << "---" << std::endl;
+}
+
+void Floorplan::print_hardblocks() {
+    for(auto hb : hardblocks) {
+        hb.second.print();
+    }
+}
+
+void Floorplan::print_pins() {
+    for(auto pin : pins) {
+        pin.second.print();
+    }
 }

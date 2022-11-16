@@ -13,7 +13,7 @@ public:
 
     // Constructors
     Pin();
-    Pin(std::string n, int x, int y);
+    Pin(std::string n, Coord coord);
 
     // Functions
     void print();
