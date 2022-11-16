@@ -35,6 +35,7 @@ public:
     void read_pins(std::string filename);
     void read_nets(std::string filename);
     void write_floorplan(std::string filename);
+    int get_wirelength();
     void print();
     void print_hardblocks();
     void print_pins();

@@ -18,15 +18,15 @@
 class Net {
 public:
     // Variables
-    std::vector<Pin> pins;
-    std::vector<Hardblock> hardblocks;
+    std::vector<Pin*> pins;
+    std::vector<Hardblock*> hardblocks;
 
     // Constructors
     Net();
 
     // Functions
-    void add_pin(Pin pin);
-    void add_hardblock(Hardblock hardblock);
+    void add_pin(Pin* pin);
+    void add_hardblock(Hardblock* hardblock);
     int HPWL();
     void print();
 };

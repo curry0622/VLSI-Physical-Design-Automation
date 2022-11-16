@@ -17,7 +17,7 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     write_floorplan(output);
     // print_hardblocks();
     // print_pins();
-    print_nets();
+    // print_nets();
     print();
 }
 
@@ -106,18 +106,24 @@ void Floorplan::read_nets(std::string filename) {
             ss = std::stringstream(line);
             ss >> name;
             if(pins.find(name) != pins.end()) {
-                net.add_pin(pins[name]);
+                net.add_pin(&pins[name]);
             } else {
-                net.add_hardblock(hardblocks[name]);
+                net.add_hardblock(&hardblocks[name]);
             }
         }
         nets.push_back(net);
-        net.print();
-        std::cin.ignore();
     }
 }
 
 void Floorplan::write_floorplan(std::string filename) {}
+
+int Floorplan::get_wirelength() {
+    int wirelength = 0;
+    for(auto net : nets) {
+        wirelength += net.HPWL();
+    }
+    return wirelength;
+}
 
 void Floorplan::print() {
     std::cout << "---" << std::endl;
@@ -125,6 +131,7 @@ void Floorplan::print() {
     std::cout << "Floorplan num_hardblocks: " << num_hardblocks << std::endl;
     std::cout << "Floorplan num_terminals: " << num_terminals << std::endl;
     std::cout << "Floorplan num_nets: " << num_nets << std::endl;
+    std::cout << "Floorplan wirelength: " << get_wirelength() << std::endl;
     std::cout << "---" << std::endl;
 }
 
