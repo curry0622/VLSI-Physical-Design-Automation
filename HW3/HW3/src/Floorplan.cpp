@@ -13,8 +13,15 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     read_nets(nets_file);
     dead_space_ratio = ratio;
 
+    // Calculate total area
+    calc_total_area();
+
+    // Calculate max coord
+    calc_max_coord();
+
     // Write output
     write_floorplan(output);
+
     // print_hardblocks();
     // print_pins();
     // print_nets();
@@ -125,6 +132,18 @@ int Floorplan::get_wirelength() {
     return wirelength;
 }
 
+void Floorplan::calc_max_coord() {
+    int max = sqrt(total_area * (1 + dead_space_ratio));
+    max_coord = Coord(max, max);
+}
+
+void Floorplan::calc_total_area() {
+    total_area = 0;
+    for(auto hardblock : hardblocks) {
+        total_area += hardblock.second.width * hardblock.second.height;
+    }
+}
+
 void Floorplan::print() {
     std::cout << "---" << std::endl;
     std::cout << "Floorplan dead_space_ratio: " << dead_space_ratio << std::endl;
@@ -132,6 +151,8 @@ void Floorplan::print() {
     std::cout << "Floorplan num_terminals: " << num_terminals << std::endl;
     std::cout << "Floorplan num_nets: " << num_nets << std::endl;
     std::cout << "Floorplan wirelength: " << get_wirelength() << std::endl;
+    std::cout << "Floorplan total_area: " << total_area << std::endl;
+    std::cout << "Floorplan max_coord: (" << max_coord.x  << ", " << max_coord.y << ")" << std::endl;
     std::cout << "---" << std::endl;
 }
 

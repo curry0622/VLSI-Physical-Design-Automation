@@ -21,7 +21,9 @@ public:
     int num_hardblocks;
     int num_terminals;
     int num_nets;
+    int total_area;
     double dead_space_ratio;
+    Coord max_coord;
     std::unordered_map<std::string, Hardblock> hardblocks;
     std::unordered_map<std::string, Pin> pins;
     std::vector<Net> nets;
@@ -36,6 +38,8 @@ public:
     void read_nets(std::string filename);
     void write_floorplan(std::string filename);
     int get_wirelength();
+    void calc_max_coord();
+    void calc_total_area();
     void print();
     void print_hardblocks();
     void print_pins();
