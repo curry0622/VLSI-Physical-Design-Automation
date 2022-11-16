@@ -1,5 +1,9 @@
 #include <bits/stdc++.h>
+
+#ifndef NET_HPP
+#define NET_HPP
 #include "Net.hpp"
+#endif
 
 #ifndef HARDBLOCK_HPP
 #define HARDBLOCK_HPP

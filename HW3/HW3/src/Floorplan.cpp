@@ -112,6 +112,8 @@ void Floorplan::read_nets(std::string filename) {
             }
         }
         nets.push_back(net);
+        net.print();
+        std::cin.ignore();
     }
 }
 
@@ -127,8 +129,8 @@ void Floorplan::print() {
 }
 
 void Floorplan::print_hardblocks() {
-    for(auto hb : hardblocks) {
-        hb.second.print();
+    for(auto hardblock : hardblocks) {
+        hardblock.second.print();
     }
 }
 
