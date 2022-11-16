@@ -9,15 +9,16 @@ Floorplan::Floorplan() {
 Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio) {
     // Read inputs
     read_hardblocks(hardblocks_file);
-    read_nets(nets_file);
     read_pins(pins_file);
+    read_nets(nets_file);
     dead_space_ratio = ratio;
 
     // Write output
     write_floorplan(output);
-    print();
     // print_hardblocks();
     // print_pins();
+    print_nets();
+    print();
 }
 
 void Floorplan::read_hardblocks(std::string filename) {
@@ -66,8 +67,6 @@ void Floorplan::read_hardblocks(std::string filename) {
     }
 }
 
-void Floorplan::read_nets(std::string filename) {}
-
 void Floorplan::read_pins(std::string filename) {
     std::ifstream fin(filename);
     std::string line;
@@ -80,6 +79,42 @@ void Floorplan::read_pins(std::string filename) {
     }
 }
 
+void Floorplan::read_nets(std::string filename) {
+    // Variables
+    std::ifstream fin(filename);
+    std::string line, buffer;
+    std::stringstream ss;
+
+    // Read num of nets
+    std::getline(fin, line);
+    ss = std::stringstream(line);
+    ss >> buffer >> buffer >> num_nets;
+
+    // Read the second line
+    std::getline(fin, line);
+    ss = std::stringstream(line);
+
+    // Read the nets
+    while(std::getline(fin, line)) {
+        Net net;
+        int degree;
+        ss = std::stringstream(line);
+        ss >> buffer >> buffer >> degree;
+        for(int i = 0; i < degree; i++) {
+            std::string name;
+            std::getline(fin, line);
+            ss = std::stringstream(line);
+            ss >> name;
+            if(pins.find(name) != pins.end()) {
+                net.add_pin(pins[name]);
+            } else {
+                net.add_hardblock(hardblocks[name]);
+            }
+        }
+        nets.push_back(net);
+    }
+}
+
 void Floorplan::write_floorplan(std::string filename) {}
 
 void Floorplan::print() {
@@ -87,6 +122,7 @@ void Floorplan::print() {
     std::cout << "Floorplan dead_space_ratio: " << dead_space_ratio << std::endl;
     std::cout << "Floorplan num_hardblocks: " << num_hardblocks << std::endl;
     std::cout << "Floorplan num_terminals: " << num_terminals << std::endl;
+    std::cout << "Floorplan num_nets: " << num_nets << std::endl;
     std::cout << "---" << std::endl;
 }
 
@@ -99,5 +135,11 @@ void Floorplan::print_hardblocks() {
 void Floorplan::print_pins() {
     for(auto pin : pins) {
         pin.second.print();
+    }
+}
+
+void Floorplan::print_nets() {
+    for(auto net : nets) {
+        net.print();
     }
 }
