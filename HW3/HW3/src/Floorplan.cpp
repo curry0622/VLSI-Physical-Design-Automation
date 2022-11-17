@@ -198,30 +198,34 @@ int Floorplan::get_area(std::vector<std::string> sol) {
 
 std::vector<std::string> Floorplan::init_sol() {
     std::vector<std::string> sol;
-    bool first = true, horizontal = false;
+    bool v_1st = true, h_1st = true;
     int curr_width = 0;
     for(auto hardblock : hardblocks) {
-        sol.push_back(hardblock.first);
-        curr_width += hardblock.second.width;
-        if(!first) {
-            sol.push_back("V");
-            if(curr_width > max_coord.x) {
-                curr_width = 0;
-                first = true;
-                if(horizontal) {
-                    sol.push_back("H");
-                } else {
-                    horizontal = !horizontal;
-                }
+        // int width = std::max(hardblock.second.width, hardblock.second.height);
+        int width = (hardblock.second.width + hardblock.second.height) / 2;
+        if(curr_width + width <= max_coord.x) {
+            std::cout << "<=" << std::endl;
+            curr_width += width;
+            sol.push_back(hardblock.first), std::cout << hardblock.first << std::endl;
+            if(v_1st) {
+                v_1st = false;
+            } else {
+                sol.push_back("V"), std::cout << "V" << std::endl;
             }
         } else {
-            first = false;
+            std::cout << ">" << std::endl;
+            curr_width = width;
+            if(h_1st) {
+                h_1st = false;
+                sol.push_back(hardblock.first), std::cout << hardblock.first << std::endl;
+            } else {
+                sol.push_back("H"), std::cout << "H" << std::endl;
+                sol.push_back(hardblock.first), std::cout << hardblock.first << std::endl;
+            }
         }
+        std::cout << "curr_width: " << curr_width << std::endl;
     }
-    sol.push_back("H");
-    for(auto s: sol) {
-        std::cout << s << std::endl;
-    }
+    sol.push_back("H"), std::cout << "H" << std::endl;
     return sol;
 }
 
@@ -270,6 +274,7 @@ std::pair<int, int> Floorplan::get_min_area_comb(std::vector<std::pair<int, int>
                 width = a[i].first + b[j].first;
                 height = std::max(a[i].second, b[j].second);
                 area = width * height;
+                std::cout << width << " * " << height << " = " << area << std::endl;
                 if(area < min_area) {
                     min_area = area;
                     result = {width, height};
@@ -283,6 +288,7 @@ std::pair<int, int> Floorplan::get_min_area_comb(std::vector<std::pair<int, int>
                 width = std::max(a[i].first, b[j].first);
                 height = a[i].second + b[j].second;
                 area = width * height;
+                std::cout << width << " * " << height << " = " << area << std::endl;
                 if(area < min_area) {
                     min_area = area;
                     result = {width, height};
@@ -290,7 +296,7 @@ std::pair<int, int> Floorplan::get_min_area_comb(std::vector<std::pair<int, int>
             }
         }
     }
-    std::cout << result.first << " * " << result.second << " = " << result.first * result.second << std::endl;
+    std::cout << "final: " << result.first << " * " << result.second << " = " << result.first * result.second << std::endl;
     return result;
 }
 
