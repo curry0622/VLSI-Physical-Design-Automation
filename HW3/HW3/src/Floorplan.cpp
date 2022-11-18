@@ -23,6 +23,12 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     std::vector<std::string> sol = init_sol();
     int area = get_area(sol);
     std::cout << "Area of init sol: " << area << std::endl;
+    // std::vector<std::pair<int, int>> l, r, result;
+    // l.push_back({2, 5});
+    // l.push_back({3, 4});
+    // r.push_back({3, 5});
+    // r.push_back({6, 4});
+    // result = stockmeyer(l, r, "V");
 
     // Write output
     write_floorplan(output);
@@ -150,31 +156,31 @@ int Floorplan::get_wirelength() {
 }
 
 int Floorplan::get_area(std::vector<std::string> sol) {
-    // Different from Stockmeyer, use greedy
     std::stack<std::vector<std::pair<int, int>>> stk;
+    std::vector<std::pair<int, int>> result;
+
     for(int i = 0; i < sol.size(); i++) {
         if(sol[i] == "V" || sol[i] == "H") {
-            std::vector<std::pair<int, int>> b = stk.top(); // b: right or top
+            std::vector<std::pair<int, int>> r = stk.top();
             stk.pop();
-            std::vector<std::pair<int, int>> a = stk.top(); // a: left or bottom
+            std::vector<std::pair<int, int>> l = stk.top();
             stk.pop();
-            stk.push(stockmeyer(a, b, sol[i]));
+            stk.push(stockmeyer(l, r, sol[i]));
         } else {
             Hardblock hardblock = hardblocks[sol[i]];
-            int width = hardblock.width;
-            int height = hardblock.height;
-            if(height > width) {
-                stk.push({{width, height}, {height, width}});
-            } else if(height < width) {
-                stk.push({{height, width}, {width, height}});
+            int width = hardblock.width, height = hardblock.height;
+            if(width != height) {
+                std::vector<std::pair<int, int>> tmp = {{width, height}, {height, width}};
+                std::sort(tmp.begin(), tmp.end());
+                stk.push(tmp);
             } else {
                 stk.push({{width, height}});
             }
         }
     }
-    std::cout << "stk size: " << stk.size() << std::endl;
-    std::vector<std::pair<int, int>> result = stk.top();
+
     int width, height, area, min_width, min_height, min_area = INT_MAX;
+    result = stk.top();
     for(auto pair : result) {
         width = pair.first;
         height = pair.second;
@@ -193,32 +199,31 @@ std::vector<std::string> Floorplan::init_sol() {
     std::vector<std::string> sol;
     bool v_1st = true, h_1st = true;
     int curr_width = 0;
-    double TOLERANCE = 1.2;
+    double TOLERANCE = 1.3;
+
     for(auto hardblock : hardblocks) {
         int width = (hardblock.second.width + hardblock.second.height) / 2;
         if(curr_width + width <= max_coord.x * TOLERANCE) {
-            std::cout << "<=" << std::endl;
             curr_width += width;
-            sol.push_back(hardblock.first), std::cout << hardblock.first << std::endl;
+            sol.push_back(hardblock.first);
             if(v_1st) {
                 v_1st = false;
             } else {
-                sol.push_back("V"), std::cout << "V" << std::endl;
+                sol.push_back("V");
             }
         } else {
-            std::cout << ">" << std::endl;
             curr_width = width;
             if(h_1st) {
                 h_1st = false;
-                sol.push_back(hardblock.first), std::cout << hardblock.first << std::endl;
+                sol.push_back(hardblock.first);
             } else {
-                sol.push_back("H"), std::cout << "H" << std::endl;
-                sol.push_back(hardblock.first), std::cout << hardblock.first << std::endl;
+                sol.push_back("H");
+                sol.push_back(hardblock.first);
             }
         }
-        std::cout << "curr_width: " << curr_width << std::endl;
     }
-    sol.push_back("H"), std::cout << "H" << std::endl;
+    sol.push_back("H");
+
     return sol;
 }
 
@@ -227,11 +232,11 @@ std::vector<std::pair<int, int>> Floorplan::stockmeyer(
     std::vector<std::pair<int, int>> r,
     std::string type
 ) {
-    std::vector<std::pair<int, int>> result;
+    std::vector<std::pair<int, int>> result; // vector of (width, height)
 
-    if(type == "V") { // (w_l + w_r, max(h_l, h_r))
+    if(type == "V") { // width = w_l + w_r, height = max(h_l, h_r)
         int i = 0, j = 0;
-        while(i < 2 && j < 2) {
+        while(i < l.size() && j < r.size()) {
             if(l[i].second > r[j].second) {
                 result.push_back({l[i].first + r[j].first, l[i].second});
                 i++;
@@ -243,8 +248,8 @@ std::vector<std::pair<int, int>> Floorplan::stockmeyer(
                 i++, j++;
             }
         }
-    } else { // (max(w_l, w_r), h_l + h_r)
-        int i = 1, j = 1;
+    } else { // width = max(w_l, w_r), height = h_l + h_r
+        int i = l.size() - 1, j = r.size() - 1;
         while(i >= 0 && j >= 0) {
             if(l[i].first > r[j].first) {
                 result.push_back({l[i].first, l[i].second + r[j].second});
@@ -258,6 +263,9 @@ std::vector<std::pair<int, int>> Floorplan::stockmeyer(
             }
         }
     }
+
+    // Sort result by width (small to large)
+    std::sort(result.begin(), result.end());
 
     return result;
 }
