@@ -158,7 +158,7 @@ int Floorplan::get_area(std::vector<std::string> sol) {
             stk.pop();
             std::vector<std::pair<int, int>> a = stk.top(); // a: left or bottom
             stk.pop();
-            stk.push({get_min_area_comb(a, b, sol[i])});
+            stk.push(stockmeyer(a, b, sol[i]));
         } else {
             Hardblock hardblock = hardblocks[sol[i]];
             int width = hardblock.width;
@@ -173,17 +173,30 @@ int Floorplan::get_area(std::vector<std::string> sol) {
         }
     }
     std::cout << "stk size: " << stk.size() << std::endl;
-    std::pair<int, int> result = stk.top()[0];
-    return result.first * result.second;
+    std::vector<std::pair<int, int>> result = stk.top();
+    int width, height, area, min_width, min_height, min_area = INT_MAX;
+    for(auto pair : result) {
+        width = pair.first;
+        height = pair.second;
+        area = width * height;
+        if(area < min_area) {
+            min_width = width;
+            min_height = height;
+            min_area = area;
+        }
+    }
+    std::cout << min_width << " * " << min_height << " = " << min_area << std::endl;
+    return min_area;
 }
 
 std::vector<std::string> Floorplan::init_sol() {
     std::vector<std::string> sol;
     bool v_1st = true, h_1st = true;
     int curr_width = 0;
+    double TOLERANCE = 1.2;
     for(auto hardblock : hardblocks) {
         int width = (hardblock.second.width + hardblock.second.height) / 2;
-        if(curr_width + width <= max_coord.x) {
+        if(curr_width + width <= max_coord.x * TOLERANCE) {
             std::cout << "<=" << std::endl;
             curr_width += width;
             sol.push_back(hardblock.first), std::cout << hardblock.first << std::endl;
@@ -207,42 +220,6 @@ std::vector<std::string> Floorplan::init_sol() {
     }
     sol.push_back("H"), std::cout << "H" << std::endl;
     return sol;
-}
-
-std::pair<int, int> Floorplan::get_min_area_comb(std::vector<std::pair<int, int>> a, std::vector<std::pair<int, int>> b, std::string type) {
-    int width, height, area, min_area = INT_MAX;
-    std::pair<int, int> result = {0, 0};
-    if(type == "V") {
-        std::cout << "V" << std::endl;
-        for(int i = 0; i < a.size(); i++) {
-            for(int j = 0; j < b.size(); j++) {
-                width = a[i].first + b[j].first;
-                height = std::max(a[i].second, b[j].second);
-                area = width * height;
-                std::cout << width << " * " << height << " = " << area << std::endl;
-                if(area < min_area) {
-                    min_area = area;
-                    result = {width, height};
-                }
-            }
-        }
-    } else {
-        std::cout << "H" << std::endl;
-        for(int i = 0; i < a.size(); i++) {
-            for(int j = 0; j < b.size(); j++) {
-                width = std::max(a[i].first, b[j].first);
-                height = a[i].second + b[j].second;
-                area = width * height;
-                std::cout << width << " * " << height << " = " << area << std::endl;
-                if(area < min_area) {
-                    min_area = area;
-                    result = {width, height};
-                }
-            }
-        }
-    }
-    std::cout << "final: " << result.first << " * " << result.second << " = " << result.first * result.second << std::endl;
-    return result;
 }
 
 std::vector<std::pair<int, int>> Floorplan::stockmeyer(
