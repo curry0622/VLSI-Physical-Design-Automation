@@ -21,12 +21,6 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Initial solution
     std::vector<std::string> sol = init_sol();
-    // std::vector<std::string> sol;
-    // sol.push_back("sb0");
-    // sol.push_back("sb1");
-    // sol.push_back("H");
-    // sol.push_back("sb2");
-    // sol.push_back("H");
     int area = get_area(sol);
     std::cout << "Area of init sol: " << area << std::endl;
 
@@ -155,25 +149,6 @@ int Floorplan::get_wirelength() {
     return wirelength;
 }
 
-// int Floorplan::get_area(std::vector<std::string> sol) {
-//     // Different from Stockmeyer, use greedy
-//     std::stack<std::vector<int>> stk;
-//     for(int i = 0; i < sol.size(); i++) {
-//         if(sol[i] == "V" || sol[i] == "H") {
-//             std::vector<int> b = stk.top(); // b: right or top
-//             stk.pop();
-//             std::vector<int> a = stk.top(); // a: left or bottom
-//             stk.pop();
-//             stk.push(get_min_area_comb(a, b, sol[i]));
-//         } else {
-//             Hardblock hardblock = hardblocks[sol[i]];
-//             stk.push({hardblock.width, hardblock.height});
-//         }
-//     }
-//     std::vector<int> result = stk.top();
-//     return result[0] * result[1];
-// }
-
 int Floorplan::get_area(std::vector<std::string> sol) {
     // Different from Stockmeyer, use greedy
     std::stack<std::vector<std::pair<int, int>>> stk;
@@ -188,7 +163,13 @@ int Floorplan::get_area(std::vector<std::string> sol) {
             Hardblock hardblock = hardblocks[sol[i]];
             int width = hardblock.width;
             int height = hardblock.height;
-            stk.push({{width, height}, {height, width}});
+            if(height > width) {
+                stk.push({{width, height}, {height, width}});
+            } else if(height < width) {
+                stk.push({{height, width}, {width, height}});
+            } else {
+                stk.push({{width, height}});
+            }
         }
     }
     std::cout << "stk size: " << stk.size() << std::endl;
@@ -201,7 +182,6 @@ std::vector<std::string> Floorplan::init_sol() {
     bool v_1st = true, h_1st = true;
     int curr_width = 0;
     for(auto hardblock : hardblocks) {
-        // int width = std::max(hardblock.second.width, hardblock.second.height);
         int width = (hardblock.second.width + hardblock.second.height) / 2;
         if(curr_width + width <= max_coord.x) {
             std::cout << "<=" << std::endl;
@@ -228,41 +208,6 @@ std::vector<std::string> Floorplan::init_sol() {
     sol.push_back("H"), std::cout << "H" << std::endl;
     return sol;
 }
-
-// std::vector<int> Floorplan::get_min_area_comb(std::vector<int> a, std::vector<int> b, std::string type) {
-//     int width, height, area, min_area = INT_MAX;
-//     std::vector<int> w = {0, 0}, h = {0, 0};
-//     if(type == "V") {
-//         for(int i = 0; i < 2; i++) {
-//             for(int j = 0; j < 2; j++) {
-//                 width = a[i] + b[j];
-//                 height = std::max(a[1 - i], b[1 - j]);
-//                 area = width * height;
-//                 if(area < min_area) {
-//                     min_area = area;
-//                     w = {i, j};
-//                     h = {1 - i, 1 - j};
-//                 }
-//             }
-//         }
-//         return {a[w[0]] + b[w[1]], std::max(a[h[0]], b[h[1]])};
-//     } else {
-//         for(int i = 0; i < 2; i++) {
-//             for(int j = 0; j < 2; j++) {
-//                 width = std::max(a[i], b[j]);
-//                 height = a[1 - i] + b[1 - j];
-//                 area = width * height;
-//                 if(area < min_area) {
-//                     min_area = area;
-//                     w = {i, j};
-//                     h = {1 - i, 1 - j};
-//                 }
-//             }
-//         }
-//         return {std::max(a[w[0]], b[w[1]]), a[h[0]] + b[h[1]]};
-//     }
-//     return {};
-// }
 
 std::pair<int, int> Floorplan::get_min_area_comb(std::vector<std::pair<int, int>> a, std::vector<std::pair<int, int>> b, std::string type) {
     int width, height, area, min_area = INT_MAX;
@@ -297,6 +242,46 @@ std::pair<int, int> Floorplan::get_min_area_comb(std::vector<std::pair<int, int>
         }
     }
     std::cout << "final: " << result.first << " * " << result.second << " = " << result.first * result.second << std::endl;
+    return result;
+}
+
+std::vector<std::pair<int, int>> Floorplan::stockmeyer(
+    std::vector<std::pair<int, int>> l,
+    std::vector<std::pair<int, int>> r,
+    std::string type
+) {
+    std::vector<std::pair<int, int>> result;
+
+    if(type == "V") { // (w_l + w_r, max(h_l, h_r))
+        int i = 0, j = 0;
+        while(i < 2 && j < 2) {
+            if(l[i].second > r[j].second) {
+                result.push_back({l[i].first + r[j].first, l[i].second});
+                i++;
+            } else if(l[i].second < r[j].second) {
+                result.push_back({l[i].first + r[j].first, r[j].second});
+                j++;
+            } else {
+                result.push_back({l[i].first + r[j].first, l[i].second});
+                i++, j++;
+            }
+        }
+    } else { // (max(w_l, w_r), h_l + h_r)
+        int i = 1, j = 1;
+        while(i >= 0 && j >= 0) {
+            if(l[i].first > r[j].first) {
+                result.push_back({l[i].first, l[i].second + r[j].second});
+                i--;
+            } else if(l[i].first < r[j].first) {
+                result.push_back({r[j].first, l[i].second + r[j].second});
+                j--;
+            } else {
+                result.push_back({l[i].first, l[i].second + r[j].second});
+                i--, j--;
+            }
+        }
+    }
+
     return result;
 }
 

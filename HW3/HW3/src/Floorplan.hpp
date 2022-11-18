@@ -42,8 +42,12 @@ public:
     int get_wirelength();
     int get_area(std::vector<std::string> sol);
     std::vector<std::string> init_sol();
-    // std::vector<int> get_min_area_comb(std::vector<int> a, std::vector<int> b, std::string type);
     std::pair<int, int> get_min_area_comb(std::vector<std::pair<int, int>> a, std::vector<std::pair<int, int>> b, std::string type);
+    std::vector<std::pair<int, int>> stockmeyer(
+        std::vector<std::pair<int, int>> l,
+        std::vector<std::pair<int, int>> r,
+        std::string type
+    );
 
     // Utils
     void print();
