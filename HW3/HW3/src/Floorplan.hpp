@@ -42,9 +42,9 @@ public:
     int get_wirelength();
     int get_area(std::vector<std::string> sol);
     std::vector<std::string> init_sol();
-    std::vector<std::pair<int, int>> stockmeyer(
-        std::vector<std::pair<int, int>> l,
-        std::vector<std::pair<int, int>> r,
+    std::vector<std::vector<int>> stockmeyer(
+        std::vector<std::vector<int>> l,
+        std::vector<std::vector<int>> r,
         std::string type
     );
 

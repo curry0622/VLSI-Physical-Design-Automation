@@ -156,21 +156,21 @@ int Floorplan::get_wirelength() {
 }
 
 int Floorplan::get_area(std::vector<std::string> sol) {
-    std::stack<std::vector<std::pair<int, int>>> stk;
-    std::vector<std::pair<int, int>> result;
+    std::stack<std::vector<std::vector<int>>> stk;
+    std::vector<std::vector<int>> result;
 
     for(int i = 0; i < sol.size(); i++) {
         if(sol[i] == "V" || sol[i] == "H") {
-            std::vector<std::pair<int, int>> r = stk.top();
+            std::vector<std::vector<int>> r = stk.top();
             stk.pop();
-            std::vector<std::pair<int, int>> l = stk.top();
+            std::vector<std::vector<int>> l = stk.top();
             stk.pop();
             stk.push(stockmeyer(l, r, sol[i]));
         } else {
             Hardblock hardblock = hardblocks[sol[i]];
             int width = hardblock.width, height = hardblock.height;
             if(width != height) {
-                std::vector<std::pair<int, int>> tmp = {{width, height}, {height, width}};
+                std::vector<std::vector<int>> tmp = {{width, height}, {height, width}};
                 std::sort(tmp.begin(), tmp.end());
                 stk.push(tmp);
             } else {
@@ -182,8 +182,8 @@ int Floorplan::get_area(std::vector<std::string> sol) {
     int width, height, area, min_width, min_height, min_area = INT_MAX;
     result = stk.top();
     for(auto pair : result) {
-        width = pair.first;
-        height = pair.second;
+        width = pair[0];
+        height = pair[1];
         area = width * height;
         if(area < min_area) {
             min_width = width;
@@ -227,38 +227,38 @@ std::vector<std::string> Floorplan::init_sol() {
     return sol;
 }
 
-std::vector<std::pair<int, int>> Floorplan::stockmeyer(
-    std::vector<std::pair<int, int>> l,
-    std::vector<std::pair<int, int>> r,
+std::vector<std::vector<int>> Floorplan::stockmeyer(
+    std::vector<std::vector<int>> l,
+    std::vector<std::vector<int>> r,
     std::string type
 ) {
-    std::vector<std::pair<int, int>> result; // vector of (width, height)
+    std::vector<std::vector<int>> result; // vector of (width, height)
 
     if(type == "V") { // width = w_l + w_r, height = max(h_l, h_r)
         int i = 0, j = 0;
         while(i < l.size() && j < r.size()) {
-            if(l[i].second > r[j].second) {
-                result.push_back({l[i].first + r[j].first, l[i].second});
+            if(l[i][1] > r[j][1]) {
+                result.push_back({l[i][0] + r[j][0], l[i][1]});
                 i++;
-            } else if(l[i].second < r[j].second) {
-                result.push_back({l[i].first + r[j].first, r[j].second});
+            } else if(l[i][1] < r[j][1]) {
+                result.push_back({l[i][0] + r[j][0], r[j][1]});
                 j++;
             } else {
-                result.push_back({l[i].first + r[j].first, l[i].second});
+                result.push_back({l[i][0] + r[j][0], l[i][1]});
                 i++, j++;
             }
         }
     } else { // width = max(w_l, w_r), height = h_l + h_r
         int i = l.size() - 1, j = r.size() - 1;
         while(i >= 0 && j >= 0) {
-            if(l[i].first > r[j].first) {
-                result.push_back({l[i].first, l[i].second + r[j].second});
+            if(l[i][0] > r[j][0]) {
+                result.push_back({l[i][0], l[i][1] + r[j][1]});
                 i--;
-            } else if(l[i].first < r[j].first) {
-                result.push_back({r[j].first, l[i].second + r[j].second});
+            } else if(l[i][0] < r[j][0]) {
+                result.push_back({r[j][0], l[i][1] + r[j][1]});
                 j--;
             } else {
-                result.push_back({l[i].first, l[i].second + r[j].second});
+                result.push_back({l[i][0], l[i][1] + r[j][1]});
                 i--, j--;
             }
         }
