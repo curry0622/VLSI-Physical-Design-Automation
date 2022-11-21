@@ -229,32 +229,33 @@ int Floorplan::get_area(std::vector<std::string> sol) {
 
 std::vector<std::string> Floorplan::init_sol() {
     std::vector<std::string> sol;
-    bool v_1st = true, h_1st = true;
-    int curr_width = 0;
-    double TOLERANCE = 1.3;
+    // bool v_1st = true, h_1st = true;
+    // int curr_width = 0;
+    // double TOLERANCE = 1.3;
 
-    for(auto hardblock : hardblocks) {
-        int width = (hardblock.second.width + hardblock.second.height) / 2;
-        if(curr_width + width <= max_coord.x * TOLERANCE) {
-            curr_width += width;
-            sol.push_back(hardblock.first);
-            if(v_1st) {
-                v_1st = false;
-            } else {
-                sol.push_back("V");
-            }
-        } else {
-            curr_width = width;
-            if(h_1st) {
-                h_1st = false;
-                sol.push_back(hardblock.first);
-            } else {
-                sol.push_back("H");
-                sol.push_back(hardblock.first);
-            }
-        }
-    }
-    sol.push_back("H");
+    // for(auto hardblock : hardblocks) {
+    //     int width = (hardblock.second.width + hardblock.second.height) / 2;
+    //     if(curr_width + width <= max_coord.x * TOLERANCE) {
+    //         curr_width += width;
+    //         sol.push_back(hardblock.first);
+    //         if(v_1st) {
+    //             v_1st = false;
+    //         } else {
+    //             sol.push_back("V");
+    //         }
+    //     } else {
+    //         curr_width = width;
+    //         if(h_1st) {
+    //             h_1st = false;
+    //             sol.push_back(hardblock.first);
+    //         } else {
+    //             sol.push_back("H");
+    //             sol.push_back(hardblock.first);
+    //         }
+    //     }
+    // }
+    // sol.push_back("H");
+    sol = {"sb1", "sb2", "H", "sb3", "sb4", "V", "sb5", "sb6", "V", "H", "V"};
 
     return sol;
 }
