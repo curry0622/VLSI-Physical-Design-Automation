@@ -20,13 +20,6 @@ Coord Hardblock::get_center() {
     return Coord(coord.x + width / 2, coord.y + height / 2);
 }
 
-void Hardblock::rotate() {
-    rotated = !rotated;
-    int temp = width;
-    width = height;
-    height = temp;
-}
-
 void Hardblock::print() {
     std::cout << "---" << std::endl;
     std::cout << "Hardblock name: " << name << std::endl;

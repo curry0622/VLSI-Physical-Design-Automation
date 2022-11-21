@@ -19,6 +19,5 @@ public:
 
     // Functions
     Coord get_center();
-    void rotate();
     void print();
 };

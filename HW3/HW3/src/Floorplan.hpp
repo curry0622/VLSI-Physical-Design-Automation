@@ -49,8 +49,10 @@ public:
     void write_floorplan(std::string filename);
     void calc_max_coord();
     void calc_total_area();
+    void update_coord(std::vector<std::vector<Node>>& record, int index, int min_at);
     int get_wirelength();
     int get_area(std::vector<std::string> sol);
+    int get_cost(std::vector<std::string> sol);
     std::vector<std::string> init_sol();
     std::vector<Node> stockmeyer(
         std::vector<Node> l,
@@ -58,7 +60,6 @@ public:
         std::string type,
         int index
     );
-    void update_coord(std::vector<std::vector<Node>>& record, int index, int min_at);
 
     // Utils
     void print();

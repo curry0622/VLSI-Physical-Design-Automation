@@ -21,21 +21,9 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Initial solution
     std::vector<std::string> sol = init_sol();
-    int area = get_area(sol);
-    std::cout << "Area of init sol: " << area << std::endl;
 
-    // std::vector<std::vector<int>> l, r, result;
-    // l.push_back({2, 3});
-    // l.push_back({3, 2});
-    // r.push_back({2, 2});
-    // r.push_back({3, 2});
-    // result = stockmeyer(l, r, "H");
-    // for(auto i : result) {
-    //     for(auto j : i) {
-    //         std::cout << j << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
+    // Get cost
+    double cost = get_cost(sol);
 
     // Write output
     write_floorplan(output);
@@ -154,6 +142,31 @@ void Floorplan::calc_total_area() {
     }
 }
 
+void Floorplan::update_coord(std::vector<std::vector<Node>>& record, int index, int min_at) {
+    record[index] = {record[index][min_at]};
+
+    Node* n = &record[index][0];
+    Node* left = &record[n->left_from][n->left_at];
+    Node* right = &record[n->right_from][n->right_at];
+
+    if(n->type == "V") {
+        left->coord = n->coord;
+        right->coord = Coord(n->coord.x + left->width, n->coord.y);
+        update_coord(record, n->left_from, n->left_at);
+        update_coord(record, n->right_from, n->right_at);
+    } else if(n->type == "H") {
+        left->coord = n->coord;
+        right->coord = Coord(n->coord.x, n->coord.y + left->height);
+        update_coord(record, n->left_from, n->left_at);
+        update_coord(record, n->right_from, n->right_at);
+    } else {
+        hardblocks[n->type].coord = n->coord;
+        if(n->width != hardblocks[n->type].width) {
+            hardblocks[n->type].rotated = true;
+        }
+    }
+}
+
 int Floorplan::get_wirelength() {
     int wirelength = 0;
     for(auto net : nets) {
@@ -220,42 +233,49 @@ int Floorplan::get_area(std::vector<std::string> sol) {
     // Update coordinates
     update_coord(record, record.size() - 1, min_index);
 
-    for(auto pair : hardblocks) {
-        pair.second.print();
-    }
-
     return min_area;
+}
+
+int Floorplan::get_cost(std::vector<std::string> sol) {
+    const double LAMBDA = 0.5;
+    int area = get_area(sol);
+    int wirelength = get_wirelength();
+    std::cout << "area: " << area << ", wirelength: " << wirelength << ", lambda: " << LAMBDA << std::endl;
+    std::cout << "cost: " << area + LAMBDA * wirelength << std::endl;
+    return area + LAMBDA * wirelength;
 }
 
 std::vector<std::string> Floorplan::init_sol() {
     std::vector<std::string> sol;
-    // bool v_1st = true, h_1st = true;
-    // int curr_width = 0;
-    // double TOLERANCE = 1.3;
+    bool v_1st = true, h_1st = true;
+    int curr_width = 0;
+    double TOLERANCE = 1.3;
 
-    // for(auto hardblock : hardblocks) {
-    //     int width = (hardblock.second.width + hardblock.second.height) / 2;
-    //     if(curr_width + width <= max_coord.x * TOLERANCE) {
-    //         curr_width += width;
-    //         sol.push_back(hardblock.first);
-    //         if(v_1st) {
-    //             v_1st = false;
-    //         } else {
-    //             sol.push_back("V");
-    //         }
-    //     } else {
-    //         curr_width = width;
-    //         if(h_1st) {
-    //             h_1st = false;
-    //             sol.push_back(hardblock.first);
-    //         } else {
-    //             sol.push_back("H");
-    //             sol.push_back(hardblock.first);
-    //         }
-    //     }
-    // }
-    // sol.push_back("H");
-    sol = {"sb1", "sb2", "H", "sb3", "sb4", "V", "sb5", "sb6", "V", "H", "V"};
+    for(auto hardblock : hardblocks) {
+        int width = (hardblock.second.width + hardblock.second.height) / 2;
+        if(curr_width + width <= max_coord.x * TOLERANCE) {
+            curr_width += width;
+            sol.push_back(hardblock.first);
+            if(v_1st) {
+                v_1st = false;
+            } else {
+                sol.push_back("V");
+            }
+        } else {
+            curr_width = width;
+            if(h_1st) {
+                h_1st = false;
+                sol.push_back(hardblock.first);
+            } else {
+                sol.push_back("H");
+                sol.push_back(hardblock.first);
+            }
+        }
+    }
+    sol.push_back("H");
+
+    // For n6
+    // sol = {"sb1", "sb2", "H", "sb3", "sb4", "V", "sb5", "sb6", "V", "H", "V"};
 
     return sol;
 }
@@ -316,31 +336,6 @@ std::vector<Node> Floorplan::stockmeyer(
     });
 
     return result;
-}
-
-void Floorplan::update_coord(std::vector<std::vector<Node>>& record, int index, int min_at) {
-    record[index] = {record[index][min_at]};
-
-    Node* n = &record[index][0];
-    Node* left = &record[n->left_from][n->left_at];
-    Node* right = &record[n->right_from][n->right_at];
-
-    if(n->type == "V") {
-        left->coord = n->coord;
-        right->coord = Coord(n->coord.x + left->width, n->coord.y);
-        update_coord(record, n->left_from, n->left_at);
-        update_coord(record, n->right_from, n->right_at);
-    } else if(n->type == "H") {
-        left->coord = n->coord;
-        right->coord = Coord(n->coord.x, n->coord.y + left->height);
-        update_coord(record, n->left_from, n->left_at);
-        update_coord(record, n->right_from, n->right_at);
-    } else {
-        hardblocks[n->type].coord = n->coord;
-        if(n->width != hardblocks[n->type].width) {
-            hardblocks[n->type].rotated = true;
-        }
-    }
 }
 
 void Floorplan::print() {
