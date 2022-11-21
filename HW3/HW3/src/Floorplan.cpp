@@ -21,14 +21,14 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Initial solution
     std::vector<std::string> sol = init_sol();
-    // while(true) {
-    //     for(auto s : sol) {
-    //         std::cout << s << " ";
-    //     }
-    //     std::cout << std::endl;
-    //     std::cin.ignore();
-    //     invert_chain(sol);
-    // }
+    while(true) {
+        for(auto s : sol) {
+            std::cout << s << " ";
+        }
+        std::cout << std::endl;
+        std::cin.ignore();
+        swap_operand_operator(sol);
+    }
 
     // Get cost
     double cost = get_cost(sol);
@@ -225,7 +225,48 @@ void Floorplan::invert_chain(std::vector<std::string>& sol) {
     sol[index] = sol[index] == "V" ? "H" : "V";
 }
 
-void Floorplan::swap_operand_operator(std::vector<std::string>& sol) {}
+void Floorplan::swap_operand_operator(std::vector<std::string>& sol) {
+    srand(time(NULL));
+    int index = rand() % (sol.size() - 1);
+    bool flag = true;
+
+    while(flag) {
+        if((sol[index] == "V" || sol[index] == "H") && (sol[index + 1] != "V" && sol[index + 1] != "H")) {
+            // (operator, operand) -> (operand, operator)
+            // Check: no consecutive operators
+            if(index + 2 < sol.size() && sol[index] == sol[index + 2]) {
+                index = rand() % (sol.size() - 1);
+                continue;
+            }
+            std::swap(sol[index], sol[index + 1]);
+            flag = false;
+        } else if((sol[index + 1] == "V" || sol[index + 1] == "H") && (sol[index] != "V" && sol[index] != "H")){
+            // (operand, operator) -> (operator, operand)
+            // Check: no consecutive operators
+            if(index - 1 >= 0 && sol[index + 1] == sol[index - 1]) {
+                index = rand() % (sol.size() - 1);
+                continue;
+            }
+            // Check: balloting property
+            int opr_num = 0;
+            for(int i = 0; i <= index + 1; i++) {
+                if(sol[i] == "V" || sol[i] == "H") {
+                    opr_num++;
+                }
+            }
+            if(2 * opr_num <= index) {
+                std::swap(sol[index], sol[index + 1]);
+                flag = false;
+            } else {
+                index = rand() % (sol.size() - 1);
+                continue;
+            }
+        } else {
+            index = rand() % (sol.size() - 1);
+            continue;
+        }
+    }
+}
 
 int Floorplan::get_wirelength() {
     int wirelength = 0;
