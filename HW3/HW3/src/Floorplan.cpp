@@ -167,6 +167,39 @@ void Floorplan::update_coord(std::vector<std::vector<Node>>& record, int index, 
     }
 }
 
+void Floorplan::swap_operand(std::vector<std::string>& sol) {
+    srand(time(NULL));
+    int l = rand() % sol.size();
+    int r = l + 1;
+    bool flag = false;
+
+    while(sol[l] == "V" || sol[l] == "H") {
+        l = rand() % sol.size();
+        r = l + 1;
+    }
+    while(sol[r] == "V" || sol[r] == "H") {
+        r++;
+        if(r >= sol.size()) {
+            r = l - 1;
+            flag = true;
+            break;
+        }
+    }
+    if(flag) {
+        while(sol[r] == "V" || sol[r] == "H") {
+            r--;
+            if(r < 0) {
+                return;
+            }
+        }
+    }
+    std::swap(sol[l], sol[r]);
+}
+
+void Floorplan::invert_chain(std::vector<std::string>& sol) {}
+
+void Floorplan::swap_operand_operator(std::vector<std::string>& sol) {}
+
 int Floorplan::get_wirelength() {
     int wirelength = 0;
     for(auto net : nets) {
@@ -243,6 +276,20 @@ int Floorplan::get_cost(std::vector<std::string> sol) {
     std::cout << "area: " << area << ", wirelength: " << wirelength << ", lambda: " << LAMBDA << std::endl;
     std::cout << "cost: " << area + LAMBDA * wirelength << std::endl;
     return area + LAMBDA * wirelength;
+}
+
+std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol) {
+    srand(time(NULL));
+    int r = rand() % 3;
+
+    switch(r) {
+        case 0:
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+    }
 }
 
 std::vector<std::string> Floorplan::init_sol() {
