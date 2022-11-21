@@ -23,12 +23,19 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     std::vector<std::string> sol = init_sol();
     int area = get_area(sol);
     std::cout << "Area of init sol: " << area << std::endl;
-    // std::vector<std::pair<int, int>> l, r, result;
-    // l.push_back({2, 5});
-    // l.push_back({3, 4});
-    // r.push_back({3, 5});
-    // r.push_back({6, 4});
-    // result = stockmeyer(l, r, "V");
+
+    // std::vector<std::vector<int>> l, r, result;
+    // l.push_back({2, 3});
+    // l.push_back({3, 2});
+    // r.push_back({2, 2});
+    // r.push_back({3, 2});
+    // result = stockmeyer(l, r, "H");
+    // for(auto i : result) {
+    //     for(auto j : i) {
+    //         std::cout << j << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
     // Write output
     write_floorplan(output);
@@ -156,42 +163,54 @@ int Floorplan::get_wirelength() {
 }
 
 int Floorplan::get_area(std::vector<std::string> sol) {
-    std::stack<std::vector<std::vector<int>>> stk;
-    std::vector<std::vector<int>> result;
+    std::stack<std::vector<Node>> stk;
+    std::vector<Node> result;
 
     for(int i = 0; i < sol.size(); i++) {
         if(sol[i] == "V" || sol[i] == "H") {
-            std::vector<std::vector<int>> r = stk.top();
+            std::vector<Node> r = stk.top();
             stk.pop();
-            std::vector<std::vector<int>> l = stk.top();
+            std::vector<Node> l = stk.top();
             stk.pop();
-            stk.push(stockmeyer(l, r, sol[i]));
+            std::vector<Node> res = stockmeyer(l, r, sol[i], i);
+            stk.push(res);
         } else {
             Hardblock hardblock = hardblocks[sol[i]];
             int width = hardblock.width, height = hardblock.height;
             if(width != height) {
-                std::vector<std::vector<int>> tmp = {{width, height}, {height, width}};
-                std::sort(tmp.begin(), tmp.end());
-                stk.push(tmp);
+                std::vector<Node> res = {
+                    Node(sol[i], i, width, height, -1, -1, -1, -1, Coord(0, 0)),
+                    Node(sol[i], i, height, width, -1, -1, -1, -1, Coord(0, 0))
+                };
+                std::sort(res.begin(), res.end(), [](Node a, Node b) {
+                    return a.width < b.width;
+                });
+                stk.push(res);
             } else {
-                stk.push({{width, height}});
+                std::vector<Node> res = {
+                    Node(sol[i], i, width, height, -1, -1, -1, -1, Coord(0, 0))
+                };
+                stk.push(res);
             }
         }
     }
 
-    int width, height, area, min_width, min_height, min_area = INT_MAX;
+    int width, height, area, min_width, min_height, min_area = INT_MAX, idx;
     result = stk.top();
-    for(auto pair : result) {
-        width = pair[0];
-        height = pair[1];
+    for(int i = 0; i < result.size(); i++) {
+        width = result[i].width;
+        height = result[i].height;
         area = width * height;
         if(area < min_area) {
             min_width = width;
             min_height = height;
             min_area = area;
+            idx = i;
         }
     }
     std::cout << min_width << " * " << min_height << " = " << min_area << std::endl;
+    result[idx].print();
+
     return min_area;
 }
 
@@ -227,45 +246,60 @@ std::vector<std::string> Floorplan::init_sol() {
     return sol;
 }
 
-std::vector<std::vector<int>> Floorplan::stockmeyer(
-    std::vector<std::vector<int>> l,
-    std::vector<std::vector<int>> r,
-    std::string type
+std::vector<Node> Floorplan::stockmeyer(
+    std::vector<Node> l,
+    std::vector<Node> r,
+    std::string type,
+    int index
 ) {
-    std::vector<std::vector<int>> result; // vector of (width, height)
+    std::vector<Node> result; // vector of (width, height)
 
     if(type == "V") { // width = w_l + w_r, height = max(h_l, h_r)
         int i = 0, j = 0;
         while(i < l.size() && j < r.size()) {
-            if(l[i][1] > r[j][1]) {
-                result.push_back({l[i][0] + r[j][0], l[i][1]});
+            Node n = Node(
+                "V",
+                index,
+                l[i].width + r[j].width, std::max(l[i].height, r[j].height),
+                l[i].index, i,
+                r[j].index, j,
+                Coord(0, 0)
+            );
+            result.push_back(n);
+            if(l[i].height > r[j].height) {
                 i++;
-            } else if(l[i][1] < r[j][1]) {
-                result.push_back({l[i][0] + r[j][0], r[j][1]});
+            } else if(l[i].height < r[j].height) {
                 j++;
             } else {
-                result.push_back({l[i][0] + r[j][0], l[i][1]});
                 i++, j++;
             }
         }
     } else { // width = max(w_l, w_r), height = h_l + h_r
         int i = l.size() - 1, j = r.size() - 1;
         while(i >= 0 && j >= 0) {
-            if(l[i][0] > r[j][0]) {
-                result.push_back({l[i][0], l[i][1] + r[j][1]});
+            Node n = Node(
+                "H",
+                index,
+                std::max(l[i].width, r[j].width), l[i].height + r[j].height,
+                l[i].index, i,
+                r[j].index, j,
+                Coord(0, 0)
+            );
+            result.push_back(n);
+            if(l[i].width > r[j].width) {
                 i--;
-            } else if(l[i][0] < r[j][0]) {
-                result.push_back({r[j][0], l[i][1] + r[j][1]});
+            } else if(l[i].width < r[j].width) {
                 j--;
             } else {
-                result.push_back({l[i][0], l[i][1] + r[j][1]});
                 i--, j--;
             }
         }
     }
 
     // Sort result by width (small to large)
-    std::sort(result.begin(), result.end());
+    std::sort(result.begin(), result.end(), [](Node a, Node b) {
+        return a.width < b.width;
+    });
 
     return result;
 }

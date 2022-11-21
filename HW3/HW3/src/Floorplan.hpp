@@ -15,6 +15,16 @@
 #include "Pin.hpp"
 #endif
 
+#ifndef COORD_HPP
+#define COORD_HPP
+#include "Coord.hpp"
+#endif
+
+#ifndef NODE_HPP
+#define NODE_HPP
+#include "Node.hpp"
+#endif
+
 class Floorplan {
 public:
     // Variables
@@ -42,10 +52,11 @@ public:
     int get_wirelength();
     int get_area(std::vector<std::string> sol);
     std::vector<std::string> init_sol();
-    std::vector<std::vector<int>> stockmeyer(
-        std::vector<std::vector<int>> l,
-        std::vector<std::vector<int>> r,
-        std::string type
+    std::vector<Node> stockmeyer(
+        std::vector<Node> l,
+        std::vector<Node> r,
+        std::string type,
+        int index
     );
 
     // Utils
