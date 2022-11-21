@@ -21,6 +21,14 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Initial solution
     std::vector<std::string> sol = init_sol();
+    // while(true) {
+    //     for(auto s : sol) {
+    //         std::cout << s << " ";
+    //     }
+    //     std::cout << std::endl;
+    //     std::cin.ignore();
+    //     invert_chain(sol);
+    // }
 
     // Get cost
     double cost = get_cost(sol);
@@ -193,10 +201,29 @@ void Floorplan::swap_operand(std::vector<std::string>& sol) {
             }
         }
     }
+
     std::swap(sol[l], sol[r]);
 }
 
-void Floorplan::invert_chain(std::vector<std::string>& sol) {}
+void Floorplan::invert_chain(std::vector<std::string>& sol) {
+    srand(time(NULL));
+    int index = rand() % sol.size();
+    int l = index - 1, r = index + 1;
+
+    while(sol[index] != "V" && sol[index] != "H") {
+        index = rand() % sol.size();
+        l = index - 1, r = index + 1;
+    }
+    while(l >= 0 && (sol[l] == "V" || sol[l] == "H")) {
+        sol[l] = sol[l] == "V" ? "H" : "V";
+        l--;
+    }
+    while(r < sol.size() && (sol[r] == "V" || sol[r] == "H")) {
+        sol[r] = sol[r] == "V" ? "H" : "V";
+        r++;
+    }
+    sol[index] = sol[index] == "V" ? "H" : "V";
+}
 
 void Floorplan::swap_operand_operator(std::vector<std::string>& sol) {}
 
