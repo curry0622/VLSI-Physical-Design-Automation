@@ -28,6 +28,6 @@ void Node::print() {
     std::cout << "Node left_at: " << left_at << std::endl;
     std::cout << "Node right_from: " << right_from << std::endl;
     std::cout << "Node right_at: " << right_at << std::endl;
-    std::cout << "Node coord: " << coord.x << " " << coord.y << std::endl;
+    std::cout << "Node coord: ", coord.print(), std::cout << std::endl;
     std::cout << "---" << std::endl;
 }

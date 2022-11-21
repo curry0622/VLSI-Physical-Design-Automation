@@ -163,9 +163,12 @@ int Floorplan::get_wirelength() {
 }
 
 int Floorplan::get_area(std::vector<std::string> sol) {
+    // Variables
     std::stack<std::vector<Node>> stk;
+    std::vector<std::vector<Node>> record;
     std::vector<Node> result;
 
+    // Stockmeyer
     for(int i = 0; i < sol.size(); i++) {
         if(sol[i] == "V" || sol[i] == "H") {
             std::vector<Node> r = stk.top();
@@ -174,6 +177,7 @@ int Floorplan::get_area(std::vector<std::string> sol) {
             stk.pop();
             std::vector<Node> res = stockmeyer(l, r, sol[i], i);
             stk.push(res);
+            record.push_back(res);
         } else {
             Hardblock hardblock = hardblocks[sol[i]];
             int width = hardblock.width, height = hardblock.height;
@@ -186,16 +190,19 @@ int Floorplan::get_area(std::vector<std::string> sol) {
                     return a.width < b.width;
                 });
                 stk.push(res);
+                record.push_back(res);
             } else {
                 std::vector<Node> res = {
                     Node(sol[i], i, width, height, -1, -1, -1, -1, Coord(0, 0))
                 };
                 stk.push(res);
+                record.push_back(res);
             }
         }
     }
 
-    int width, height, area, min_width, min_height, min_area = INT_MAX, idx;
+    // Get min area
+    int width, height, area, min_width, min_height, min_area = INT_MAX, min_index;
     result = stk.top();
     for(int i = 0; i < result.size(); i++) {
         width = result[i].width;
@@ -205,11 +212,17 @@ int Floorplan::get_area(std::vector<std::string> sol) {
             min_width = width;
             min_height = height;
             min_area = area;
-            idx = i;
+            min_index = i;
         }
     }
     std::cout << min_width << " * " << min_height << " = " << min_area << std::endl;
-    result[idx].print();
+
+    // Update coordinates
+    update_coord(record, record.size() - 1, min_index);
+
+    for(auto pair : hardblocks) {
+        pair.second.print();
+    }
 
     return min_area;
 }
@@ -302,6 +315,31 @@ std::vector<Node> Floorplan::stockmeyer(
     });
 
     return result;
+}
+
+void Floorplan::update_coord(std::vector<std::vector<Node>>& record, int index, int min_at) {
+    record[index] = {record[index][min_at]};
+
+    Node* n = &record[index][0];
+    Node* left = &record[n->left_from][n->left_at];
+    Node* right = &record[n->right_from][n->right_at];
+
+    if(n->type == "V") {
+        left->coord = n->coord;
+        right->coord = Coord(n->coord.x + left->width, n->coord.y);
+        update_coord(record, n->left_from, n->left_at);
+        update_coord(record, n->right_from, n->right_at);
+    } else if(n->type == "H") {
+        left->coord = n->coord;
+        right->coord = Coord(n->coord.x, n->coord.y + left->height);
+        update_coord(record, n->left_from, n->left_at);
+        update_coord(record, n->right_from, n->right_at);
+    } else {
+        hardblocks[n->type].coord = n->coord;
+        if(n->width != hardblocks[n->type].width) {
+            hardblocks[n->type].rotated = true;
+        }
+    }
 }
 
 void Floorplan::print() {

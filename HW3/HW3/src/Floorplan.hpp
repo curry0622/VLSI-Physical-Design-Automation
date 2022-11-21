@@ -58,6 +58,7 @@ public:
         std::string type,
         int index
     );
+    void update_coord(std::vector<std::vector<Node>>& record, int index, int min_at);
 
     // Utils
     void print();
