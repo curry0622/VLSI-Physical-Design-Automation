@@ -27,7 +27,7 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
         }
         std::cout << std::endl;
         std::cin.ignore();
-        swap_operand_operator(sol);
+        gen_neighbor(sol);
     }
 
     // Get cost
@@ -346,16 +346,19 @@ int Floorplan::get_cost(std::vector<std::string> sol) {
     return area + LAMBDA * wirelength;
 }
 
-std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol) {
+void Floorplan::gen_neighbor(std::vector<std::string>& sol) {
     srand(time(NULL));
     int r = rand() % 3;
 
     switch(r) {
         case 0:
+            swap_operand(sol);
             break;
         case 1:
+            invert_chain(sol);
             break;
         case 2:
+            swap_operand_operator(sol);
             break;
     }
 }
