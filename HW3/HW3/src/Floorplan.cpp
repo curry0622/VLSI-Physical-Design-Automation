@@ -7,6 +7,9 @@ Floorplan::Floorplan() {
 }
 
 Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio) {
+    // Random seed
+    srand(time(NULL));
+
     // Read inputs
     read_hardblocks(hardblocks_file);
     read_pins(pins_file);
@@ -21,11 +24,7 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Simulated annealing
     std::vector<std::string> best_sol = simulated_annealing();
-    for(auto s : best_sol) {
-        std::cout << s << " ";
-    }
-    std::cout << std::endl;
-    int min_cost = get_cost(best_sol);
+    get_area(best_sol, true);
 
     // Write output
     write_floorplan(output);
@@ -170,7 +169,6 @@ void Floorplan::update_coord(std::vector<std::vector<Node>>& record, int index, 
 }
 
 void Floorplan::swap_operand(std::vector<std::string>& sol) {
-    srand(time(NULL));
     int l = rand() % sol.size();
     int r = l + 1;
     bool flag = false;
@@ -200,7 +198,6 @@ void Floorplan::swap_operand(std::vector<std::string>& sol) {
 }
 
 void Floorplan::invert_chain(std::vector<std::string>& sol) {
-    srand(time(NULL));
     int index = rand() % sol.size();
     int l = index - 1, r = index + 1;
 
@@ -220,7 +217,6 @@ void Floorplan::invert_chain(std::vector<std::string>& sol) {
 }
 
 void Floorplan::swap_operand_operator(std::vector<std::string>& sol) {
-    srand(time(NULL));
     int index = rand() % (sol.size() - 1);
     bool flag = true;
 
@@ -270,7 +266,7 @@ int Floorplan::get_wirelength() {
     return wirelength;
 }
 
-int Floorplan::get_area(std::vector<std::string> sol) {
+int Floorplan::get_area(std::vector<std::string> sol, bool PRINT=false) {
     // Variables
     std::stack<std::vector<Node>> stk;
     std::vector<std::vector<Node>> record;
@@ -323,7 +319,8 @@ int Floorplan::get_area(std::vector<std::string> sol) {
             min_index = i;
         }
     }
-    std::cout << min_width << " * " << min_height << " = " << min_area << std::endl;
+    if(PRINT)
+        std::cout << min_width << " * " << min_height << " = " << min_area << std::endl;
 
     // Update coordinates
     update_coord(record, record.size() - 1, min_index);
@@ -332,11 +329,11 @@ int Floorplan::get_area(std::vector<std::string> sol) {
 }
 
 int Floorplan::get_cost(std::vector<std::string> sol) {
-    const double LAMBDA = 0.5;
+    const double LAMBDA = 0;
     int area = get_area(sol);
     int wirelength = get_wirelength();
-    std::cout << "area: " << area << ", wirelength: " << wirelength << ", lambda: " << LAMBDA << std::endl;
-    std::cout << "cost: " << area + LAMBDA * wirelength << std::endl;
+    // std::cout << "area: " << area << ", wirelength: " << wirelength << ", lambda: " << LAMBDA << std::endl;
+    // std::cout << "cost: " << area + LAMBDA * wirelength << std::endl;
     return area + LAMBDA * wirelength;
 }
 
@@ -378,7 +375,6 @@ std::vector<std::string> Floorplan::init_sol() {
 std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol) {
     std::vector<std::string> neighbor = sol;
 
-    srand(time(NULL));
     int r = rand() % 3;
 
     switch(r) {
@@ -400,9 +396,10 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     // Initial solution
     std::vector<std::string> sol = init_sol();
     std::vector<std::string> best_sol = sol;
+    get_area(sol, true);
 
     // Parameters
-    double T = 1000.0, T_MIN = 1.0, T_DECAY = 0.9;
+    double T = 1000.0, T_MIN = 1.0, T_DECAY = 0.95;
     double REJECT_RATIO = 0.95;
     int K = 5;
     int N = num_hardblocks * K;
@@ -415,6 +412,7 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     while((double)reject_cnt / gen_cnt < REJECT_RATIO && T > T_MIN) {
         // Initialize
         gen_cnt = 0, uphill_cnt = 0, reject_cnt = 0;
+        int rand_acc_cnt = 0;
 
         // Generate neighbor
         while(uphill_cnt <= N && gen_cnt <= 2 * N) {
@@ -422,11 +420,9 @@ std::vector<std::string> Floorplan::simulated_annealing() {
             int neighbor_cost = get_cost(neighbor);
             gen_cnt++;
 
-            // Random
-            double p = exp((double)(cost - neighbor_cost) / T);
-            double r = (double)rand() / RAND_MAX;
-
-            if(neighbor_cost <= cost || r < p) {
+            bool rand_accept = (double)rand() / RAND_MAX < exp(-1 * (neighbor_cost - cost) / T);
+            if(rand_accept) rand_acc_cnt++;
+            if(neighbor_cost <= cost || rand_accept) {
                 if(neighbor_cost > cost) {
                     uphill_cnt++;
                 }
@@ -435,15 +431,34 @@ std::vector<std::string> Floorplan::simulated_annealing() {
                 if(cost < min_cost) {
                     min_cost = cost;
                     best_sol = sol;
+                    std::cout << "update best solution: " << std::endl;
+                    get_area(best_sol, true);
                 }
             } else {
                 reject_cnt++;
             }
         }
 
+        std::cout << "gen_cnt: " << gen_cnt << ", uphill_cnt: " << uphill_cnt << ", reject_cnt: " << reject_cnt << ", rand_acc: " << rand_acc_cnt << std::endl;
+        if(uphill_cnt > N) {
+            std::cout << "BREAK_IN: uphill_cnt > N" << std::endl << std::endl;
+        }
+        if(gen_cnt > 2 * N) {
+            std::cout << "BREAK_IN: gen_cnt > 2 * N" << std::endl << std::endl;
+        }
+
         // Reduce temperature
         T *= T_DECAY;
     }
+    if((double)reject_cnt / gen_cnt >= REJECT_RATIO) {
+        std::cout << "BREAK_OUT: reject_cnt / gen_cnt >= REJECT_RATIO" << std::endl;
+        std::cout << "reject_cnt: " << reject_cnt << ", gen_cnt: " << gen_cnt << std::endl << std::endl;
+    }
+    if(T <= T_MIN) {
+        std::cout << "BREAK_OUT: T <= T_MIN" << std::endl;
+        std::cout << "T: " << T << ", T_MIN: " << T_MIN << std::endl << std::endl;
+    }
+
 
     return best_sol;
 }

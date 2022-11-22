@@ -54,7 +54,7 @@ public:
     void invert_chain(std::vector<std::string>& sol);
     void swap_operand_operator(std::vector<std::string>& sol);
     int get_wirelength();
-    int get_area(std::vector<std::string> sol);
+    int get_area(std::vector<std::string> sol, bool PRINT);
     int get_cost(std::vector<std::string> sol);
     std::vector<std::string> init_sol();
     std::vector<std::string> gen_neighbor(std::vector<std::string> sol);
