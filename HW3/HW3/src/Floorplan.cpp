@@ -19,19 +19,13 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     // Calculate max coord
     calc_max_coord();
 
-    // Initial solution
-    std::vector<std::string> sol = init_sol();
-    while(true) {
-        for(auto s : sol) {
-            std::cout << s << " ";
-        }
-        std::cout << std::endl;
-        std::cin.ignore();
-        gen_neighbor(sol);
+    // Simulated annealing
+    std::vector<std::string> best_sol = simulated_annealing();
+    for(auto s : best_sol) {
+        std::cout << s << " ";
     }
-
-    // Get cost
-    double cost = get_cost(sol);
+    std::cout << std::endl;
+    int min_cost = get_cost(best_sol);
 
     // Write output
     write_floorplan(output);
@@ -346,23 +340,6 @@ int Floorplan::get_cost(std::vector<std::string> sol) {
     return area + LAMBDA * wirelength;
 }
 
-void Floorplan::gen_neighbor(std::vector<std::string>& sol) {
-    srand(time(NULL));
-    int r = rand() % 3;
-
-    switch(r) {
-        case 0:
-            swap_operand(sol);
-            break;
-        case 1:
-            invert_chain(sol);
-            break;
-        case 2:
-            swap_operand_operator(sol);
-            break;
-    }
-}
-
 std::vector<std::string> Floorplan::init_sol() {
     std::vector<std::string> sol;
     bool v_1st = true, h_1st = true;
@@ -396,6 +373,79 @@ std::vector<std::string> Floorplan::init_sol() {
     // sol = {"sb1", "sb2", "H", "sb3", "sb4", "V", "sb5", "sb6", "V", "H", "V"};
 
     return sol;
+}
+
+std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol) {
+    std::vector<std::string> neighbor = sol;
+
+    srand(time(NULL));
+    int r = rand() % 3;
+
+    switch(r) {
+        case 0:
+            swap_operand(neighbor);
+            break;
+        case 1:
+            invert_chain(neighbor);
+            break;
+        case 2:
+            swap_operand_operator(neighbor);
+            break;
+    }
+
+    return neighbor;
+}
+
+std::vector<std::string> Floorplan::simulated_annealing() {
+    // Initial solution
+    std::vector<std::string> sol = init_sol();
+    std::vector<std::string> best_sol = sol;
+
+    // Parameters
+    double T = 1000.0, T_MIN = 1.0, T_DECAY = 0.9;
+    double REJECT_RATIO = 0.95;
+    int K = 5;
+    int N = num_hardblocks * K;
+
+    // Variables
+    int cost = get_cost(sol), min_cost = cost;
+    int gen_cnt = 1, uphill_cnt = 0, reject_cnt = 0;
+
+    // Simulated annealing
+    while((double)reject_cnt / gen_cnt < REJECT_RATIO && T > T_MIN) {
+        // Initialize
+        gen_cnt = 0, uphill_cnt = 0, reject_cnt = 0;
+
+        // Generate neighbor
+        while(uphill_cnt <= N && gen_cnt <= 2 * N) {
+            std::vector<std::string> neighbor = gen_neighbor(sol);
+            int neighbor_cost = get_cost(neighbor);
+            gen_cnt++;
+
+            // Random
+            double p = exp((double)(cost - neighbor_cost) / T);
+            double r = (double)rand() / RAND_MAX;
+
+            if(neighbor_cost <= cost || r < p) {
+                if(neighbor_cost > cost) {
+                    uphill_cnt++;
+                }
+                sol = neighbor;
+                cost = neighbor_cost;
+                if(cost < min_cost) {
+                    min_cost = cost;
+                    best_sol = sol;
+                }
+            } else {
+                reject_cnt++;
+            }
+        }
+
+        // Reduce temperature
+        T *= T_DECAY;
+    }
+
+    return best_sol;
 }
 
 std::vector<Node> Floorplan::stockmeyer(

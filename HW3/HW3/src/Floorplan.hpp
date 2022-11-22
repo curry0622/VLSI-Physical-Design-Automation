@@ -53,11 +53,12 @@ public:
     void swap_operand(std::vector<std::string>& sol);
     void invert_chain(std::vector<std::string>& sol);
     void swap_operand_operator(std::vector<std::string>& sol);
-    void gen_neighbor(std::vector<std::string>& sol);
     int get_wirelength();
     int get_area(std::vector<std::string> sol);
     int get_cost(std::vector<std::string> sol);
     std::vector<std::string> init_sol();
+    std::vector<std::string> gen_neighbor(std::vector<std::string> sol);
+    std::vector<std::string> simulated_annealing();
     std::vector<Node> stockmeyer(
         std::vector<Node> l,
         std::vector<Node> r,
