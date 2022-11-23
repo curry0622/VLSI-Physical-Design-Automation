@@ -23,9 +23,11 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     calc_max_coord();
 
     // Simulated annealing
-    std::vector<std::string> best_sol = simulated_annealing();
-    std::vector<int> res = get_area(best_sol);
-    std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
+    // std::vector<std::string> best_sol = simulated_annealing();
+    // std::vector<int> res = get_area(best_sol);
+    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
+    std::vector<std::string> sol = init_sol();
+    std::vector<int> res = get_area(sol);
 
     // Write output
     write_floorplan(output);
@@ -130,7 +132,16 @@ void Floorplan::read_nets(std::string filename) {
     }
 }
 
-void Floorplan::write_floorplan(std::string filename) {}
+void Floorplan::write_floorplan(std::string filename) {
+    std::ofstream fout(filename);
+    fout << "Wirelength " << get_wirelength() << std::endl;
+    fout << "Blocks" << std::endl;
+    for(auto pair : hardblocks) {
+        Hardblock hardblock = pair.second;
+        fout << hardblock.name << " " << hardblock.coord.x << " " << hardblock.coord.y << " " << hardblock.rotated << std::endl;
+    }
+    fout.close();
+}
 
 void Floorplan::calc_max_coord() {
     int max = sqrt(total_area * (1 + dead_space_ratio));
@@ -328,15 +339,19 @@ std::vector<int> Floorplan::get_area(std::vector<std::string> sol) {
 }
 
 int Floorplan::get_cost(std::vector<std::string> sol) {
-    const double LAMBDA = 0.5;
+    const double LAMBDA = 0;
     std::vector<int> res = get_area(sol); // {w, h, area}
     int wirelength = get_wirelength();
-    int width = res[0], height = res[1];
+    int width = res[0], height = res[1], penalty = 0;
     if(width < max_coord.x)
         width = max_coord.x;
+    else
+        penalty += pow(width - max_coord.x, 2);
     if(height < max_coord.y)
         height = max_coord.y;
-    int cost = width * height + LAMBDA * wirelength;
+    else
+        penalty += pow(height - max_coord.y, 2);
+    int cost = width * height + LAMBDA * wirelength + 10 * penalty;
     return cost;
 }
 
@@ -348,6 +363,7 @@ std::vector<std::string> Floorplan::init_sol() {
 
     for(auto hardblock : hardblocks) {
         int width = (hardblock.second.width + hardblock.second.height) / 2;
+        // int width = hardblock.second.width;
         if(curr_width + width <= max_coord.x * TOLERANCE) {
             curr_width += width;
             sol.push_back(hardblock.first);
@@ -402,8 +418,8 @@ std::vector<std::string> Floorplan::simulated_annealing() {
 
     // Parameters
     double T = 1000.0, T_MIN = 1.0, T_DECAY = 0.95;
-    double REJECT_RATIO = 0.95;
-    int K = 5;
+    double REJECT_RATIO = 0.99;
+    int K = 7;
     int N = num_hardblocks * K;
 
     // Variables
@@ -444,6 +460,11 @@ std::vector<std::string> Floorplan::simulated_annealing() {
 
         // Reduce temperature
         T *= T_DECAY;
+    }
+    if(T <= T_MIN) {
+        std::cout << "T <= T_MIN" << std::endl;
+    } else {
+        std::cout << "REJECT_RATIO <= " << REJECT_RATIO << std::endl;
     }
 
     return best_sol;
