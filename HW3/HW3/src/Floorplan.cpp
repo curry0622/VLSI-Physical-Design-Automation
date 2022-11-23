@@ -20,14 +20,14 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     calc_max_coord();
 
     // Simulated annealing
-    std::vector<std::string> best_sol = simulated_annealing();
-    std::vector<int> res = get_area(best_sol);
-    std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
+    // std::vector<std::string> best_sol = simulated_annealing();
+    // std::vector<int> res = get_area(best_sol);
+    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
 
     // Temp
-    // std::vector<std::string> sol = init_sol();
-    // std::vector<int> res = get_area(sol);
-    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
+    std::vector<std::string> sol = init_sol();
+    std::vector<int> res = get_area(sol);
+    std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
 
     // Write output
     write_floorplan(output);
@@ -365,21 +365,29 @@ int Floorplan::get_cost(std::vector<std::string> sol) {
     if(res[1] > bound)
         area_cost += pow(bound - res[1], 2);
 
-    return 1000 * area_cost;
+    return 1000 * area_cost + 0.1 * wirelength_cost;
 }
 
 std::vector<std::string> Floorplan::init_sol() {
     std::vector<std::string> sol;
     bool v_1st = true, h_1st = true;
     int curr_width = 0;
-    double TOLERANCE = 1.3;
+    double TOLERANCE = 1;
 
+    // Sort hardblocks by height
+    std::vector<Hardblock> sorted_hardblocks;
     for(auto hardblock : hardblocks) {
-        int width = (hardblock.second.width + hardblock.second.height) / 2;
-        // int width = hardblock.second.width;
+        sorted_hardblocks.push_back(hardblock.second);
+    }
+    std::sort(sorted_hardblocks.begin(), sorted_hardblocks.end(), [](Hardblock a, Hardblock b) {
+        return a.height > b.height;
+    });
+
+    for(auto hardblock : sorted_hardblocks) {
+        int width = hardblock.width;
         if(curr_width + width <= max_coord.x * TOLERANCE) {
             curr_width += width;
-            sol.push_back(hardblock.first);
+            sol.push_back(hardblock.name);
             if(v_1st) {
                 v_1st = false;
             } else {
@@ -389,10 +397,10 @@ std::vector<std::string> Floorplan::init_sol() {
             curr_width = width;
             if(h_1st) {
                 h_1st = false;
-                sol.push_back(hardblock.first);
+                sol.push_back(hardblock.name);
             } else {
                 sol.push_back("H");
-                sol.push_back(hardblock.first);
+                sol.push_back(hardblock.name);
             }
         }
     }
@@ -460,7 +468,7 @@ std::vector<std::string> Floorplan::simulated_annealing() {
                     best_sol = sol;
                     std::cout << "update best solution: " << std::endl;
                     std::vector<int> res = get_area(best_sol);
-                    std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
+                    std::cout << res[0] << " * " << res[1] << " = " << res[2] << ", cost = " << cost << std::endl;
                 }
             } else {
                 reject_cnt++;
