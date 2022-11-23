@@ -20,14 +20,14 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     calc_max_coord();
 
     // Simulated annealing
-    // std::vector<std::string> best_sol = simulated_annealing();
-    // std::vector<int> res = get_area(best_sol);
-    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
+    std::vector<std::string> best_sol = simulated_annealing();
+    std::vector<int> res = get_area(best_sol);
+    std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
 
     // Temp
-    std::vector<std::string> sol = init_sol();
-    std::vector<int> res = get_area(sol);
-    std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
+    // std::vector<std::string> sol = init_sol();
+    // std::vector<int> res = get_area(sol);
+    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
 
     // Write output
     write_floorplan(output);
@@ -341,31 +341,24 @@ std::vector<int> Floorplan::get_area(std::vector<std::string> sol) {
 }
 
 int Floorplan::get_cost(std::vector<std::string> sol) {
-    // const double LAMBDA = 0;
-    // std::vector<int> res = get_area(sol); // {w, h, area}
-    // int wirelength = get_wirelength();
-    // int width = res[0], height = res[1], penalty = 0;
-    // if(width < max_coord.x)
-    //     width = max_coord.x;
-    // else
-    //     penalty += pow(width - max_coord.x, 2);
-    // if(height < max_coord.y)
-    //     height = max_coord.y;
-    // else
-    //     penalty += pow(height - max_coord.y, 2);
-    // int cost = width * height + LAMBDA * wirelength + 10 * penalty;
-    // return cost;
+    const double LAMBDA = 1000;
+    std::vector<int> res = get_area(sol); // {w, h, area}
+    int wirelength = get_wirelength();
+    int width = res[0], height = res[1], penalty = 0;
 
-    int area_cost = 0, wirelength_cost = get_wirelength();
-    std::vector<int> res = get_area(sol);
-    int bound = sqrt(total_area);
+    if(width < max_coord.x)
+        width = max_coord.x;
+    else
+        penalty += pow(width - max_coord.x, 2);
 
-    if(res[0] > bound)
-        area_cost += pow(bound - res[0], 2);
-    if(res[1] > bound)
-        area_cost += pow(bound - res[1], 2);
+    if(height < max_coord.y)
+        height = max_coord.y;
+    else
+        penalty += pow(height - max_coord.y, 2);
 
-    return 1000 * area_cost + 0.1 * wirelength_cost;
+    int cost = LAMBDA * (width * height + penalty) + wirelength;
+
+    return cost;
 }
 
 std::vector<std::string> Floorplan::init_sol() {
@@ -409,10 +402,8 @@ std::vector<std::string> Floorplan::init_sol() {
     return sol;
 }
 
-std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol) {
+std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol, int r) {
     std::vector<std::string> neighbor = sol;
-
-    int r = rand() % 3;
 
     switch(r) {
         case 0:
@@ -443,6 +434,7 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     // Variables
     int cost = get_cost(sol), min_cost = cost;
     int gen_cnt = 1, uphill_cnt = 0, reject_cnt = 0;
+    int move_num[3] = {0, 0, 0};
 
     // Simulated annealing
     while((double)reject_cnt / gen_cnt <= REJECT_RATIO && T >= T_MIN) {
@@ -451,7 +443,8 @@ std::vector<std::string> Floorplan::simulated_annealing() {
 
         // Generate neighbor
         while(uphill_cnt <= N && gen_cnt <= 2 * N) {
-            std::vector<std::string> neighbor = gen_neighbor(sol);
+            int r = 0;
+            std::vector<std::string> neighbor = gen_neighbor(sol, r);
             int neighbor_cost = get_cost(neighbor);
             gen_cnt++;
 
@@ -466,9 +459,10 @@ std::vector<std::string> Floorplan::simulated_annealing() {
                 if(cost < min_cost) {
                     min_cost = cost;
                     best_sol = sol;
+                    move_num[r]++;
                     std::cout << "update best solution: " << std::endl;
                     std::vector<int> res = get_area(best_sol);
-                    std::cout << res[0] << " * " << res[1] << " = " << res[2] << ", cost = " << cost << std::endl;
+                    std::cout << res[0] << " * " << res[1] << " = " << res[2] << ", wirelength = " << get_wirelength() << ", M" << r + 1 << std::endl;
                 }
             } else {
                 reject_cnt++;
@@ -482,6 +476,9 @@ std::vector<std::string> Floorplan::simulated_annealing() {
         std::cout << "T <= T_MIN" << std::endl;
     } else {
         std::cout << "REJECT_RATIO <= " << REJECT_RATIO << std::endl;
+    }
+    for(int i = 0; i < 3; i++) {
+        std::cout << "M" << i + 1 << ": " << move_num[i] << std::endl;
     }
 
     return best_sol;
