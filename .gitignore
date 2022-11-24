@@ -4,7 +4,9 @@
 out
 test.cells
 test.nets
-HW2/HW2/src/hw2
 HW2/HW2_grading/output
 HW2/HW2_grading/student
 HW2/HW2_grading/HW2_grade.csv
+HW3/HW3_grading/output
+HW3/HW3_grading/student
+HW3/HW3_grading/HW3_grade.csv
