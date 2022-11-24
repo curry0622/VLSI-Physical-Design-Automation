@@ -17,6 +17,8 @@ Hardblock::Hardblock(std::string name, Coord coord, int width, int height) {
 }
 
 Coord Hardblock::get_center() {
+    if(rotated)
+        return Coord(coord.x + height / 2, coord.y + width / 2);
     return Coord(coord.x + width / 2, coord.y + height / 2);
 }
 
