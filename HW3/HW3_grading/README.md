@@ -62,24 +62,24 @@ __Do not put your original directory here__ because it will remove all directori
 
     ```shell
     grading on 111062500:
-    testcase |      ratio | wirelength |    runtime | status
-        n100 |       0.15 |     205686 |       3.66 | success
-        n200 |       0.15 |     372652 |      18.30 | success
-        n300 |       0.15 |     500496 |      57.45 | success
-        n100 |        0.1 |     218287 |       5.11 | success
-        n200 |        0.1 |     378920 |      25.53 | success
-        n300 |        0.1 |     519189 |     101.77 | success
+        testcase |      ratio | wirelength |    runtime | status
+            n100 |       0.15 |     205686 |       3.66 | success
+            n200 |       0.15 |     372652 |      18.30 | success
+            n300 |       0.15 |     500496 |      57.45 | success
+            n100 |        0.1 |     218287 |       5.11 | success
+            n200 |        0.1 |     378920 |      25.53 | success
+            n300 |        0.1 |     519189 |     101.77 | success
     ```
 
   * If the status is not __success__, it means your program failed in this case. e.g.:
 
     ```shell
     grading on 111062500:
-    testcase |      ratio | wirelength |    runtime | status
-        n100 |       0.15 |       fail |        TLE | n100 failed.
-        n200 |       0.15 |       fail |        TLE | n200 failed.
-        n300 |       0.15 |       fail |        TLE | n300 failed.
-        n100 |        0.1 |       fail |        TLE | n100 failed.
-        n200 |        0.1 |       fail |        TLE | n200 failed.
-        n300 |        0.1 |       fail |        TLE | n300 failed.
+        testcase |      ratio | wirelength |    runtime | status
+            n100 |       0.15 |       fail |        TLE | n100 failed.
+            n200 |       0.15 |       fail |        TLE | n200 failed.
+            n300 |       0.15 |       fail |        TLE | n300 failed.
+            n100 |        0.1 |       fail |        TLE | n100 failed.
+            n200 |        0.1 |       fail |        TLE | n200 failed.
+            n300 |        0.1 |       fail |        TLE | n300 failed.
     ```
