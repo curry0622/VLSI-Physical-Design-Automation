@@ -446,9 +446,9 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     std::vector<std::string> best_sol = sol;
 
     // Parameters
-    double T = 100000.0, T_MIN = 1.0, T_DECAY = 0.95;
+    double T = 1000.0, T_MIN = 1.0, T_DECAY = 0.95;
     double REJECT_RATIO = 0.95;
-    int K = 10;
+    int K = 8;
     int N = num_hardblocks * K;
 
     // Variables
