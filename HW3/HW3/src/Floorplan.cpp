@@ -185,7 +185,7 @@ void Floorplan::update_coord(std::vector<std::vector<Node>>& record, int index, 
     }
 }
 
-void Floorplan::swap_operand(std::vector<std::string>& sol) {
+void Floorplan::swap_adjacent_operand(std::vector<std::string>& sol) {
     int l = rand() % sol.size();
     int r = l + 1;
     bool flag = false;
@@ -212,6 +212,21 @@ void Floorplan::swap_operand(std::vector<std::string>& sol) {
     }
 
     std::swap(sol[l], sol[r]);
+    hardblocks[sol[l]].set_index_in_sol(l);
+    hardblocks[sol[r]].set_index_in_sol(r);
+}
+
+void Floorplan::swap_operand_in_net(std::vector<std::string>& sol) {
+    int net_index = rand() % nets.size();
+    while(nets[net_index].hardblocks.size() < 2) {
+        net_index = rand() % nets.size();
+    }
+    int i = nets[net_index].hardblocks[0]->index_in_sol - 2;
+    if(i >= 0 && sol[i] != "V" && sol[i] != "H") {
+        std::swap(sol[i], sol[i + 2]);
+        hardblocks[sol[i]].set_index_in_sol(i);
+        hardblocks[sol[i + 2]].set_index_in_sol(i + 2);
+    }
 }
 
 void Floorplan::invert_chain(std::vector<std::string>& sol) {
@@ -286,6 +301,8 @@ void Floorplan::swap_random_operand(std::vector<std::string>& sol) {
     }
 
     std::swap(sol[l], sol[r]);
+    hardblocks[sol[l]].set_index_in_sol(l);
+    hardblocks[sol[r]].set_index_in_sol(r);
 }
 
 int Floorplan::get_wirelength() {
@@ -392,28 +409,35 @@ std::vector<std::string> Floorplan::init_sol() {
         return a.height > b.height;
     });
 
+    int i = 0;
     for(auto hardblock : sorted_hardblocks) {
         int width = hardblock.width;
         if(curr_width + width <= max_coord.x * TOLERANCE) {
             curr_width += width;
             sol.push_back(hardblock.name);
+            hardblocks[hardblock.name].set_index_in_sol(i++);
             if(v_1st) {
                 v_1st = false;
             } else {
                 sol.push_back("V");
+                i++;
             }
         } else {
             curr_width = width;
             if(h_1st) {
                 h_1st = false;
                 sol.push_back(hardblock.name);
+                hardblocks[hardblock.name].set_index_in_sol(i++);
             } else {
                 sol.push_back("H");
+                i++;
                 sol.push_back(hardblock.name);
+                hardblocks[hardblock.name].set_index_in_sol(i++);
             }
         }
     }
     sol.push_back("H");
+    i++;
 
     return sol;
 }
@@ -423,7 +447,7 @@ std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol, i
 
     // switch(r) {
     //     case 0:
-    //         swap_operand(neighbor);
+    //         swap_adjacent_operand(neighbor);
     //         break;
     //     case 1:
     //         swap_random_operand(neighbor);
@@ -434,10 +458,12 @@ std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol, i
     //         break;
     // }
 
-    if(r < 70) {
-        swap_operand(neighbor);
-    } else  {
+    if(r < 50) {
+        swap_adjacent_operand(neighbor);
+    } else if(r < 95)  {
         swap_random_operand(neighbor);
+    } else {
+        swap_operand_in_net(neighbor);
     }
 
     return neighbor;
