@@ -28,6 +28,7 @@
 class Floorplan {
 public:
     // Variables
+    clock_t start_time;
     int num_hardblocks;
     int num_terminals;
     int num_nets;

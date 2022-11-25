@@ -7,6 +7,9 @@ Floorplan::Floorplan() {
 }
 
 Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio) {
+    // Start timer
+    start_time = clock();
+
     // Read inputs
     read_hardblocks(hardblocks_file);
     read_pins(pins_file);
@@ -566,6 +569,7 @@ void Floorplan::print() {
     std::cout << "Floorplan wirelength: " << get_wirelength() << std::endl;
     std::cout << "Floorplan total_area: " << total_area << std::endl;
     std::cout << "Floorplan max_coord: (" << max_coord.x  << ", " << max_coord.y << ")" << std::endl;
+    std::cout << "Floorplan time: " << (double)(clock() - start_time) / CLOCKS_PER_SEC << " sec" << std::endl;
     std::cout << "---" << std::endl;
 }
 
