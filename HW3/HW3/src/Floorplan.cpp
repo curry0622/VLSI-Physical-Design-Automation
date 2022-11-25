@@ -45,29 +45,28 @@ void Floorplan::read_hardblocks(std::string filename) {
     // Variables
     std::ifstream file(filename);
     std::string line, buffer;
-    std::stringstream ss;
 
     // Read num of hardblocks
     std::getline(file, line);
-    ss = std::stringstream(line);
-    ss >> buffer >> buffer >> num_hardblocks;
+    std::stringstream ss1(line);
+    ss1 >> buffer >> buffer >> num_hardblocks;
 
     // Read num of terminals
     std::getline(file, line);
-    ss = std::stringstream(line);
-    ss >> buffer >> buffer >> num_terminals;
+    std::stringstream ss2(line);
+    ss2 >> buffer >> buffer >> num_terminals;
 
     // Read the third line
     std::getline(file, line);
-    ss = std::stringstream(line);
-    ss >> buffer;
+    std::stringstream ss3(line);
+    ss3 >> buffer;
 
     // Read the hardblocks
     while(std::getline(file, line)) {
         if(line.length() > 0) {
             std::string name;
             Coord coord[4];
-            ss = std::stringstream(line);
+            std::stringstream ss(line);
             ss >> name >> buffer >> buffer;
             for(int i = 0; i < 4; i++) {
                 int x, y;
@@ -103,28 +102,27 @@ void Floorplan::read_nets(std::string filename) {
     // Variables
     std::ifstream fin(filename);
     std::string line, buffer;
-    std::stringstream ss;
+    // std::stringstream ss;
 
     // Read num of nets
     std::getline(fin, line);
-    ss = std::stringstream(line);
-    ss >> buffer >> buffer >> num_nets;
+    std::stringstream ss1(line);
+    ss1 >> buffer >> buffer >> num_nets;
 
     // Read the second line
     std::getline(fin, line);
-    ss = std::stringstream(line);
 
     // Read the nets
     while(std::getline(fin, line)) {
         Net net;
         int degree;
-        ss = std::stringstream(line);
-        ss >> buffer >> buffer >> degree;
+        std::stringstream sso(line);
+        sso >> buffer >> buffer >> degree;
         for(int i = 0; i < degree; i++) {
             std::string name;
             std::getline(fin, line);
-            ss = std::stringstream(line);
-            ss >> name;
+            std::stringstream ssi(line);
+            ssi >> name;
             if(pins.find(name) != pins.end()) {
                 net.add_pin(&pins[name]);
             } else {
