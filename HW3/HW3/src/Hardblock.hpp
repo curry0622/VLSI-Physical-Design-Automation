@@ -12,7 +12,6 @@ public:
     Coord coord;
     int width, height;
     int rotated;
-    int index_in_sol;
 
     // Constructors
     Hardblock();
@@ -20,7 +19,6 @@ public:
 
     // Functions
     Coord get_center();
-    void set_index_in_sol(int index);
 
     // Utils
     void print();

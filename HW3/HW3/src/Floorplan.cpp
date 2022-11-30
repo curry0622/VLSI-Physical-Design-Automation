@@ -24,13 +24,6 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Simulated annealing
     std::vector<std::string> best_sol = simulated_annealing();
-    std::vector<int> res = get_area(best_sol);
-    std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
-
-    // Temp
-    // std::vector<std::string> sol = init_sol();
-    // std::vector<int> res = get_area(sol);
-    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << std::endl;
 
     // Write output
     write_floorplan(output);
@@ -210,21 +203,6 @@ void Floorplan::swap_adjacent_operand(std::vector<std::string>& sol) {
     }
 
     std::swap(sol[l], sol[r]);
-    hardblocks[sol[l]].set_index_in_sol(l);
-    hardblocks[sol[r]].set_index_in_sol(r);
-}
-
-void Floorplan::swap_operand_in_net(std::vector<std::string>& sol) {
-    int net_index = rand() % nets.size();
-    while(nets[net_index].hardblocks.size() < 2) {
-        net_index = rand() % nets.size();
-    }
-    int i = nets[net_index].hardblocks[0]->index_in_sol - 2;
-    if(i >= 0 && sol[i] != "V" && sol[i] != "H") {
-        std::swap(sol[i], sol[i + 2]);
-        hardblocks[sol[i]].set_index_in_sol(i);
-        hardblocks[sol[i + 2]].set_index_in_sol(i + 2);
-    }
 }
 
 void Floorplan::invert_chain(std::vector<std::string>& sol) {
@@ -299,8 +277,6 @@ void Floorplan::swap_random_operand(std::vector<std::string>& sol) {
     }
 
     std::swap(sol[l], sol[r]);
-    hardblocks[sol[l]].set_index_in_sol(l);
-    hardblocks[sol[r]].set_index_in_sol(r);
 }
 
 int Floorplan::get_wirelength() {
@@ -407,35 +383,28 @@ std::vector<std::string> Floorplan::init_sol() {
         return a.height > b.height;
     });
 
-    int i = 0;
     for(auto hardblock : sorted_hardblocks) {
         int width = hardblock.width;
         if(curr_width + width <= max_coord.x * TOLERANCE) {
             curr_width += width;
             sol.push_back(hardblock.name);
-            hardblocks[hardblock.name].set_index_in_sol(i++);
             if(v_1st) {
                 v_1st = false;
             } else {
                 sol.push_back("V");
-                i++;
             }
         } else {
             curr_width = width;
             if(h_1st) {
                 h_1st = false;
                 sol.push_back(hardblock.name);
-                hardblocks[hardblock.name].set_index_in_sol(i++);
             } else {
                 sol.push_back("H");
-                i++;
                 sol.push_back(hardblock.name);
-                hardblocks[hardblock.name].set_index_in_sol(i++);
             }
         }
     }
     sol.push_back("H");
-    i++;
 
     return sol;
 }
@@ -443,25 +412,10 @@ std::vector<std::string> Floorplan::init_sol() {
 std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol, int r) {
     std::vector<std::string> neighbor = sol;
 
-    // switch(r) {
-    //     case 0:
-    //         swap_adjacent_operand(neighbor);
-    //         break;
-    //     case 1:
-    //         swap_random_operand(neighbor);
-    //         // invert_chain(neighbor);
-    //         break;
-    //     case 2:
-    //         swap_operand_operator(neighbor);
-    //         break;
-    // }
-
     if(r < 50) {
         swap_adjacent_operand(neighbor);
-    } else if(r < 95)  {
+    } else  {
         swap_random_operand(neighbor);
-    } else {
-        swap_operand_in_net(neighbor);
     }
 
     return neighbor;
@@ -475,13 +429,12 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     // Parameters
     double T = 1000.0, T_MIN = 1.0, T_DECAY = 0.95;
     double REJECT_RATIO = 0.95;
-    int K = 8;
+    int K = 10;
     int N = num_hardblocks * K;
 
     // Variables
     int cost = get_cost(sol), min_cost = cost;
     int gen_cnt = 1, uphill_cnt = 0, reject_cnt = 0;
-    // int move_num[3] = {0, 0, 0};
 
     // Simulated annealing
     while((double)reject_cnt / gen_cnt <= REJECT_RATIO && T >= T_MIN) {
@@ -506,10 +459,9 @@ std::vector<std::string> Floorplan::simulated_annealing() {
                 if(cost < min_cost) {
                     min_cost = cost;
                     best_sol = sol;
-                    // move_num[r]++;
-                    std::cout << "update best solution: " << std::endl;
-                    std::vector<int> res = get_area(best_sol);
-                    std::cout << res[0] << " * " << res[1] << " = " << res[2] << ", wirelength = " << get_wirelength() << ", M" << r + 1 << std::endl;
+                    // std::cout << "update best solution: " << std::endl;
+                    // std::vector<int> res = get_area(best_sol);
+                    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << ", wirelength = " << get_wirelength() << ", M" << r + 1 << std::endl;
                 }
             } else {
                 reject_cnt++;
@@ -524,9 +476,6 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     } else {
         std::cout << "REJECT_RATIO <= " << REJECT_RATIO << std::endl;
     }
-    // for(int i = 0; i < 3; i++) {
-    //     std::cout << "M" << i + 1 << ": " << move_num[i] << std::endl;
-    // }
 
     return best_sol;
 }
