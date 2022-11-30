@@ -9,6 +9,7 @@ Floorplan::Floorplan() {
 Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio) {
     // Start timer
     start_time = clock();
+    t.start();
 
     // Read inputs
     read_hardblocks(hardblocks_file);
@@ -437,7 +438,7 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     int gen_cnt = 1, uphill_cnt = 0, reject_cnt = 0;
 
     // Simulated annealing
-    while((double)reject_cnt / gen_cnt <= REJECT_RATIO && T >= T_MIN) {
+    while((double)reject_cnt / gen_cnt <= REJECT_RATIO && T >= T_MIN && !t.is_timeout(100)) {
         // Initialize
         gen_cnt = 0, uphill_cnt = 0, reject_cnt = 0;
 
@@ -470,11 +471,6 @@ std::vector<std::string> Floorplan::simulated_annealing() {
 
         // Reduce temperature
         T *= T_DECAY;
-    }
-    if(T <= T_MIN) {
-        std::cout << "T <= T_MIN" << std::endl;
-    } else {
-        std::cout << "REJECT_RATIO <= " << REJECT_RATIO << std::endl;
     }
 
     return best_sol;
@@ -542,7 +538,7 @@ void Floorplan::print() {
     std::cout << "Floorplan wirelength: " << get_wirelength() << std::endl;
     std::cout << "Floorplan total_area: " << total_area << std::endl;
     std::cout << "Floorplan max_coord: (" << max_coord.x  << ", " << max_coord.y << ")" << std::endl;
-    std::cout << "Floorplan time: " << (double)(clock() - start_time) / CLOCKS_PER_SEC << " sec" << std::endl;
+    std::cout << "Floorplan time: " << t.get_elapsed_time() << " sec" << std::endl;
     std::cout << "---" << std::endl;
 }
 

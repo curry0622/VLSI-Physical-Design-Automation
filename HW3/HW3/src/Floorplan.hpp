@@ -25,6 +25,11 @@
 #include "Node.hpp"
 #endif
 
+#ifndef TIMER_HPP
+#define TIMER_HPP
+#include "Timer.hpp"
+#endif
+
 class Floorplan {
 public:
     // Variables
@@ -38,6 +43,7 @@ public:
     std::unordered_map<std::string, Hardblock> hardblocks;
     std::unordered_map<std::string, Pin> pins;
     std::vector<Net> nets;
+    Timer t;
 
     // Constructors
     Floorplan();
