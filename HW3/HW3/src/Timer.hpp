@@ -13,6 +13,7 @@ public:
     // Functions
     void start();
     void stop();
+    void stop_acc();
     bool is_timeout(double t);
     double get_elapsed_time();
 };

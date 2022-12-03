@@ -43,7 +43,7 @@ public:
     std::unordered_map<std::string, Hardblock> hardblocks;
     std::unordered_map<std::string, Pin> pins;
     std::vector<Net> nets;
-    Timer t;
+    Timer prog_t, io_t, area_t, wire_t;
 
     // Constructors
     Floorplan();
@@ -63,7 +63,7 @@ public:
     void swap_random_operand(std::vector<std::string>& sol);
     int get_wirelength();
     int get_cost(std::vector<std::string> sol);
-    std::vector<int> get_area(std::vector<std::string> sol);
+    void get_area(std::vector<std::string> sol, int& w, int& h);
     std::vector<std::string> init_sol();
     std::vector<std::string> gen_neighbor(std::vector<std::string> sol, int r);
     std::vector<std::string> simulated_annealing();

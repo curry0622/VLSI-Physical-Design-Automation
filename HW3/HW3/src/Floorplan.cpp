@@ -9,7 +9,7 @@ Floorplan::Floorplan() {
 Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio) {
     // Start timer
     start_time = clock();
-    t.start();
+    prog_t.start();
 
     // Read inputs
     read_hardblocks(hardblocks_file);
@@ -25,9 +25,14 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Simulated annealing
     std::vector<std::string> best_sol = simulated_annealing();
+    int w, h;
+    get_area(best_sol, w, h);
 
     // Write output
     write_floorplan(output);
+
+    // Stop timer
+    prog_t.stop();
 
     // print_hardblocks();
     // print_pins();
@@ -36,6 +41,9 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 }
 
 void Floorplan::read_hardblocks(std::string filename) {
+    // Start timer
+    io_t.start();
+
     // Variables
     std::ifstream file(filename);
     std::string line, buffer;
@@ -78,9 +86,15 @@ void Floorplan::read_hardblocks(std::string filename) {
             break;
         }
     }
+
+    // Stop timer
+    io_t.stop_acc();
 }
 
 void Floorplan::read_pins(std::string filename) {
+    // Start timer
+    io_t.start();
+
     std::ifstream fin(filename);
     std::string line;
     while(std::getline(fin, line)) {
@@ -90,9 +104,15 @@ void Floorplan::read_pins(std::string filename) {
         ss >> name >> x >> y;
         pins[name] = Pin(name, Coord(x, y));
     }
+
+    // Stop timer
+    io_t.stop_acc();
 }
 
 void Floorplan::read_nets(std::string filename) {
+    // Stop timer
+    io_t.start();
+
     // Variables
     std::ifstream fin(filename);
     std::string line, buffer;
@@ -125,9 +145,15 @@ void Floorplan::read_nets(std::string filename) {
         }
         nets.push_back(net);
     }
+
+    // Stop timer
+    io_t.stop_acc();
 }
 
 void Floorplan::write_floorplan(std::string filename) {
+    // Start timer
+    io_t.start();
+
     std::ofstream fout(filename);
     fout << "Wirelength " << get_wirelength() << std::endl;
     fout << "Blocks" << std::endl;
@@ -136,6 +162,9 @@ void Floorplan::write_floorplan(std::string filename) {
         fout << hardblock.name << " " << hardblock.coord.x << " " << hardblock.coord.y << " " << hardblock.rotated << std::endl;
     }
     fout.close();
+
+    // Stop timer
+    io_t.stop_acc();
 }
 
 void Floorplan::calc_max_coord() {
@@ -289,27 +318,28 @@ int Floorplan::get_wirelength() {
 }
 
 int Floorplan::get_cost(std::vector<std::string> sol) {
-    const double LAMBDA = 1000;
-    std::vector<int> res = get_area(sol); // {w, h, area}
-    int wirelength = get_wirelength();
-    int width = res[0], height = res[1], penalty = 0;
+    int width, height, wirelength, penalty = 0;
+    area_t.start();
+    get_area(sol, width, height);
+    area_t.stop_acc();
+    wire_t.start();
+    wirelength = get_wirelength();
+    wire_t.stop_acc();
 
     if(width < max_coord.x)
         width = max_coord.x;
     else
-        penalty += pow(width - max_coord.x, 2);
+        penalty += width - max_coord.x;
 
     if(height < max_coord.y)
         height = max_coord.y;
     else
-        penalty += pow(height - max_coord.y, 2);
+        penalty += height - max_coord.y;
 
-    int cost = LAMBDA * (width * height + penalty) + wirelength;
-
-    return cost;
+    return 128 * (width * height + penalty) + wirelength;
 }
 
-std::vector<int> Floorplan::get_area(std::vector<std::string> sol) {
+void Floorplan::get_area(std::vector<std::string> sol, int& w, int& h) {
     // Variables
     std::stack<std::vector<Node>> stk;
     std::vector<std::vector<Node>> record;
@@ -366,7 +396,9 @@ std::vector<int> Floorplan::get_area(std::vector<std::string> sol) {
     // Update coordinates
     update_coord(record, record.size() - 1, min_index);
 
-    return {min_width, min_height, min_area};
+    // Result
+    w = min_width;
+    h = min_height;
 }
 
 std::vector<std::string> Floorplan::init_sol() {
@@ -419,6 +451,14 @@ std::vector<std::string> Floorplan::gen_neighbor(std::vector<std::string> sol, i
         swap_random_operand(neighbor);
     }
 
+    // if(r < 33) {
+    //     swap_adjacent_operand(neighbor);
+    // } else if(r < 66) {
+    //     invert_chain(neighbor);
+    // } else {
+    //     swap_operand_operator(neighbor);
+    // }
+
     return neighbor;
 }
 
@@ -432,18 +472,19 @@ std::vector<std::string> Floorplan::simulated_annealing() {
     double REJECT_RATIO = 0.95;
     int K = 10;
     int N = num_hardblocks * K;
+    int DOUBLE_N = N * 2;
 
     // Variables
     int cost = get_cost(sol), min_cost = cost;
     int gen_cnt = 1, uphill_cnt = 0, reject_cnt = 0;
 
     // Simulated annealing
-    while((double)reject_cnt / gen_cnt <= REJECT_RATIO && T >= T_MIN && !t.is_timeout(100)) {
+    while((double)reject_cnt / gen_cnt <= REJECT_RATIO && T >= T_MIN && !prog_t.is_timeout(580)) {
         // Initialize
         gen_cnt = 0, uphill_cnt = 0, reject_cnt = 0;
 
         // Generate neighbor
-        while(uphill_cnt <= N && gen_cnt <= 2 * N) {
+        while(uphill_cnt <= N && gen_cnt <= DOUBLE_N) {
             int r = rand() % 100;
             std::vector<std::string> neighbor = gen_neighbor(sol, r);
             int neighbor_cost = get_cost(neighbor);
@@ -460,9 +501,7 @@ std::vector<std::string> Floorplan::simulated_annealing() {
                 if(cost < min_cost) {
                     min_cost = cost;
                     best_sol = sol;
-                    // std::cout << "update best solution: " << std::endl;
-                    // std::vector<int> res = get_area(best_sol);
-                    // std::cout << res[0] << " * " << res[1] << " = " << res[2] << ", wirelength = " << get_wirelength() << ", M" << r + 1 << std::endl;
+                    // std::cout << "update best solution: " << get_wirelength() << std::endl;
                 }
             } else {
                 reject_cnt++;
@@ -538,7 +577,10 @@ void Floorplan::print() {
     std::cout << "Floorplan wirelength: " << get_wirelength() << std::endl;
     std::cout << "Floorplan total_area: " << total_area << std::endl;
     std::cout << "Floorplan max_coord: (" << max_coord.x  << ", " << max_coord.y << ")" << std::endl;
-    std::cout << "Floorplan time: " << t.get_elapsed_time() << " sec" << std::endl;
+    std::cout << "Floorplan total time: " << prog_t.get_elapsed_time() << " sec" << std::endl;
+    std::cout << "Floorplan IO time: " << io_t.get_elapsed_time() << " sec" << std::endl;
+    std::cout << "Floorplan area time: " << area_t.get_elapsed_time() << " sec" << std::endl;
+    std::cout << "Floorplan wire length time: " << wire_t.get_elapsed_time() << " sec" << std::endl;
     std::cout << "---" << std::endl;
 }
 

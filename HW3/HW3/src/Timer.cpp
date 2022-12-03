@@ -10,11 +10,15 @@ void Timer::start() {
 }
 
 void Timer::stop() {
+    elapsed_time = (double)(clock() - start_time) / CLOCKS_PER_SEC;
+}
+
+void Timer::stop_acc() {
     elapsed_time += (double)(clock() - start_time) / CLOCKS_PER_SEC;
 }
 
 bool Timer::is_timeout(double t) {
-    elapsed_time = (double)(clock() - start_time) / CLOCKS_PER_SEC;
+    stop();
     std::cout << "Elapsed time: " << elapsed_time << std::endl;
     return elapsed_time > t;
 }
