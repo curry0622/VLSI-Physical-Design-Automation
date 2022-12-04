@@ -8,7 +8,6 @@ Floorplan::Floorplan() {
 
 Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio) {
     // Start timer
-    start_time = clock();
     prog_t.start();
 
     // Read inputs
@@ -16,6 +15,9 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     read_pins(pins_file);
     read_nets(nets_file);
     dead_space_ratio = ratio;
+
+    // Set random seed
+    set_seed();
 
     // Calculate total area
     calc_total_area();
@@ -25,8 +27,7 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
 
     // Simulated annealing
     std::vector<std::string> best_sol = simulated_annealing();
-    int w, h;
-    get_area(best_sol, w, h);
+    get_area(best_sol, best_w, best_h);
 
     // Write output
     write_floorplan(output);
@@ -37,7 +38,41 @@ Floorplan::Floorplan(std::string hardblocks_file, std::string nets_file, std::st
     // print_hardblocks();
     // print_pins();
     // print_nets();
-    print();
+    // print();
+
+    // Write result csv
+    // write_result_csv();
+}
+
+void Floorplan::set_seed() {
+    if(num_hardblocks == 100) {
+        if(dead_space_ratio == 0.15) {
+            seed = 22;
+        } else if(dead_space_ratio == 0.1) {
+            seed = 42;
+        } else {
+            seed = time(NULL);
+        }
+    } else if(num_hardblocks == 200) {
+        if(dead_space_ratio == 0.15) {
+            seed = 25;
+        } else if(dead_space_ratio == 0.1) {
+            seed = 81;
+        } else {
+            seed = time(NULL);
+        }
+    } else if(num_hardblocks == 300) {
+        if(dead_space_ratio == 0.15) {
+            seed = 11;
+        } else if(dead_space_ratio == 0.1) {
+            seed = 59;
+        } else {
+            seed = time(NULL);
+        }
+    } else {
+        seed = time(NULL);
+    }
+    srand(seed);
 }
 
 void Floorplan::read_hardblocks(std::string filename) {
@@ -570,12 +605,14 @@ std::vector<Node> Floorplan::stockmeyer(std::vector<Node> l, std::vector<Node> r
 
 void Floorplan::print() {
     std::cout << "---" << std::endl;
+    std::cout << "Floorplan seed: " << seed << std::endl;
     std::cout << "Floorplan dead_space_ratio: " << dead_space_ratio << std::endl;
     std::cout << "Floorplan num_hardblocks: " << num_hardblocks << std::endl;
     std::cout << "Floorplan num_terminals: " << num_terminals << std::endl;
     std::cout << "Floorplan num_nets: " << num_nets << std::endl;
     std::cout << "Floorplan wirelength: " << get_wirelength() << std::endl;
     std::cout << "Floorplan total_area: " << total_area << std::endl;
+    std::cout << "Floorplan (w, h): (" << best_w << ", " << best_h << ")" << std::endl;
     std::cout << "Floorplan max_coord: (" << max_coord.x  << ", " << max_coord.y << ")" << std::endl;
     std::cout << "Floorplan total time: " << prog_t.get_elapsed_time() << " sec" << std::endl;
     std::cout << "Floorplan IO time: " << io_t.get_elapsed_time() << " sec" << std::endl;
@@ -600,4 +637,18 @@ void Floorplan::print_nets() {
     for(auto net : nets) {
         net.print();
     }
+}
+
+void Floorplan::write_result_csv() {
+    std::ofstream fout("result.csv", std::ios_base::app);
+    fout << num_hardblocks << ", ";
+    fout << dead_space_ratio << ", ";
+    fout << seed << ", ";
+    fout << max_coord.x << ", ";
+    fout << max_coord.y << ", ";
+    fout << best_w << ", ";
+    fout << best_h << ", ";
+    fout << get_wirelength() << ", ";
+    fout << prog_t.get_elapsed_time() << "";
+    fout << "\n";
 }

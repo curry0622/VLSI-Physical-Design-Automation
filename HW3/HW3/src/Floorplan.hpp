@@ -33,11 +33,12 @@
 class Floorplan {
 public:
     // Variables
-    clock_t start_time;
+    unsigned int seed;
     int num_hardblocks;
     int num_terminals;
     int num_nets;
     int total_area;
+    int best_w, best_h;
     double dead_space_ratio;
     Coord max_coord;
     std::unordered_map<std::string, Hardblock> hardblocks;
@@ -50,6 +51,7 @@ public:
     Floorplan(std::string hardblocks_file, std::string nets_file, std::string pins_file, std::string output, double ratio);
 
     // Functions
+    void set_seed();
     void read_hardblocks(std::string filename);
     void read_pins(std::string filename);
     void read_nets(std::string filename);
@@ -74,4 +76,5 @@ public:
     void print_hardblocks();
     void print_pins();
     void print_nets();
+    void write_result_csv();
 };

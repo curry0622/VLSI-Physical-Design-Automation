@@ -19,7 +19,6 @@ void Timer::stop_acc() {
 
 bool Timer::is_timeout(double t) {
     stop();
-    std::cout << "Elapsed time: " << elapsed_time << std::endl;
     return elapsed_time > t;
 }
 

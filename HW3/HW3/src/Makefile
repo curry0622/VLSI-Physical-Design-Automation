@@ -1,4 +1,4 @@
-CXX := g++
+CXX := /usr/local/gcc-9.3.0/bin/g++
 CXXFLAGS := -std=c++11 -O3 -march=native -pipe
 LIBS := -lm
 EXEC := ../bin/hw3
