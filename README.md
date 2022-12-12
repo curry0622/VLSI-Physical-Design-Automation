@@ -12,6 +12,6 @@ In this homework, you are asked to implement **Fiduccia–Mattheyses Algorithm**
 
 In this homework, you are asked to adapt and implement an existing algorithm, published in the DAC-86 paper entitled **A New Algorithm for Floorplan Design** by Wong and Liu, for solving the fixed-outline slicing floorplan design problem with a set of hard blocks.
 
-## Homework 4: Placement Legalization
+## HW4: Placement Legalization
 
 In this homework, you are asked to adapt and implement an existing algorithm, published in the ISPD-08 paper entitled **“Abacus: fast legalization of standard cell circuits with minimal movement”** by Spindler, Schlichtmann and Johannes, to legalize a given global placement result with minimal total displacement (measured by Euclidean distance).
