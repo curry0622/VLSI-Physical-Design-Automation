@@ -4,9 +4,11 @@
 
 [Spec](./CS6135_HW2_spec.pdf)
 
-[Source code](./HW2/src/)
-
 [Report](./CS6135_HW2_111062625_report.pdf)
+
+## Source code
+
+[Here](./HW2/src/)
 
 ## Cut Size (compared to other students)
 
@@ -24,4 +26,4 @@
 | Min  | 0.01  | 0.02   | 0.02  | 0.02   | 0.02   | 0.03   | 0.02   | 0.02   |
 | Max  | 259.7 | 259.71 | 299.1 | 299.26 | 298.76 | 298.96 | 299.96 | 299.68 |
 
-Final score: **79.11** out of 80.0 (Notice that this score was calculated by cut size only).
+Performance score: **79.11** out of 80.0 (Note that this score was calculated by cut size only).
