@@ -38,7 +38,6 @@ void Legalizer::read_node(std::string node_file) {
         ss << line;
         ss >> name >> w >> h;
         ss.clear();
-        std::cout << name << ": " << w << ", " << h << std::endl;
     }
 
     // Read blockages
@@ -49,12 +48,36 @@ void Legalizer::read_node(std::string node_file) {
         ss << line;
         ss >> name >> w >> h >> buffer;
         ss.clear();
-        std::cout << name << ": " << w << ", " << h << std::endl;
     }
 }
 
 void Legalizer::read_pl(std::string node_file) {
-    
+    // Variables
+    std::ifstream file(node_file);
+    std::stringstream ss;
+    std::string line, buffer;
+
+    // Read cells
+    for(int i = 0; i < num_cells; i++) {
+        std::getline(file, line);
+        std::string name;
+        double x, y;
+        ss << line;
+        ss >> name >> x >> y >> buffer >> buffer;
+        ss.clear();
+        std::cout << name << ": " << x << ", " << y << std::endl;
+    }
+
+    // Read blockages
+    for(int i = 0; i < num_blockages; i++) {
+        std::getline(file, line);
+        std::string name;
+        double x, y;
+        ss << line;
+        ss >> name >> x >> y >> buffer >> buffer >> buffer;
+        ss.clear();
+        std::cout << name << ": " << x << ", " << y << std::endl;
+    }
 }
 
 void Legalizer::read_scl(std::string node_file) {
