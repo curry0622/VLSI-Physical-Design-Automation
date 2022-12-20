@@ -5,6 +5,11 @@
 #include "Node.hpp"
 #endif
 
+#ifndef ROW_HPP
+#define ROW_HPP
+#include "Row.hpp"
+#endif
+
 class Legalizer {
 public:
     // Variables
@@ -15,9 +20,9 @@ public:
     int num_rows;
     std::vector<Node*> cells;
     std::vector<Node*> blockages;
+    std::vector<Row*> rows;
 
     // Constructors
-    Legalizer();
     Legalizer(std::string input_file, std::string output_file);
 
     // Functions
@@ -25,9 +30,10 @@ public:
     void read_pl(std::string pl_file);
     void read_scl(std::string scl_file);
     void read_input(std::string input_file);
-    void write_result(std::string output_file);
+    void write_output(std::string output_file);
 
     // Utils
     void print_cells();
     void print_blockages();
+    void print_rows();
 };

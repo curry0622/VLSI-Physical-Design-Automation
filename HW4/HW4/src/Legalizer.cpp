@@ -1,16 +1,16 @@
 #include "Legalizer.hpp"
 
-Legalizer::Legalizer() {
-    // TODO
-}
-
 Legalizer::Legalizer(std::string input_file, std::string output_file) {
     // Read input
     read_input(input_file);
 
+    // Write output
+    // write_output(output_file);
+
     // Print
     // print_cells();
     // print_blockages();
+    // print_rows();
 }
 
 void Legalizer::read_node(std::string node_file) {
@@ -101,33 +101,42 @@ void Legalizer::read_scl(std::string node_file) {
     // Read rows
     std::getline(file, line);
     for(int i = 0; i < num_rows; i++) {
-        double coord, h, site_w, num_sites, subrow_origin;
+        double y, h, site_w, num_sites, x;
+
+        // Coordinate
         std::getline(file, line);
         std::getline(file, line);
         ss << line;
-        ss >> buffer >> buffer >> coord;
+        ss >> buffer >> buffer >> y;
         ss.clear();
 
+        // Height
         std::getline(file, line);
         ss << line;
         ss >> buffer >> buffer >> h;
         ss.clear();
 
+        // Site width
         std::getline(file, line);
         ss << line;
         ss >> buffer >> buffer >> site_w;
         ss.clear();
 
+        // Number of sites
         std::getline(file, line);
         ss << line;
         ss >> buffer >> buffer >> num_sites;
         ss.clear();
 
+        // Subrow Origin
         std::getline(file, line);
         ss << line;
-        ss >> buffer >> buffer >> subrow_origin;
+        ss >> buffer >> buffer >> x;
         ss.clear();
         std::getline(file, line);
+
+        // Add row
+        rows.push_back(new Row(x, y, h, num_sites, site_w));
     }
 }
 
@@ -158,6 +167,21 @@ void Legalizer::read_input(std::string input_file) {
     read_scl(path + scl_file);
 }
 
+void Legalizer::write_output(std::string output_file) {
+    // Variables
+    std::ofstream file(output_file);
+
+    // Write cells
+    for(int i = 0; i < num_cells; i++) {
+        file << cells[i]->name << " " << cells[i]->x << " " << cells[i]->y << std::endl;
+    }
+
+    // Write blockages
+    for(int i = 0; i < num_blockages; i++) {
+        file << blockages[i]->name << " " << blockages[i]->x << " " << blockages[i]->y << std::endl;
+    }
+}
+
 void Legalizer::print_cells() {
     for(int i = 0; i < num_cells; i++) {
         cells[i]->print();
@@ -167,5 +191,11 @@ void Legalizer::print_cells() {
 void Legalizer::print_blockages() {
     for(int i = 0; i < num_blockages; i++) {
         blockages[i]->print();
+    }
+}
+
+void Legalizer::print_rows() {
+    for(int i = 0; i < num_rows; i++) {
+        rows[i]->print();
     }
 }
