@@ -7,6 +7,7 @@ public:
     int num_nodes;
     int num_cells;
     int num_blockages;
+    int num_rows;
 
     // Constructors
     Legalizer();

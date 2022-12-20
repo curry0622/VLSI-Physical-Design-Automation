@@ -17,15 +17,12 @@ void Legalizer::read_node(std::string node_file) {
 
     // Read info
     std::getline(file, line);
-    std::cout << line << std::endl;
     ss << line;
     ss >> buffer >> buffer >> num_nodes;
     ss.clear();
 
     std::getline(file, line);
-    std::cout << line << std::endl;
     ss << line;
-    ss >> buffer >> buffer >> num_blockages;
     ss.clear();
 
     // Read cells
@@ -65,7 +62,6 @@ void Legalizer::read_pl(std::string node_file) {
         ss << line;
         ss >> name >> x >> y >> buffer >> buffer;
         ss.clear();
-        std::cout << name << ": " << x << ", " << y << std::endl;
     }
 
     // Read blockages
@@ -76,12 +72,52 @@ void Legalizer::read_pl(std::string node_file) {
         ss << line;
         ss >> name >> x >> y >> buffer >> buffer >> buffer;
         ss.clear();
-        std::cout << name << ": " << x << ", " << y << std::endl;
     }
 }
 
 void Legalizer::read_scl(std::string node_file) {
-    
+    // Variables
+    std::ifstream file(node_file);
+    std::stringstream ss;
+    std::string line, buffer;
+
+    // Read info
+    std::getline(file, line);
+    ss << line;
+    ss >> buffer >> buffer >> num_rows;
+    ss.clear();
+
+    // Read rows
+    std::getline(file, line);
+    for(int i = 0; i < num_rows; i++) {
+        double coord, h, site_w, num_sites, subrow_origin;
+        std::getline(file, line);
+        std::getline(file, line);
+        ss << line;
+        ss >> buffer >> buffer >> coord;
+        ss.clear();
+
+        std::getline(file, line);
+        ss << line;
+        ss >> buffer >> buffer >> h;
+        ss.clear();
+
+        std::getline(file, line);
+        ss << line;
+        ss >> buffer >> buffer >> site_w;
+        ss.clear();
+
+        std::getline(file, line);
+        ss << line;
+        ss >> buffer >> buffer >> num_sites;
+        ss.clear();
+
+        std::getline(file, line);
+        ss << line;
+        ss >> buffer >> buffer >> subrow_origin;
+        ss.clear();
+        std::getline(file, line);
+    }
 }
 
 void Legalizer::read_input(std::string input_file) {
