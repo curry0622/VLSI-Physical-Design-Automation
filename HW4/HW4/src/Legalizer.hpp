@@ -1,5 +1,10 @@
 #include <bits/stdc++.h>
 
+#ifndef NODE_HPP
+#define NODE_HPP
+#include "Node.hpp"
+#endif
+
 class Legalizer {
 public:
     // Variables
@@ -8,6 +13,8 @@ public:
     int num_cells;
     int num_blockages;
     int num_rows;
+    std::vector<Node*> cells;
+    std::vector<Node*> blockages;
 
     // Constructors
     Legalizer();
@@ -21,4 +28,6 @@ public:
     void write_result(std::string output_file);
 
     // Utils
+    void print_cells();
+    void print_blockages();
 };

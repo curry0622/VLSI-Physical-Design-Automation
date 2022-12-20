@@ -7,6 +7,10 @@ Legalizer::Legalizer() {
 Legalizer::Legalizer(std::string input_file, std::string output_file) {
     // Read input
     read_input(input_file);
+
+    // Print
+    // print_cells();
+    // print_blockages();
 }
 
 void Legalizer::read_node(std::string node_file) {
@@ -23,6 +27,7 @@ void Legalizer::read_node(std::string node_file) {
 
     std::getline(file, line);
     ss << line;
+    ss >> buffer >> buffer >> num_blockages;
     ss.clear();
 
     // Read cells
@@ -35,6 +40,8 @@ void Legalizer::read_node(std::string node_file) {
         ss << line;
         ss >> name >> w >> h;
         ss.clear();
+        cells.push_back(new Node(name));
+        cells[i]->set_wh(w, h);
     }
 
     // Read blockages
@@ -45,6 +52,8 @@ void Legalizer::read_node(std::string node_file) {
         ss << line;
         ss >> name >> w >> h >> buffer;
         ss.clear();
+        blockages.push_back(new Node(name));
+        blockages[i]->set_wh(w, h);
     }
 }
 
@@ -62,6 +71,7 @@ void Legalizer::read_pl(std::string node_file) {
         ss << line;
         ss >> name >> x >> y >> buffer >> buffer;
         ss.clear();
+        cells[i]->set_xy(x, y);
     }
 
     // Read blockages
@@ -72,6 +82,7 @@ void Legalizer::read_pl(std::string node_file) {
         ss << line;
         ss >> name >> x >> y >> buffer >> buffer >> buffer;
         ss.clear();
+        blockages[i]->set_xy(x, y);
     }
 }
 
@@ -145,4 +156,16 @@ void Legalizer::read_input(std::string input_file) {
     read_node(path + node_file);
     read_pl(path + pl_file);
     read_scl(path + scl_file);
+}
+
+void Legalizer::print_cells() {
+    for(int i = 0; i < num_cells; i++) {
+        cells[i]->print();
+    }
+}
+
+void Legalizer::print_blockages() {
+    for(int i = 0; i < num_blockages; i++) {
+        blockages[i]->print();
+    }
 }
