@@ -5,18 +5,24 @@
 #include "RowSection.hpp"
 #endif
 
+#ifndef NODE_HPP
+#define NODE_HPP
+#include "Node.hpp"
+#endif
+
 class Row {
 public:
     // Variables
     double x, y;
-    int height;
+    int h;
     int num_sites;
     int site_width;
     std::vector<RowSection*> row_sections;
 
     // Constructors
     Row();
-    Row(double x, double y, int height, int num_sites, int site_width);
+    Row(double x, double y, int h, int num_sites, int site_width);
+    void split_row(Node* blockage);
 
     // Functions
 

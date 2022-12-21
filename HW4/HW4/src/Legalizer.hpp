@@ -36,6 +36,7 @@ public:
     void read_scl(std::string scl_file);
     void read_input(std::string input_file);
     void write_output(std::string output_file);
+    void split_rows();
     void abacus();
     int find_closest_row(Node* cell);
 

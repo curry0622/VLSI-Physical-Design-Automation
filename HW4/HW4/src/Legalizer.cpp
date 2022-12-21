@@ -4,6 +4,12 @@ Legalizer::Legalizer(std::string input_file, std::string output_file) {
     // Read input
     read_input(input_file);
 
+    // Split rows
+    split_rows();
+
+    // Legalize by Abacus
+    abacus();
+
     // Write output
     // write_output(output_file);
 
@@ -180,6 +186,22 @@ void Legalizer::write_output(std::string output_file) {
     // Write blockages
     for(int i = 0; i < num_blockages; i++) {
         file << blockages[i]->name << " " << blockages[i]->x << " " << blockages[i]->y << std::endl;
+    }
+}
+
+void Legalizer::split_rows() {
+    // Sort blockages by x (ascending)
+    std::sort(blockages.begin(), blockages.end(), [](Node* a, Node* b) {
+        return a->x < b->x;
+    });
+
+    // For each blockage, if it occupies a row, split the row
+    for(auto& blockage : blockages) {
+        for(auto& row : rows) {
+            if(row->y >= blockage->y && row->y < blockage->y + blockage->h) {
+                row->split_row(blockage);
+            }
+        }
     }
 }
 
