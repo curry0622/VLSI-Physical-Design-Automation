@@ -4,8 +4,8 @@ Legalizer::Legalizer(std::string input_file, std::string output_file) {
     // Read input
     read_input(input_file);
 
-    // Split rows
-    split_rows();
+    // Slice rows
+    slice_rows();
 
     // Legalize by Abacus
     abacus();
@@ -143,7 +143,7 @@ void Legalizer::read_scl(std::string node_file) {
 
         // Add row and initialize its row section
         rows.push_back(new Row(x, y, h, num_sites, site_w));
-        rows[i]->row_sections.push_back(new RowSection(x, num_sites * site_w));
+        rows[i]->row_sections.push_back(new SubRow(x, num_sites * site_w));
     }
 }
 
@@ -189,17 +189,17 @@ void Legalizer::write_output(std::string output_file) {
     }
 }
 
-void Legalizer::split_rows() {
+void Legalizer::slice_rows() {
     // Sort blockages by x (ascending)
     std::sort(blockages.begin(), blockages.end(), [](Node* a, Node* b) {
         return a->x < b->x;
     });
 
-    // For each blockage, if it occupies a row, split the row
+    // For each blockage, if it occupies a row, slice the row
     for(auto& blockage : blockages) {
         for(auto& row : rows) {
             if(row->y >= blockage->y && row->y < blockage->y + blockage->h) {
-                row->split_row(blockage);
+                row->slice_row(blockage);
             }
         }
     }
@@ -211,6 +211,7 @@ void Legalizer::abacus() {
         return a->x < b->x;
     });
 
+    // For each cell, find the best position
     for(auto& cell : cells) {
         int row_idx = find_closest_row(cell);
         

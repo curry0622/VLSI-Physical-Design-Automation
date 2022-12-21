@@ -16,21 +16,21 @@ Row::Row(double x, double y, int h, int num_sites, int site_width) {
     this->site_width = site_width;
 }
 
-void Row::split_row(Node* blockage) {
+void Row::slice_row(Node* blockage) {
     // Variables
-    RowSection* last_section = row_sections.back();
-    double lsMinX = last_section->x, lsMaxX = last_section->x + last_section->w;
-    double bMinX = blockage->x, bMaxX = blockage->x + blockage->w;
+    SubRow* lsr = row_sections.back(); // last subrow
+    double lsr_min_x = lsr->x, lsr_max_x = lsr->x + lsr->w;
+    double blkg_min_x = blockage->x, blkg_max_x = blockage->x + blockage->w;
 
-    // Split row into sections
-    if(lsMinX < bMinX) {
-        if(lsMaxX > bMaxX) {
-            row_sections.push_back(new RowSection(bMaxX, lsMaxX - bMaxX));
+    // Slice row into subrows
+    if(lsr_min_x < blkg_min_x) {
+        if(lsr_max_x > blkg_max_x) {
+            row_sections.push_back(new SubRow(blkg_max_x, lsr_max_x - blkg_max_x));
         }
-        last_section->set_xw(lsMinX, bMinX - lsMinX);
+        lsr->set_xw(lsr_min_x, blkg_min_x - lsr_min_x);
     } else {
-        if(lsMaxX > bMaxX) {
-            last_section->set_xw(bMaxX, lsMaxX - bMaxX);
+        if(lsr_max_x > blkg_max_x) {
+            lsr->set_xw(blkg_max_x, lsr_max_x - blkg_max_x);
         } else {
             row_sections.pop_back();
         }

@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
 
-#ifndef ROWSECTION_HPP
-#define ROWSECTION_HPP
-#include "RowSection.hpp"
+#ifndef SUBROW_HPP
+#define SUBROW_HPP
+#include "SubRow.hpp"
 #endif
 
 #ifndef NODE_HPP
@@ -17,12 +17,12 @@ public:
     int h;
     int num_sites;
     int site_width;
-    std::vector<RowSection*> row_sections;
+    std::vector<SubRow*> row_sections;
 
     // Constructors
     Row();
     Row(double x, double y, int h, int num_sites, int site_width);
-    void split_row(Node* blockage);
+    void slice_row(Node* blockage);
 
     // Functions
 

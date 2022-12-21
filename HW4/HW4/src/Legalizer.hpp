@@ -10,9 +10,9 @@
 #include "Row.hpp"
 #endif
 
-#ifndef ROWSECTION_HPP
-#define ROWSECTION_HPP
-#include "RowSection.hpp"
+#ifndef SUBROW_HPP
+#define SUBROW_HPP
+#include "SubRow.hpp"
 #endif
 
 class Legalizer {
@@ -36,7 +36,7 @@ public:
     void read_scl(std::string scl_file);
     void read_input(std::string input_file);
     void write_output(std::string output_file);
-    void split_rows();
+    void slice_rows();
     void abacus();
     int find_closest_row(Node* cell);
 

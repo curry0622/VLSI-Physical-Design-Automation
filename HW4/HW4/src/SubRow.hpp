@@ -1,14 +1,14 @@
 #include <bits/stdc++.h>
 
-class RowSection {
+class SubRow {
 public:
     // Variables
     double x;
     int w;
 
     // Constructors
-    RowSection();
-    RowSection(double x, int w);
+    SubRow();
+    SubRow(double x, int w);
 
     // Functions
     void set_xw(double x, int w);
