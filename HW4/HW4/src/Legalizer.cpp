@@ -135,8 +135,9 @@ void Legalizer::read_scl(std::string node_file) {
         ss.clear();
         std::getline(file, line);
 
-        // Add row
+        // Add row and initialize its row section
         rows.push_back(new Row(x, y, h, num_sites, site_w));
+        rows[i]->row_sections.push_back(new RowSection(x, num_sites * site_w));
     }
 }
 
@@ -182,6 +183,31 @@ void Legalizer::write_output(std::string output_file) {
     }
 }
 
+void Legalizer::abacus() {
+    // Sort cells by x (ascending)
+    std::sort(cells.begin(), cells.end(), [](Node* a, Node* b) {
+        return a->x < b->x;
+    });
+
+    for(auto& cell : cells) {
+        int row_idx = find_closest_row(cell);
+        
+    }
+}
+
+int Legalizer::find_closest_row(Node* cell) {
+    double min_dist = DBL_MAX;
+    for(int i = 0; i < num_rows; i++) {
+        double new_dist = abs(cell->y - rows[i]->y);
+        if(min_dist > new_dist) {
+            min_dist = new_dist;
+        } else {
+            return i;
+        }
+    }
+    return num_rows - 1;
+}
+
 void Legalizer::print_cells() {
     for(int i = 0; i < num_cells; i++) {
         cells[i]->print();
@@ -198,4 +224,8 @@ void Legalizer::print_rows() {
     for(int i = 0; i < num_rows; i++) {
         rows[i]->print();
     }
+}
+
+void Legalizer::pause() {
+    std::cin.ignore();
 }

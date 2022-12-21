@@ -10,6 +10,11 @@
 #include "Row.hpp"
 #endif
 
+#ifndef ROWSECTION_HPP
+#define ROWSECTION_HPP
+#include "RowSection.hpp"
+#endif
+
 class Legalizer {
 public:
     // Variables
@@ -31,9 +36,12 @@ public:
     void read_scl(std::string scl_file);
     void read_input(std::string input_file);
     void write_output(std::string output_file);
+    void abacus();
+    int find_closest_row(Node* cell);
 
     // Utils
     void print_cells();
     void print_blockages();
     void print_rows();
+    void pause();
 };
