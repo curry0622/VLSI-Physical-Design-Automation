@@ -16,23 +16,23 @@ Row::Row(double x, double y, int h, int num_sites, int site_width) {
     this->site_width = site_width;
 }
 
-void Row::slice_row(Node* blockage) {
+void Row::slice(Node* blockage) {
     // Variables
-    SubRow* lsr = row_sections.back(); // last subrow
+    SubRow* lsr = subrows.back(); // last subrow
     double lsr_min_x = lsr->x, lsr_max_x = lsr->x + lsr->w;
     double blkg_min_x = blockage->x, blkg_max_x = blockage->x + blockage->w;
 
     // Slice row into subrows
     if(lsr_min_x < blkg_min_x) {
         if(lsr_max_x > blkg_max_x) {
-            row_sections.push_back(new SubRow(blkg_max_x, lsr_max_x - blkg_max_x));
+            subrows.push_back(new SubRow(blkg_max_x, lsr_max_x - blkg_max_x));
         }
         lsr->set_xw(lsr_min_x, blkg_min_x - lsr_min_x);
     } else {
         if(lsr_max_x > blkg_max_x) {
             lsr->set_xw(blkg_max_x, lsr_max_x - blkg_max_x);
         } else {
-            row_sections.pop_back();
+            subrows.pop_back();
         }
     }
 }
@@ -44,8 +44,8 @@ void Row::print() {
     std::cout << "h: " << h << std::endl;
     std::cout << "num_sites: " << num_sites << std::endl;
     std::cout << "site_width: " << site_width << std::endl;
-    std::cout << "row_sections: " << std::endl;
-    for(int i = 0; i < row_sections.size(); i++) {
-        row_sections[i]->print();
+    std::cout << "subrows: " << std::endl;
+    for(int i = 0; i < subrows.size(); i++) {
+        subrows[i]->print();
     }
 }

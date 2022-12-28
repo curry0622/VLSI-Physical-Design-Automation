@@ -8,10 +8,10 @@ Legalizer::Legalizer(std::string input_file, std::string output_file) {
     slice_rows();
 
     // Legalize by Abacus
-    abacus();
+    // abacus();
 
     // Write output
-    // write_output(output_file);
+    write_output(output_file);
 
     // Print
     // print_cells();
@@ -143,7 +143,7 @@ void Legalizer::read_scl(std::string node_file) {
 
         // Add row and initialize its row section
         rows.push_back(new Row(x, y, h, num_sites, site_w));
-        rows[i]->row_sections.push_back(new SubRow(x, num_sites * site_w));
+        rows[i]->subrows.push_back(new SubRow(x, num_sites * site_w));
     }
 }
 
@@ -199,7 +199,7 @@ void Legalizer::slice_rows() {
     for(auto& blockage : blockages) {
         for(auto& row : rows) {
             if(row->y >= blockage->y && row->y < blockage->y + blockage->h) {
-                row->slice_row(blockage);
+                row->slice(blockage);
             }
         }
     }
@@ -213,22 +213,51 @@ void Legalizer::abacus() {
 
     // For each cell, find the best position
     for(auto& cell : cells) {
-        int row_idx = find_closest_row(cell);
+        // Initialize min cost
+        double min_cost = DBL_MAX;
+
+        // Iterate through the rows
+        for(auto& row : rows) {
+            // Place cell into row(trial)
+            // Compute cost
+            // If cost < min_cost:
+            //   min_cost = cost
+            //   best_row = row
+            // Remove cell from row
+        }
+
+        // Place cell into best_row (final)
+
+        // int row_idx = find_closest_row(cell);
         
     }
 }
 
 int Legalizer::find_closest_row(Node* cell) {
-    double min_dist = DBL_MAX;
-    for(int i = 0; i < num_rows; i++) {
-        double new_dist = abs(cell->y - rows[i]->y);
-        if(min_dist > new_dist) {
-            min_dist = new_dist;
+    // Initialize min_dist to the y distance between the cell and the first row
+    double min_dist = abs(cell->y - rows[0]->y);
+
+    // Iterate through the rows and find the closest row
+    for(int i = 1; i < num_rows; i++) {
+        double curr_dist = abs(cell->y - rows[i]->y);
+        if(min_dist > curr_dist) {
+            min_dist = curr_dist;
         } else {
-            return i;
+            return i - 1;
         }
     }
     return num_rows - 1;
+}
+
+int Legalizer::place_row_trial(Node* cell, Row* row) {
+    // Variables
+    int subrow_idx = 0;
+
+    // Place cell into row
+    
+
+    // Return subrow index
+    return subrow_idx;
 }
 
 void Legalizer::print_cells() {

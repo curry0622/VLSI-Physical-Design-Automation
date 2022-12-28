@@ -17,12 +17,12 @@ public:
     int h;
     int num_sites;
     int site_width;
-    std::vector<SubRow*> row_sections;
+    std::vector<SubRow*> subrows;
 
     // Constructors
     Row();
     Row(double x, double y, int h, int num_sites, int site_width);
-    void slice_row(Node* blockage);
+    void slice(Node* blockage);
 
     // Functions
 
