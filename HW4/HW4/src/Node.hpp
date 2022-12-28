@@ -16,6 +16,7 @@ public:
     // Functions
     void set_xy(double x, double y);
     void set_wh(int w, int h);
+    double get_cost();
 
     // Utils
     void print();

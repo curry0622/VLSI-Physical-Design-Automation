@@ -211,12 +211,39 @@ void Legalizer::abacus() {
         return a->x < b->x;
     });
 
-    // For each cell, find the best position
+    // Iterate through the cells
     for(auto& cell : cells) {
-        int row_idx = find_closest_row(cell);
-        int subrow_idx = find_closest_subrow(cell, rows[row_idx]);
-        
+        int opt_row_idx = find_closest_row(cell);
+        int opt_subrow_idx = place_row_trial(cell, rows[opt_row_idx]);
+        double opt_cost = cell->get_cost();
+        int up_row_idx = opt_row_idx, down_row_idx = opt_row_idx;
+
+        while(down_row_idx > 0 && std::abs(cell->y - rows[down_row_idx]->y) < opt_cost) {
+            down_row_idx--;
+            int subrow_idx = place_row_trial(cell, rows[down_row_idx]);
+            double cost = cell->get_cost();
+            if(cost < opt_cost) {
+                opt_cost = cost;
+                opt_row_idx = down_row_idx;
+                opt_subrow_idx = subrow_idx;
+            }
+        }
+
+        while(up_row_idx < num_rows - 1 && std::abs(cell->y - rows[up_row_idx]->y) < opt_cost) {
+            up_row_idx++;
+            int subrow_idx = place_row_trial(cell, rows[up_row_idx]);
+            double cost = cell->get_cost();
+            if(cost < opt_cost) {
+                opt_cost = cost;
+                opt_row_idx = up_row_idx;
+                opt_subrow_idx = subrow_idx;
+            }
+        }
+
+        place_row_final(cell, rows[opt_row_idx], opt_subrow_idx);
     }
+
+    // TODO: deter pos
 }
 
 int Legalizer::find_closest_row(Node* cell) {
@@ -326,6 +353,53 @@ int Legalizer::place_row_trial(Node* cell, Row* row) {
     cell->opt_y = row->y;
 
     return subrow_idx;
+}
+
+void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
+    SubRow* subrow = row->subrows[subrow_idx];
+    subrow->free_width -= cell->w;
+
+    double opt_x = cell->x;
+    if(cell->x < subrow->min_x) {
+        opt_x = subrow->min_x;
+    } else if(cell->x > subrow->max_x - cell->w) {
+        opt_x = subrow->max_x - cell->w;
+    }
+
+    Cluster* last_cluster = subrow->clusters.back();
+    if(subrow->clusters.empty() || last_cluster->x + last_cluster->width <= opt_x) {
+        last_cluster = new Cluster(opt_x, cell->weight * opt_x, cell->w, cell->weight, last_cluster);
+        last_cluster->cells.push_back(cell);
+        subrow->clusters.push_back(last_cluster);
+    } else {
+        last_cluster->cells.push_back(cell);
+        last_cluster->q += cell->weight * (opt_x - last_cluster->width);
+        last_cluster->width += cell->w;
+        last_cluster->weight += cell->weight;
+
+        while(true) {
+            last_cluster->x = last_cluster->q / last_cluster->weight;
+
+            if(last_cluster->x < subrow->min_x) {
+                last_cluster->x = subrow->min_x;
+            }
+            if(last_cluster->x > subrow->max_x - last_cluster->width) {
+                last_cluster->x = subrow->max_x - last_cluster->width;
+            }
+
+            Cluster* pre_cluster = last_cluster->pre;
+            if(pre_cluster != nullptr && pre_cluster->x + pre_cluster->width > last_cluster->x) {
+                pre_cluster->cells.insert(pre_cluster->cells.end(), last_cluster->cells.begin(), last_cluster->cells.end());
+                pre_cluster->weight += last_cluster->weight;
+                pre_cluster->q += last_cluster->q - last_cluster->weight * pre_cluster->width;
+                pre_cluster->width += last_cluster->width;
+                last_cluster = pre_cluster;
+            } else {
+                break;
+            }
+        }
+        subrow->clusters.push_back(last_cluster);
+    }
 }
 
 void Legalizer::print_cells() {

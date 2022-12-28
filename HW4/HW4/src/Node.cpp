@@ -29,6 +29,12 @@ void Node::set_wh(int w, int h) {
     this->weight = w;
 }
 
+double Node::get_cost() {
+    if(opt_x == DBL_MAX || opt_y == DBL_MAX)
+        return DBL_MAX;
+    return std::sqrt(pow(opt_x - x, 2) + pow(opt_y - y, 2));
+}
+
 void Node::print() {
     std::cout << "[Node]" << std::endl;
     std::cout << "Name: " << name << std::endl;

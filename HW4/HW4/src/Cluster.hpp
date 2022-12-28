@@ -17,7 +17,7 @@ public:
 
     // Constructors
     Cluster();
-    Cluster(double x);
+    Cluster(double x, double q, int width, int weight, Cluster* pre);
 
     // Functions
     void add_cell(Node* cell);
