@@ -13,6 +13,13 @@ Legalizer::Legalizer(std::string input_file, std::string output_file) {
     // Write output
     write_output(output_file);
 
+    // Check overlap
+    if(check_overlap()) {
+        std::cout << "Overlap!" << std::endl;
+    } else {
+        std::cout << "No overlap!" << std::endl;
+    }
+
     // Print
     // print_cells();
     // print_blockages();
@@ -180,7 +187,7 @@ void Legalizer::write_output(std::string output_file) {
 
     // Write cells
     for(int i = 0; i < num_cells; i++) {
-        file << cells[i]->name << " " << cells[i]->x << " " << cells[i]->y << std::endl;
+        file << cells[i]->name << " " << cells[i]->opt_x << " " << cells[i]->opt_y << std::endl;
     }
 
     // Write blockages
@@ -242,8 +249,7 @@ void Legalizer::abacus() {
 
         place_row_final(cell, rows[opt_row_idx], opt_subrow_idx);
     }
-
-    // TODO: deter pos
+    cells_alignment();
 }
 
 int Legalizer::find_closest_row(Node* cell) {
@@ -366,7 +372,9 @@ void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
         opt_x = subrow->max_x - cell->w;
     }
 
-    Cluster* last_cluster = subrow->clusters.back();
+    Cluster* last_cluster = nullptr;
+    if(!subrow->clusters.empty())
+        last_cluster = subrow->clusters.back();
     if(subrow->clusters.empty() || last_cluster->x + last_cluster->width <= opt_x) {
         last_cluster = new Cluster(opt_x, cell->weight * opt_x, cell->w, cell->weight, last_cluster);
         last_cluster->cells.push_back(cell);
@@ -400,6 +408,70 @@ void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
         }
         subrow->clusters.push_back(last_cluster);
     }
+}
+
+void Legalizer::cells_alignment() {
+    for(auto& row : rows) {
+        int site_width = row->site_width;
+        for(auto& subrow : row->subrows) {
+            // for(auto& cluster : subrow->clusters) {
+            //     double shift_x = cluster->x - subrow->min_x;
+            //     if(shift_x - std::floor(shift_x / site_width) * site_width <= site_width / 2.0) {
+            //         cluster->x = std::floor(shift_x / site_width) * site_width + subrow->min_x;
+            //     } else {
+            //         cluster->x = std::ceil(shift_x / site_width) * site_width + subrow->min_x;
+            //     }
+
+            //     int opt_x = cluster->x;
+            //     for(auto& cell : cluster->cells) {
+            //         cell->opt_x = opt_x;
+            //         cell->opt_y = row->y;
+            //         opt_x += cell->w;
+            //     }
+            // }
+            for(int i = subrow->clusters.size() - 1; i >= 0; i--) {
+                Cluster* cluster = subrow->clusters[i];
+                double shift_x = cluster->x - subrow->min_x;
+                if(shift_x - std::floor(shift_x / site_width) * site_width <= site_width / 2.0) {
+                    cluster->x = std::floor(shift_x / site_width) * site_width + subrow->min_x;
+                } else {
+                    cluster->x = std::ceil(shift_x / site_width) * site_width + subrow->min_x;
+                }
+
+                int opt_x = cluster->x;
+                for(auto& cell : cluster->cells) {
+                    cell->opt_x = opt_x;
+                    cell->opt_y = row->y;
+                    opt_x += cell->w;
+                }
+            }
+        }
+    }
+}
+
+bool Legalizer::check_overlap() {
+    for(auto& cell : cells) {
+        for(auto& cell2 : cells) {
+            if(cell == cell2) continue;
+            if(cell->opt_x + cell->w > cell2->opt_x && cell->opt_x < cell2->opt_x + cell2->w &&
+               cell->opt_y + cell->h > cell2->opt_y && cell->opt_y < cell2->opt_y + cell2->h) {
+                cell->print();
+                cell2->print();
+                std::cout << "overlap" << std::endl;
+                return true;
+            }
+        }
+        for(auto& blockage : blockages) {
+            if(cell->opt_x + cell->w > blockage->x && cell->opt_x < blockage->x + blockage->w &&
+               cell->opt_y + cell->h > blockage->y && cell->opt_y < blockage->y + blockage->h) {
+                cell->print();
+                blockage->print();
+                std::cout << "overlap blk" << std::endl;
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 void Legalizer::print_cells() {

@@ -42,4 +42,7 @@ void Node::print() {
     std::cout << "Y: " << y << std::endl;
     std::cout << "W: " << w << std::endl;
     std::cout << "H: " << h << std::endl;
+    std::cout << "Weight: " << weight << std::endl;
+    std::cout << "Optimal X: " << opt_x << std::endl;
+    std::cout << "Optimal Y: " << opt_y << std::endl;
 }

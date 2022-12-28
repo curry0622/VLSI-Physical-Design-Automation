@@ -42,6 +42,8 @@ public:
     int find_closest_subrow(Node* cell, Row* row);
     int place_row_trial(Node* cell, Row* row);
     void place_row_final(Node* cell, Row* row, int subrow_idx);
+    void cells_alignment();
+    bool check_overlap();
 
     // Utils
     void print_cells();
