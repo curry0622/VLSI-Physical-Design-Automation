@@ -9,14 +9,18 @@ class Cluster {
 public:
     // Variables
     double x;
+    double q;
+    int width;
+    int weight;
     std::vector<Node*> cells;
+    Cluster* pre;
 
     // Constructors
     Cluster();
     Cluster(double x);
 
     // Functions
-    int get_width();
+    void add_cell(Node* cell);
 
     // Utils
 };

@@ -213,23 +213,8 @@ void Legalizer::abacus() {
 
     // For each cell, find the best position
     for(auto& cell : cells) {
-        // Initialize min cost
-        double min_cost = DBL_MAX;
-
-        // Iterate through the rows
-        for(auto& row : rows) {
-            // Place cell into row(trial)
-            place_row_trial(cell, row);
-            // Compute cost
-            // If cost < min_cost:
-            //   min_cost = cost
-            //   best_row = row
-            // Remove cell from row
-        }
-
-        // Place cell into best_row (final)
-
-        // int row_idx = find_closest_row(cell);
+        int row_idx = find_closest_row(cell);
+        int subrow_idx = find_closest_subrow(cell, rows[row_idx]);
         
     }
 }
@@ -292,17 +277,54 @@ int Legalizer::find_closest_subrow(Node* cell, Row* row) {
 }
 
 int Legalizer::place_row_trial(Node* cell, Row* row) {
-    // Variables
     int subrow_idx = find_closest_subrow(cell, row);
-    cell->print();
-    row->print();
-    std::cout << "subrow_idx: " << subrow_idx << std::endl;
-    pause();
+    if(subrow_idx == -1) {
+        cell->opt_x = DBL_MAX;
+        cell->opt_y = DBL_MAX;
+        return -1;
+    }
 
-    // Place cell into row
-    
+    SubRow* subrow = row->subrows[subrow_idx];
+    double opt_x = cell->x;
+    if(cell->x < subrow->min_x) {
+        opt_x = subrow->min_x;
+    } else if(cell->x > subrow->max_x - cell->w) {
+        opt_x = subrow->max_x - cell->w;
+    }
 
-    // Return subrow index
+    Cluster* last_cluster = subrow->clusters.back();
+    if(subrow->clusters.empty() || last_cluster->x + last_cluster->width <= opt_x) {
+        cell->opt_x = opt_x;
+    } else {
+        int trial_weight = last_cluster->weight + cell->weight;
+        int trial_width = last_cluster->width + cell->w;
+        double trial_q = last_cluster->q + cell->weight * (opt_x - last_cluster->width);
+
+        double trial_x = 0;
+        while(true) {
+            trial_x = trial_q / trial_weight;
+
+            if(trial_x < subrow->min_x) {
+                trial_x = subrow->min_x;
+            }
+            if(trial_x > subrow->max_x - trial_width) {
+                trial_x = subrow->max_x - trial_width;
+            }
+
+            Cluster* pre_cluster = last_cluster->pre;
+            if(pre_cluster != nullptr && pre_cluster->x + pre_cluster->width > trial_x) {
+                trial_q = pre_cluster->q + trial_q - trial_weight * pre_cluster->width;
+                trial_weight += pre_cluster->weight;
+                trial_width = pre_cluster->width + trial_width;
+                last_cluster = pre_cluster;
+            } else {
+                break;
+            }
+        }
+        cell->opt_x = trial_x + trial_width - cell->w;
+    }
+    cell->opt_y = row->y;
+
     return subrow_idx;
 }
 

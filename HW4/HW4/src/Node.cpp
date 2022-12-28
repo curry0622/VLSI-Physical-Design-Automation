@@ -6,6 +6,7 @@ Node::Node() {
     y = 0;
     w = 0;
     h = 0;
+    weight = 0;
 }
 
 Node::Node(std::string name) {
@@ -14,6 +15,7 @@ Node::Node(std::string name) {
     y = 0;
     w = 0;
     h = 0;
+    weight = 0;
 }
 
 void Node::set_xy(double x, double y) {
@@ -24,6 +26,7 @@ void Node::set_xy(double x, double y) {
 void Node::set_wh(int w, int h) {
     this->w = w;
     this->h = h;
+    this->weight = w;
 }
 
 void Node::print() {
