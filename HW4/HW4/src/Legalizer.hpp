@@ -39,6 +39,7 @@ public:
     void slice_rows();
     void abacus();
     int find_closest_row(Node* cell);
+    int find_closest_subrow(Node* cell, Row* row);
     int place_row_trial(Node* cell, Row* row);
 
     // Utils

@@ -8,16 +8,16 @@
 class SubRow {
 public:
     // Variables
-    double x;
-    int w;
+    double min_x, max_x;
+    int free_width;
     std::vector<Cluster*> clusters;
 
     // Constructors
     SubRow();
-    SubRow(double x, int w);
+    SubRow(double min_x, double max_x);
 
     // Functions
-    void set_xw(double x, int w);
+    void set_xs(double min_x, double max_x);
 
     // Utils
     void print();

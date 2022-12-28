@@ -237,7 +237,7 @@ int Legalizer::find_closest_row(Node* cell) {
     // Initialize min_dist to the y distance between the cell and the first row
     double min_dist = abs(cell->y - rows[0]->y);
 
-    // Iterate through the rows and find the closest row
+    // Iterate through the remaining rows and find the closest one
     for(int i = 1; i < num_rows; i++) {
         double curr_dist = abs(cell->y - rows[i]->y);
         if(min_dist > curr_dist) {
@@ -247,6 +247,14 @@ int Legalizer::find_closest_row(Node* cell) {
         }
     }
     return num_rows - 1;
+}
+
+int Legalizer::find_closest_subrow(Node* cell, Row* row) {
+    // If it has no subrows, return -1
+    if(row->subrows.empty()) {
+        return -1;
+    }
+
 }
 
 int Legalizer::place_row_trial(Node* cell, Row* row) {

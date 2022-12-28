@@ -19,18 +19,18 @@ Row::Row(double x, double y, int h, int num_sites, int site_width) {
 void Row::slice(Node* blockage) {
     // Variables
     SubRow* lsr = subrows.back(); // last subrow
-    double lsr_min_x = lsr->x, lsr_max_x = lsr->x + lsr->w;
+    double lsr_min_x = lsr->min_x, lsr_max_x = lsr->max_x;
     double blkg_min_x = blockage->x, blkg_max_x = blockage->x + blockage->w;
 
     // Slice row into subrows
     if(lsr_min_x < blkg_min_x) {
         if(lsr_max_x > blkg_max_x) {
-            subrows.push_back(new SubRow(blkg_max_x, lsr_max_x - blkg_max_x));
+            subrows.push_back(new SubRow(blkg_max_x, lsr_max_x));
         }
-        lsr->set_xw(lsr_min_x, blkg_min_x - lsr_min_x);
+        lsr->set_xs(lsr_min_x, blkg_min_x);
     } else {
         if(lsr_max_x > blkg_max_x) {
-            lsr->set_xw(blkg_max_x, lsr_max_x - blkg_max_x);
+            lsr->set_xs(blkg_max_x, lsr_max_x);
         } else {
             subrows.pop_back();
         }

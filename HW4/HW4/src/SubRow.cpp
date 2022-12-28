@@ -1,22 +1,23 @@
 #include "SubRow.hpp"
 
 SubRow::SubRow() {
-    x = 0;
-    w = 0;
+    min_x = 0;
+    max_x = 0;
+    free_width = 0;
 }
 
-SubRow::SubRow(double x, int w) {
-    this->x = x;
-    this->w = w;
+SubRow::SubRow(double min_x, double max_x) {
+    set_xs(min_x, max_x);
 }
 
-void SubRow::set_xw(double x, int w) {
-    this->x = x;
-    this->w = w;
+void SubRow::set_xs(double min_x, double max_x) {
+    this->min_x = min_x;
+    this->max_x = max_x;
+    free_width = max_x - min_x;
 }
 
 void SubRow::print() {
     std::cout << "[SubRow]" << std::endl;
-    std::cout << "x: " << x << std::endl;
-    std::cout << "w: " << w << std::endl;
+    std::cout << "min_x: " << min_x << std::endl;
+    std::cout << "max_x: " << max_x << std::endl;
 }
