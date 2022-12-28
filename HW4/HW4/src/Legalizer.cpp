@@ -8,7 +8,7 @@ Legalizer::Legalizer(std::string input_file, std::string output_file) {
     slice_rows();
 
     // Legalize by Abacus
-    // abacus();
+    abacus();
 
     // Write output
     write_output(output_file);
@@ -219,6 +219,7 @@ void Legalizer::abacus() {
         // Iterate through the rows
         for(auto& row : rows) {
             // Place cell into row(trial)
+            place_row_trial(cell, row);
             // Compute cost
             // If cost < min_cost:
             //   min_cost = cost
@@ -255,11 +256,48 @@ int Legalizer::find_closest_subrow(Node* cell, Row* row) {
         return -1;
     }
 
+    if(cell->x >= row->subrows.back()->max_x) {
+        if(cell->w <= row->subrows.back()->free_width)
+            return row->subrows.size() - 1;
+    } else {
+        for(int i = 0; i < row->subrows.size(); i++) {
+            if(cell->x >= row->subrows[i]->max_x) {
+                continue;
+            }
+
+            if(cell->x >= row->subrows[i]->min_x) {
+                if(cell->w <= row->subrows[i]->free_width)
+                    return i;
+                if(i + 1 < row->subrows.size()) {
+                    if(cell->w <= row->subrows[i + 1]->free_width)
+                        return i + 1;
+                }
+            } else {
+                if(i > 0) {
+                    if(std::abs(cell->x + cell->w - row->subrows[i-1]->max_x) < std::abs(cell->x - row->subrows[i]->min_x)) {
+                        if(cell->w <= row->subrows[i-1]->free_width)
+                            return i - 1;
+                    }
+                    if(cell->w <= row->subrows[i]->free_width)
+                        return i;
+                } else {
+                    if(cell->w <= row->subrows[i]->free_width)
+                        return 0;
+                }
+            }
+        }
+    }
+
+    return -1;
 }
 
 int Legalizer::place_row_trial(Node* cell, Row* row) {
     // Variables
-    int subrow_idx = 0;
+    int subrow_idx = find_closest_subrow(cell, row);
+    cell->print();
+    row->print();
+    std::cout << "subrow_idx: " << subrow_idx << std::endl;
+    pause();
 
     // Place cell into row
     
