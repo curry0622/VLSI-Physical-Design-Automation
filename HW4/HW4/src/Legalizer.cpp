@@ -306,13 +306,19 @@ int Legalizer::find_closest_subrow(Node* cell, Row* row) {
 }
 
 int Legalizer::place_row_trial(Node* cell, Row* row) {
+    // Find the closest subrow
     int subrow_idx = find_closest_subrow(cell, row);
+
+    // If there is no subrow available, return -1
     if(subrow_idx == -1) {
         cell->opt_x = DBL_MAX;
         cell->opt_y = DBL_MAX;
         return -1;
     }
 
+    // Initialize the optimal x,
+    // set it to the cell's x if it is within the subrow's range,
+    // otherwise set it to the boundary
     SubRow* subrow = row->subrows[subrow_idx];
     double opt_x = cell->x;
     if(cell->x < subrow->min_x) {
@@ -323,44 +329,58 @@ int Legalizer::place_row_trial(Node* cell, Row* row) {
 
     Cluster* last_cluster = subrow->last_cluster;
     if(last_cluster == nullptr || last_cluster->x + last_cluster->width <= opt_x) {
+        // If the cell is the first cluster in the subrow,
+        // or it is placed after the last cluster,
+        // set the optimal x to the cell's x
         cell->opt_x = opt_x;
     } else {
-        int trial_weight = last_cluster->weight + cell->weight;
-        int trial_width = last_cluster->width + cell->width;
-        double trial_q = last_cluster->q + cell->weight * (cell->x - last_cluster->width);
+        // Otherwise, add cell to the last cluster
+        int c_weight = last_cluster->weight + cell->weight; // new cluster's weight
+        int c_width = last_cluster->width + cell->width; // new cluster's width
+        double c_q = last_cluster->q + cell->weight * (cell->x - last_cluster->width); // new cluster's q
+        double c_x = 0; // new cluster's x
 
-        double trial_x = 0;
+        // Keep collapsing clusters until it's not overlapping with the previous cluster
         while(true) {
-            trial_x = trial_q / trial_weight;
+            c_x = c_q / c_weight;
 
-            if(trial_x < subrow->min_x) {
-                trial_x = subrow->min_x;
+            if(c_x < subrow->min_x) {
+                c_x = subrow->min_x;
             }
-            if(trial_x > subrow->max_x - trial_width) {
-                trial_x = subrow->max_x - trial_width;
+            if(c_x > subrow->max_x - c_width) {
+                c_x = subrow->max_x - c_width;
             }
 
+            // Check if the cluster is overlapping with the previous cluster
             Cluster* pre_cluster = last_cluster->pre;
-            if(pre_cluster != nullptr && pre_cluster->x + pre_cluster->width > trial_x) {
-                trial_q = pre_cluster->q + trial_q - trial_weight * pre_cluster->width;
-                trial_weight += pre_cluster->weight;
-                trial_width = pre_cluster->width + trial_width;
+            if(pre_cluster != nullptr && pre_cluster->x + pre_cluster->width > c_x) {
+                // Collapse the cluster with the previous cluster
+                c_q = pre_cluster->q + c_q - c_weight * pre_cluster->width;
+                c_weight += pre_cluster->weight;
+                c_width = pre_cluster->width + c_width;
                 last_cluster = pre_cluster;
             } else {
                 break;
             }
         }
-        cell->opt_x = trial_x + trial_width - cell->width;
+
+        // Set the optimal x of the cell
+        cell->opt_x = c_x + c_width - cell->width;
     }
+    // Set the optimal y of the cell
     cell->opt_y = row->y;
 
     return subrow_idx;
 }
 
 void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
+    // Initialize insert subrow
     SubRow* subrow = row->subrows[subrow_idx];
     subrow->free_width -= cell->width;
 
+    // Initialize the optimal x,
+    // set it to the cell's x if it is within the subrow's range,
+    // otherwise set it to the boundary
     double opt_x = cell->x;
     if(cell->x < subrow->min_x) {
         opt_x = subrow->min_x;
@@ -370,12 +390,17 @@ void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
 
     Cluster* last_cluster = subrow->last_cluster;
     if(last_cluster == nullptr || last_cluster->x + last_cluster->width <= opt_x) {
+        // If the cell is the first cluster in the subrow,
+        // or it is placed after the last cluster,
+        // create a new cluster and add the cell to it
         last_cluster = new Cluster(opt_x, last_cluster);
         last_cluster->add_cell(cell);
         subrow->last_cluster = last_cluster;
     } else {
+        // Otherwise, add cell to the last cluster
         last_cluster->add_cell(cell);
 
+        // Keep collapsing clusters until it's not overlapping with the previous cluster
         while(true) {
             last_cluster->x = last_cluster->q / last_cluster->weight;
 
@@ -386,13 +411,14 @@ void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
                 last_cluster->x = subrow->max_x - last_cluster->width;
             }
 
+            // Check if the cluster is overlapping with the previous cluster
             Cluster* pre_cluster = last_cluster->pre;
             if(pre_cluster != nullptr && pre_cluster->x + pre_cluster->width > last_cluster->x) {
+                // Collapse the cluster with the previous cluster
                 pre_cluster->cells.insert(pre_cluster->cells.end(), last_cluster->cells.begin(), last_cluster->cells.end());
                 pre_cluster->weight += last_cluster->weight;
                 pre_cluster->q += last_cluster->q - last_cluster->weight * pre_cluster->width;
                 pre_cluster->width += last_cluster->width;
-                delete last_cluster;
                 last_cluster = pre_cluster;
             } else {
                 break;
@@ -408,11 +434,13 @@ void Legalizer::cells_alignment() {
         for(auto& subrow : row->subrows) {
             Cluster* last_cluster = subrow->last_cluster;
             while(last_cluster != nullptr) {
-                double shift_x = last_cluster->x - subrow->min_x;
-                if(shift_x - std::floor(shift_x / site_width) * site_width <= site_width / 2.0) {
-                    last_cluster->x = std::floor(shift_x / site_width) * site_width + subrow->min_x;
+                double x_offset = last_cluster->x - subrow->min_x;
+                if(x_offset - std::floor(x_offset / site_width) * site_width <= site_width / 2.0) {
+                    // Align the cluster to the left
+                    last_cluster->x = subrow->min_x + std::floor(x_offset / site_width) * site_width;
                 } else {
-                    last_cluster->x = std::ceil(shift_x / site_width) * site_width + subrow->min_x;
+                    // Align the cluster to the right
+                    last_cluster->x = subrow->min_x + std::ceil(x_offset / site_width) * site_width;
                 }
 
                 int opt_x = last_cluster->x;
