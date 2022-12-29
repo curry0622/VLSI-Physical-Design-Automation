@@ -26,7 +26,8 @@ void Node::set_xy(double x, double y) {
 void Node::set_wh(int w, int h) {
     this->width = w;
     this->height = h;
-    this->weight = w;
+    // this->weight = w;
+    this->weight = 1;
 }
 
 double Node::get_cost() {

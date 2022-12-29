@@ -183,16 +183,20 @@ void Legalizer::read_input(std::string input_file) {
 
 void Legalizer::write_output(std::string output_file) {
     // Variables
-    std::ofstream file(output_file);
+    std::ofstream fout(output_file);
 
     // Write cells
-    for(int i = 0; i < num_cells; i++) {
-        file << cells[i]->name << " " << static_cast<int>(cells[i]->opt_x) << " " << static_cast<int>(cells[i]->opt_y) << std::endl;
+    for(const auto& cell : cells) {
+        fout << cell->name << " ";
+        fout << static_cast<int>(cell->opt_x) << " ";
+        fout << static_cast<int>(cell->opt_y) << std::endl;
     }
 
     // Write blockages
-    for(int i = 0; i < num_blockages; i++) {
-        file << blockages[i]->name << " " << static_cast<int>(blockages[i]->x) << " " << static_cast<int>(blockages[i]->y) << std::endl;
+    for(const auto& blockage : blockages) {
+        fout << blockage->name << " ";
+        fout << static_cast<int>(blockage->x) << " ";
+        fout << static_cast<int>(blockage->y) << std::endl;
     }
 }
 
@@ -223,10 +227,10 @@ void Legalizer::abacus() {
         int opt_row_idx = find_closest_row(cell);
         int opt_subrow_idx = place_row_trial(cell, rows[opt_row_idx]);
         double opt_cost = cell->get_cost();
-        int up_row_idx = opt_row_idx, down_row_idx = opt_row_idx;
 
-        while(down_row_idx > 0 && std::abs(cell->y - rows[down_row_idx]->y) < opt_cost) {
-            down_row_idx--;
+        // Search down until the y_cost is greater than the minimal cost
+        int down_row_idx = opt_row_idx - 1;
+        while(down_row_idx >= 0 && std::abs(cell->y - rows[down_row_idx]->y) < opt_cost) {
             int subrow_idx = place_row_trial(cell, rows[down_row_idx]);
             double cost = cell->get_cost();
             if(cost < opt_cost) {
@@ -234,10 +238,12 @@ void Legalizer::abacus() {
                 opt_row_idx = down_row_idx;
                 opt_subrow_idx = subrow_idx;
             }
+            down_row_idx--;
         }
 
-        while(up_row_idx < num_rows - 1 && std::abs(cell->y - rows[up_row_idx]->y) < opt_cost) {
-            up_row_idx++;
+        // Search up until the y_cost is greater than the minimal cost
+        int up_row_idx = opt_row_idx + 1;
+        while(up_row_idx <= num_rows - 1 && std::abs(cell->y - rows[up_row_idx]->y) < opt_cost) {
             int subrow_idx = place_row_trial(cell, rows[up_row_idx]);
             double cost = cell->get_cost();
             if(cost < opt_cost) {
@@ -245,6 +251,7 @@ void Legalizer::abacus() {
                 opt_row_idx = up_row_idx;
                 opt_subrow_idx = subrow_idx;
             }
+            up_row_idx++;
         }
 
         place_row_final(cell, rows[opt_row_idx], opt_subrow_idx);
@@ -436,20 +443,20 @@ void Legalizer::cells_alignment() {
 }
 
 void Legalizer::print_cells() {
-    for(int i = 0; i < num_cells; i++) {
-        cells[i]->print();
+    for(const auto& cell : cells) {
+        cell->print();
     }
 }
 
 void Legalizer::print_blockages() {
-    for(int i = 0; i < num_blockages; i++) {
-        blockages[i]->print();
+    for(const auto& blockage : blockages) {
+        blockage->print();
     }
 }
 
 void Legalizer::print_rows() {
-    for(int i = 0; i < num_rows; i++) {
-        rows[i]->print();
+    for(const auto& row : rows) {
+        row->print();
     }
 }
 
