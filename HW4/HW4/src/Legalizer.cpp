@@ -12,17 +12,6 @@ Legalizer::Legalizer(std::string input_file, std::string output_file) {
 
     // Write output
     write_output(output_file);
-
-    // Check overlap
-    // check_overlap();
-
-    // Check alignment
-    
-
-    // Print
-    // print_cells();
-    // print_blockages();
-    // print_rows();
 }
 
 void Legalizer::read_node(std::string node_file) {
@@ -338,7 +327,7 @@ int Legalizer::place_row_trial(Node* cell, Row* row) {
     } else {
         int trial_weight = last_cluster->weight + cell->weight;
         int trial_width = last_cluster->width + cell->width;
-        double trial_q = last_cluster->q + cell->weight * (opt_x - last_cluster->width);
+        double trial_q = last_cluster->q + cell->weight * (cell->x - last_cluster->width);
 
         double trial_x = 0;
         while(true) {
@@ -381,14 +370,11 @@ void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
 
     Cluster* last_cluster = subrow->last_cluster;
     if(last_cluster == nullptr || last_cluster->x + last_cluster->width <= opt_x) {
-        last_cluster = new Cluster(opt_x, cell->weight * opt_x, cell->width, cell->weight, last_cluster);
-        last_cluster->cells.push_back(cell);
+        last_cluster = new Cluster(opt_x, last_cluster);
+        last_cluster->add_cell(cell);
         subrow->last_cluster = last_cluster;
     } else {
-        last_cluster->cells.push_back(cell);
-        last_cluster->q += cell->weight * (opt_x - last_cluster->width);
-        last_cluster->width += cell->width;
-        last_cluster->weight += cell->weight;
+        last_cluster->add_cell(cell);
 
         while(true) {
             last_cluster->x = last_cluster->q / last_cluster->weight;

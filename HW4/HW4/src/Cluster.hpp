@@ -17,9 +17,11 @@ public:
 
     // Constructors
     Cluster();
-    Cluster(double x, double q, int width, int weight, Cluster* pre);
+    Cluster(double x, Cluster* pre);
 
     // Functions
+    void add_cell(Node* cell);
 
     // Utils
+    void print();
 };
