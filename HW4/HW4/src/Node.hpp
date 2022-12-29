@@ -6,9 +6,8 @@ public:
     std::string name;
     double x, y; // global placement coordinates
     double opt_x, opt_y; // optimal coordinates
-    int w, h;
+    int width, height;
     int weight;
-    // double weight;
 
     // Constructors
     Node();

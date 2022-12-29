@@ -13,21 +13,18 @@
 class Row {
 public:
     // Variables
-    // double x, y;
     int x, y;
-    int h;
+    int height;
     int num_sites;
     int site_width;
     std::vector<SubRow*> subrows;
 
     // Constructors
     Row();
-    // Row(double x, double y, int h, int num_sites, int site_width);
-    // void slice(Node* blockage);
     Row(int x, int y, int h, int num_sites, int site_width);
-    void slice(Node* blockage);
 
     // Functions
+    void slice(Node* blockage);
 
     // Utils
     void print();

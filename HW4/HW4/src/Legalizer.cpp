@@ -205,7 +205,7 @@ void Legalizer::slice_rows() {
     // For each blockage, if it occupies a row, slice the row
     for(auto& blockage : blockages) {
         for(auto& row : rows) {
-            if(row->y >= blockage->y && row->y < blockage->y + blockage->h) {
+            if(row->y >= blockage->y && row->y < blockage->y + blockage->height) {
                 row->slice(blockage);
             }
         }
@@ -275,7 +275,7 @@ int Legalizer::find_closest_subrow(Node* cell, Row* row) {
     }
 
     if(cell->x >= row->subrows.back()->max_x) {
-        if(cell->w <= row->subrows.back()->free_width)
+        if(cell->width <= row->subrows.back()->free_width)
             return row->subrows.size() - 1;
     } else {
         for(int i = 0; i < row->subrows.size(); i++) {
@@ -284,22 +284,22 @@ int Legalizer::find_closest_subrow(Node* cell, Row* row) {
             }
 
             if(cell->x >= row->subrows[i]->min_x) {
-                if(cell->w <= row->subrows[i]->free_width)
+                if(cell->width <= row->subrows[i]->free_width)
                     return i;
                 if(i + 1 < row->subrows.size()) {
-                    if(cell->w <= row->subrows[i + 1]->free_width)
+                    if(cell->width <= row->subrows[i + 1]->free_width)
                         return i + 1;
                 }
             } else {
                 if(i > 0) {
-                    if(std::abs(cell->x + cell->w - row->subrows[i-1]->max_x) < std::abs(cell->x - row->subrows[i]->min_x)) {
-                        if(cell->w <= row->subrows[i-1]->free_width)
+                    if(std::abs(cell->x + cell->width - row->subrows[i-1]->max_x) < std::abs(cell->x - row->subrows[i]->min_x)) {
+                        if(cell->width <= row->subrows[i-1]->free_width)
                             return i - 1;
                     }
-                    if(cell->w <= row->subrows[i]->free_width)
+                    if(cell->width <= row->subrows[i]->free_width)
                         return i;
                 } else {
-                    if(cell->w <= row->subrows[i]->free_width)
+                    if(cell->width <= row->subrows[i]->free_width)
                         return 0;
                 }
             }
@@ -321,8 +321,8 @@ int Legalizer::place_row_trial(Node* cell, Row* row) {
     double opt_x = cell->x;
     if(cell->x < subrow->min_x) {
         opt_x = subrow->min_x;
-    } else if(cell->x > subrow->max_x - cell->w) {
-        opt_x = subrow->max_x - cell->w;
+    } else if(cell->x > subrow->max_x - cell->width) {
+        opt_x = subrow->max_x - cell->width;
     }
 
     Cluster* last_cluster = subrow->last_cluster;
@@ -330,7 +330,7 @@ int Legalizer::place_row_trial(Node* cell, Row* row) {
         cell->opt_x = opt_x;
     } else {
         int trial_weight = last_cluster->weight + cell->weight;
-        int trial_width = last_cluster->width + cell->w;
+        int trial_width = last_cluster->width + cell->width;
         double trial_q = last_cluster->q + cell->weight * (opt_x - last_cluster->width);
 
         double trial_x = 0;
@@ -354,7 +354,7 @@ int Legalizer::place_row_trial(Node* cell, Row* row) {
                 break;
             }
         }
-        cell->opt_x = trial_x + trial_width - cell->w;
+        cell->opt_x = trial_x + trial_width - cell->width;
     }
     cell->opt_y = row->y;
 
@@ -363,24 +363,24 @@ int Legalizer::place_row_trial(Node* cell, Row* row) {
 
 void Legalizer::place_row_final(Node* cell, Row* row, int subrow_idx) {
     SubRow* subrow = row->subrows[subrow_idx];
-    subrow->free_width -= cell->w;
+    subrow->free_width -= cell->width;
 
     double opt_x = cell->x;
     if(cell->x < subrow->min_x) {
         opt_x = subrow->min_x;
-    } else if(cell->x > subrow->max_x - cell->w) {
-        opt_x = subrow->max_x - cell->w;
+    } else if(cell->x > subrow->max_x - cell->width) {
+        opt_x = subrow->max_x - cell->width;
     }
 
     Cluster* last_cluster = subrow->last_cluster;
     if(last_cluster == nullptr || last_cluster->x + last_cluster->width <= opt_x) {
-        last_cluster = new Cluster(opt_x, cell->weight * opt_x, cell->w, cell->weight, last_cluster);
+        last_cluster = new Cluster(opt_x, cell->weight * opt_x, cell->width, cell->weight, last_cluster);
         last_cluster->cells.push_back(cell);
         subrow->last_cluster = last_cluster;
     } else {
         last_cluster->cells.push_back(cell);
         last_cluster->q += cell->weight * (opt_x - last_cluster->width);
-        last_cluster->width += cell->w;
+        last_cluster->width += cell->width;
         last_cluster->weight += cell->weight;
 
         while(true) {
@@ -426,100 +426,13 @@ void Legalizer::cells_alignment() {
                 for(auto& cell : last_cluster->cells) {
                     cell->opt_x = opt_x;
                     cell->opt_y = row->y;
-                    opt_x += cell->w;
+                    opt_x += cell->width;
                 }
 
                 last_cluster = last_cluster->pre;
             }
-            // for(auto& cluster : subrow->clusters) {
-            //     double shift_x = cluster->x - subrow->min_x;
-            //     if(shift_x - std::floor(shift_x / site_width) * site_width <= site_width / 2.0) {
-            //         cluster->x = std::floor(shift_x / site_width) * site_width + subrow->min_x;
-            //     } else {
-            //         cluster->x = std::ceil(shift_x / site_width) * site_width + subrow->min_x;
-            //     }
-
-            //     int opt_x = cluster->x;
-            //     for(auto& cell : cluster->cells) {
-            //         cell->opt_x = opt_x;
-            //         cell->opt_y = row->y;
-            //         opt_x += cell->w;
-            //     }
-            // }
         }
     }
-}
-
-bool Legalizer::check_overlap() {
-    // for(auto& row : rows) {
-    //     std::vector<Node*> vcells;
-    //     for(auto& subrow : row->subrows) {
-    //         for(auto& cluster : subrow->clusters) {
-    //             for(auto& cell : cluster->cells) {
-    //                 vcells.push_back(cell);
-    //             }
-    //         }
-    //     }
-    //     if(vcells.empty())
-    //         continue;
-    //     for(int i = 0; i < vcells.size() - 1; i++) {
-    //         Node* cell1 = vcells[i];
-    //         Node* cell2 = vcells[i + 1];
-    //         if(cell1->opt_x + cell1->w > cell2->opt_x) {
-    //             std::cout << "cell1's opt_x: " << cell1->opt_x << std::endl;
-    //             std::cout << "cell1's w: " << cell1->w << std::endl;
-    //             std::cout << "cell2's opt_x: " << cell2->opt_x << std::endl;
-    //             std::cout << "cell1's opt_x + w: " << cell1->opt_x + cell1->w << std::endl;
-    //             std::cout << "overlap" << std::endl;
-    //             pause();
-    //         }
-    //     }
-    // }
-    // for(auto& row : rows) {
-    //     for(auto& subrow : row->subrows) {
-    //         if(subrow->clusters.empty())
-    //             continue;
-    //         for(int i = 0; i < subrow->clusters.size() - 1; i++) {
-    //             Cluster* cluster1 = subrow->clusters[i];
-    //             Cluster* cluster2 = subrow->clusters[i + 1];
-    //             if(cluster1->x + cluster1->width > cluster2->x) {
-    //                 std::cout << "subrow's min_x: " << subrow->min_x << std::endl;
-    //                 std::cout << "subrow's max_x: " << subrow->max_x << std::endl;
-    //                 // std::cout << "size: " << subrow->clusters.size() << std::endl;
-    //                 // std::cout << i << ", " << i + 1 << std::endl;
-    //                 std::cout << "cluster1's x: " << cluster1->x << std::endl;
-    //                 std::cout << "cluster1's width: " << cluster1->width << std::endl;
-    //                 std::cout << "cluster1's x + width: " << cluster1->x + cluster1->width << std::endl;
-    //                 std::cout << "cluster2's x: " << cluster2->x << std::endl;
-    //                 std::cout << "cluster2's width: " << cluster2->width << std::endl;
-    //                 std::cout << "cluster2's x + width: " << cluster2->x + cluster2->width << std::endl;
-    //                 std::cout << "overlap" << std::endl;
-    //                 pause();
-    //             }
-    //         }
-    //     }
-    // }
-    return false;
-}
-
-bool Legalizer::check_alignment() {
-    // for(auto& row : rows) {
-    //     for(auto& subrow : row->subrows) {
-    //         for(auto& cluster : subrow->clusters) {
-    //             for(auto& cell : cells) {
-    //                 if(int(cell->opt_x - cluster->x) % row->site_width != 0) {
-    //                     cell->print();
-    //                     std::cout << "cell x: " << cell->opt_x << std::endl;
-    //                     std::cout << "cluster x: " << cluster->x << std::endl;
-    //                     std::cout << "site width: " << row->site_width << std::endl;
-    //                     std::cout << "alignment" << std::endl;
-    //                     return true;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    return false;
 }
 
 void Legalizer::print_cells() {

@@ -12,7 +12,6 @@ public:
     double q;
     int width;
     int weight;
-    // double weight;
     std::vector<Node*> cells;
     Cluster* pre;
 
