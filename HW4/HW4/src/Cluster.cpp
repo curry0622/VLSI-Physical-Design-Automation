@@ -15,9 +15,3 @@ Cluster::Cluster(double x, double q, int width, int weight, Cluster* pre) {
     this->weight = weight;
     this->pre = pre;
 }
-
-void Cluster::add_cell(Node* cell) {
-    cells.push_back(cell);
-    width += cell->w;
-    weight += cell->weight;
-}

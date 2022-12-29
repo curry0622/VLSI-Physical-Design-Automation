@@ -13,7 +13,8 @@
 class Row {
 public:
     // Variables
-    double x, y;
+    // double x, y;
+    int x, y;
     int h;
     int num_sites;
     int site_width;
@@ -21,7 +22,9 @@ public:
 
     // Constructors
     Row();
-    Row(double x, double y, int h, int num_sites, int site_width);
+    // Row(double x, double y, int h, int num_sites, int site_width);
+    // void slice(Node* blockage);
+    Row(int x, int y, int h, int num_sites, int site_width);
     void slice(Node* blockage);
 
     // Functions

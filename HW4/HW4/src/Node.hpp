@@ -8,6 +8,7 @@ public:
     double opt_x, opt_y; // optimal coordinates
     int w, h;
     int weight;
+    // double weight;
 
     // Constructors
     Node();

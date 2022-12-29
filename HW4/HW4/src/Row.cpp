@@ -8,7 +8,7 @@ Row::Row() {
     site_width = 0;
 }
 
-Row::Row(double x, double y, int h, int num_sites, int site_width) {
+Row::Row(int x, int y, int h, int num_sites, int site_width) {
     this->x = x;
     this->y = y;
     this->h = h;
@@ -19,8 +19,10 @@ Row::Row(double x, double y, int h, int num_sites, int site_width) {
 void Row::slice(Node* blockage) {
     // Variables
     SubRow* lsr = subrows.back(); // last subrow
-    double lsr_min_x = lsr->min_x, lsr_max_x = lsr->max_x;
-    double blkg_min_x = blockage->x, blkg_max_x = blockage->x + blockage->w;
+    // double lsr_min_x = lsr->min_x, lsr_max_x = lsr->max_x;
+    // double blkg_min_x = blockage->x, blkg_max_x = blockage->x + blockage->w;
+    int lsr_min_x = lsr->min_x, lsr_max_x = lsr->max_x;
+    int blkg_min_x = blockage->x, blkg_max_x = blockage->x + blockage->w;
 
     // Slice row into subrows
     if(lsr_min_x < blkg_min_x) {

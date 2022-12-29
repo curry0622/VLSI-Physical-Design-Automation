@@ -12,6 +12,7 @@ public:
     double q;
     int width;
     int weight;
+    // double weight;
     std::vector<Node*> cells;
     Cluster* pre;
 
@@ -20,7 +21,6 @@ public:
     Cluster(double x, double q, int width, int weight, Cluster* pre);
 
     // Functions
-    void add_cell(Node* cell);
 
     // Utils
 };

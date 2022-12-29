@@ -4,13 +4,15 @@ SubRow::SubRow() {
     min_x = 0;
     max_x = 0;
     free_width = 0;
+    last_cluster = nullptr;
 }
 
-SubRow::SubRow(double min_x, double max_x) {
+SubRow::SubRow(int min_x, int max_x) {
     set_xs(min_x, max_x);
+    last_cluster = nullptr;
 }
 
-void SubRow::set_xs(double min_x, double max_x) {
+void SubRow::set_xs(int min_x, int max_x) {
     this->min_x = min_x;
     this->max_x = max_x;
     free_width = max_x - min_x;
