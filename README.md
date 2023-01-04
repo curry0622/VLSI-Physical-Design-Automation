@@ -15,3 +15,7 @@ In this homework, you are asked to adapt and implement an existing algorithm, pu
 ## HW4: Placement Legalization
 
 In this homework, you are asked to adapt and implement an existing algorithm, published in the **ISPD-08** paper entitled **“[Abacus: fast legalization of standard cell circuits with minimal movement](https://dl.acm.org/doi/10.1145/1353629.1353640)”** by Spindler, Schlichtmann and Johannes, to legalize a given global placement result with minimal total displacement (measured by Euclidean distance).
+
+## HW5: Automated P&R for Analog Circuit
+
+In this homework, you are asked to write programs to place and route some analog circuits, and you need to output the results in the DEF (Design Exchange File) format.
