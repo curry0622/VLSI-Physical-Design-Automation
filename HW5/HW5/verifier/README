@@ -1,0 +1,6 @@
+Usage:
+    ./verifier <k-value: 4, 16...> <.def file>
+
+Output:
+    If your result file have something wrong, it will print "[Error].....".
+    Otherwise, it will print "[Success] Your layout is common centroid."

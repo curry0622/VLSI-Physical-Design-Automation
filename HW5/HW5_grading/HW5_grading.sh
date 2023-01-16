@@ -1,7 +1,7 @@
 #!/bin/bash
 homeworkName=HW5
 binaryName=hw5
-testcasePool="python 4 16 36 64"
+testcasePool="python 4 16 36 64 100"
 
 root=$(pwd)
 outputDir=$root/output
@@ -28,10 +28,6 @@ function verifyCmd() {
 		echo "Cannot open output for testcase $1."
 	elif [[ $log =~ "Wrong format" ]]; then
 		echo "Wrong format in DEF file for testcase $1."
-	elif [[ $log =~ "Prefix changed in" ]]; then
-		echo "Wrong format in DEF file for testcase $1."
-	elif [[ $log =~ "Duplicated name for" ]]; then
-		echo "Duplicated name for some components or nets in testcase $1."
 	elif [[ $log =~ "The number of transistors" ]]; then
 		echo "The number of transistors is wrong for testcase $1."
 	elif [[ $log =~ "Exact 1 transistor need to connect to" ]]; then

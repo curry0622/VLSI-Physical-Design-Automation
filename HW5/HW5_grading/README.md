@@ -66,6 +66,7 @@ __Do not put your original directory here__ because it will remove all directori
                 16 |       pass | success
                 36 |       pass | success
                 64 |       pass | success
+               100 |       pass | success
         ```
     * If the status is not __success__, it means your program failed in this case. e.g.:
 
@@ -77,4 +78,5 @@ __Do not put your original directory here__ because it will remove all directori
                 16 |       pass | success
                 36 |       pass | success
                 64 |       pass | success
+               100 |       pass | success
         ```
