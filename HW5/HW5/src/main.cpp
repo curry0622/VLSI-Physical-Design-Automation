@@ -149,16 +149,14 @@ int main(int argc, char *argv[]) {
         for (int j = 0; j < HALF_NUM_CELL; j++) {
             std::string inst_name;
             int x, y;
-            int rl = HALF_NUM_CELL;
-            int offset = NUM_CELL - 1;
             // left via
-            inst_name = "Via34_port2ME3_" + std::to_string(i * rl + j + 0 * n);
+            inst_name = "Via34_port2ME3_" + std::to_string(i * HALF_NUM_CELL + j + 0 * n);
             x = ME3_specialnet[i][j].x1;
             y = ME4_specialnet_port[2 * j + i / NUM_M4][i % NUM_M4].y1;
-            Via34_port2ME3[2 * j + (i / NUM_M4)][i % NUM_M4][0] = Component(VIA34_LIB_NAME, inst_name, x, y);
+            Via34_port2ME3[2 * j + i / NUM_M4][i % NUM_M4][0] = Component(VIA34_LIB_NAME, inst_name, x, y);
             // right via
-            inst_name = "Via34_port2ME3_" + std::to_string(i * rl + j + 1 * n);
-            x = ME3_specialnet[offset - i][j].x1;
+            inst_name = "Via34_port2ME3_" + std::to_string(i * HALF_NUM_CELL + j + 1 * n);
+            x = ME3_specialnet[NUM_CELL - 1 - i][j].x1;
             Via34_port2ME3[2 * j + i / NUM_M4][i % NUM_M4][1] = Component(VIA34_LIB_NAME, inst_name, x, y);
         }
     }
