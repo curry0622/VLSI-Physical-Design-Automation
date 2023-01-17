@@ -144,37 +144,55 @@ int main(int argc, char *argv[]) {
     }
 
     /* Step 7: create Via34 to ME4 port */
-    Component Via34_port2ME3[4][2];
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 2; j++) {
+    Component Via34_port2ME3[NUM_CELL][2];
+    for (int i = 0; i < HALF_NUM_CELL; i++) {
+        for (int j = 0; j < HALF_NUM_CELL; j++) {
             std::string inst_name;
             int x, y;
             // left via
-            inst_name = "Via34_port2ME3_" + std::to_string((i * 2 + j) * 2 + 0);
+            inst_name = "Via34_port2ME3_" + std::to_string(i * HALF_NUM_CELL + j + 0 * NUM_CELL);
             x = ME3_specialnet[i][j].x1;
-            y = ME4_specialnet_port[i * 2 + j][0].y1;
-            Via34_port2ME3[i * 2 + j][0] = Component(VIA34_LIB_NAME, inst_name, x, y);
+            y = ME4_specialnet_port[(i+j*HALF_NUM_CELL)/NUM_M4][(i+j*HALF_NUM_CELL)%NUM_M4].y1;
+            Via34_port2ME3[(i+j*HALF_NUM_CELL)/NUM_M4][0] = Component(VIA34_LIB_NAME, inst_name, x, y);
             // right via
-            inst_name = "Via34_port2ME3_" + std::to_string((i * 2 + j) * 2 + 1);
-            x = ME3_specialnet[3-i][j].x1;
-            y = ME4_specialnet_port[i * 2 + j][0].y1;
-            Via34_port2ME3[i * 2 + j][1] = Component(VIA34_LIB_NAME, inst_name, x, y);
+            inst_name = "Via34_port2ME3_" + std::to_string(i * HALF_NUM_CELL + j + 1 * NUM_CELL);
+            x = ME3_specialnet[(NUM_CELL-1)-i][j].x1;
+            Via34_port2ME3[(i+j*HALF_NUM_CELL)/NUM_M4][1] = Component(VIA34_LIB_NAME, inst_name, x, y);
         }
     }
+    // Component Via34_port2ME3[4][2];
+    // for (int i = 0; i < 2; i++) {
+    //     for (int j = 0; j < 2; j++) {
+    //         std::string inst_name;
+    //         int x, y;
+    //         // left via
+    //         inst_name = "Via34_port2ME3_" + std::to_string((i * 2 + j) * 2 + 0);
+    //         x = ME3_specialnet[i][j].x1;
+    //         y = ME4_specialnet_port[i * 2 + j][0].y1;
+    //         Via34_port2ME3[i * 2 + j][0] = Component(VIA34_LIB_NAME, inst_name, x, y);
+    //         // right via
+    //         inst_name = "Via34_port2ME3_" + std::to_string((i * 2 + j) * 2 + 1);
+    //         x = ME3_specialnet[3-i][j].x1;
+    //         y = ME4_specialnet_port[i * 2 + j][0].y1;
+    //         Via34_port2ME3[i * 2 + j][1] = Component(VIA34_LIB_NAME, inst_name, x, y);
+    //     }
+    // }
 
     /* Create component vector */
     std::vector<Component> component_list;
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_CELL; j++) {
             component_list.push_back(cs_array[i][j]);
         }
     }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_CELL; j++) {
             component_list.push_back(Via34_drain2ME3[i][j]);
+            if (j == 0)
+                std::cout << "Via34_drain2ME3[" << i << "][" << j << "]: " << Via34_drain2ME3[i][j].x << ", " << Via34_drain2ME3[i][j].y << ", " << Via34_drain2ME3[i][j].inst_name << std::endl;
         }
     }
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NUM_CELL; i++) {
         for (int j = 0; j < 2; j++) {
             component_list.push_back(Via34_port2ME3[i][j]);
         }
@@ -182,18 +200,20 @@ int main(int argc, char *argv[]) {
 
     /* Create special net vector */
     std::vector<SpecialNet> specialnet_list;
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 2; j++) {
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_M3; j++) {
             specialnet_list.push_back(ME3_specialnet[i][j]);
         }
     }
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_CELL; j++) {
             specialnet_list.push_back(ME4_specialnet_drain[i][j]);
         }
     }
-    for (int i = 0; i < 4; i++) {
-        specialnet_list.push_back(ME4_specialnet_port[i][0]);
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_M4; j++) {
+            specialnet_list.push_back(ME4_specialnet_port[i][j]);
+        }
     }
 
     /* Final: Write info to def file */
