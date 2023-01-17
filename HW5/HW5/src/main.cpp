@@ -48,10 +48,10 @@ int main(int argc, char *argv[]) {
     }
 
     /* Step 3: create vertical ME3 */
-    SpecialNet ME3_specialnet[4][2];
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 2; j++) {
-            std::string inst_name = "Metal3_" + std::to_string(i * 2 + j);
+    SpecialNet ME3_specialnet[NUM_CELL][NUM_M3];
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_M3; j++) {
+            std::string inst_name = "Metal3_" + std::to_string(i * NUM_M3 + j);
             std::string layer = "ME3";
             int D_x = CS_WIDTH + M3_SPACING;
             int P_x = M3_WIDTH + M3_SPACING;
