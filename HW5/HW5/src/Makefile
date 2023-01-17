@@ -16,3 +16,6 @@ $(EXEC): $(OBJS)
 
 clean:
 	rm -rf $(EXEC) $(OBJS)
+
+judge:
+	./judge.sh
