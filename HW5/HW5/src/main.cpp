@@ -101,16 +101,18 @@ int main(int argc, char *argv[]) {
     }
 
     /* Step 5: create ME4 port */
-    SpecialNet ME4_specialnet_port[4];
-    for (int i = 0; i < 4; i++) {
-        std::string inst_name = "Metal4_port_" + std::to_string(i);
-        std::string layer = "ME4";
-        int D_y = CS_HEIGHT + M4_SPACING * 2 + M4_WIDTH;
-        int x1 = 0;
-        int x2 = die_x2;
-        int y1 = i * D_y;
-        int y2 = y1 + M4_WIDTH;
-        ME4_specialnet_port[i] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
+    SpecialNet ME4_specialnet_port[NUM_CELL][NUM_M4];
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_M4; j++) {
+            std::string inst_name = "Metal4_port_" + std::to_string(i * NUM_M4 + j);
+            std::string layer = "ME4";
+            int D_y = CS_HEIGHT + NUM_M4 * (M4_WIDTH + M4_SPACING) + M4_SPACING;
+            int x1 = 0;
+            int x2 = die_x2;
+            int y1 = i * D_y + j * (M4_WIDTH + M4_SPACING);
+            int y2 = y1 + M4_WIDTH;
+            ME4_specialnet_port[i][j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
+        }
     }
 
     /* Step 6: create Via34 from ME4 drain */
@@ -150,12 +152,12 @@ int main(int argc, char *argv[]) {
             // left via
             inst_name = "Via34_port2ME3_" + std::to_string((i * 2 + j) * 2 + 0);
             x = ME3_specialnet[i][j].x1;
-            y = ME4_specialnet_port[i * 2 + j].y1;
+            y = ME4_specialnet_port[i * 2 + j][0].y1;
             Via34_port2ME3[i * 2 + j][0] = Component(VIA34_LIB_NAME, inst_name, x, y);
             // right via
             inst_name = "Via34_port2ME3_" + std::to_string((i * 2 + j) * 2 + 1);
             x = ME3_specialnet[3-i][j].x1;
-            y = ME4_specialnet_port[i * 2 + j].y1;
+            y = ME4_specialnet_port[i * 2 + j][0].y1;
             Via34_port2ME3[i * 2 + j][1] = Component(VIA34_LIB_NAME, inst_name, x, y);
         }
     }
@@ -191,7 +193,7 @@ int main(int argc, char *argv[]) {
         }
     }
     for (int i = 0; i < 4; i++) {
-        specialnet_list.push_back(ME4_specialnet_port[i]);
+        specialnet_list.push_back(ME4_specialnet_port[i][0]);
     }
 
     /* Final: Write info to def file */
