@@ -64,38 +64,39 @@ int main(int argc, char *argv[]) {
     }
 
     /* Step 4: create ME4 drain */
-    SpecialNet ME4_specialnet_drain[4][4];
-    for (int i = 0; i < 2; i++) {
-        for(int j = 0; j < 2; j++) {
+    SpecialNet ME4_specialnet_drain[NUM_CELL][NUM_CELL];
+    int HALF_NUM_CELL = NUM_CELL / 2;
+    for (int i = 0; i < HALF_NUM_CELL; i++) {
+        for(int j = 0; j < HALF_NUM_CELL; j++) {
             std::string layer = "ME4", inst_name;
             // left bottom corner units
-            inst_name = "Metal4_drain_" + std::to_string(i * 2 + j + 0 * 4);
+            inst_name = "Metal4_drain_" + std::to_string(i * HALF_NUM_CELL + j + 0 * 4);
             int x1 = cs_array[i][j].x + CS_X1_TO_DRAIN;
             int x2 = ME3_specialnet[i][j].x2;
             int y1 = cs_array[i][j].y + CS_Y1_TO_DRAIN;
             int y2 = y1 + M4_WIDTH;
             ME4_specialnet_drain[i][j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
             // right bottom corner units
-            inst_name = "Metal4_drain_" + std::to_string(i * 2 + j + 1 * 4);
-            x1 = cs_array[3-i][j].x + CS_X1_TO_DRAIN;
-            x2 = ME3_specialnet[3-i][j].x2;
-            y1 = cs_array[3-i][j].y + CS_Y1_TO_DRAIN;
+            inst_name = "Metal4_drain_" + std::to_string(i * HALF_NUM_CELL + j + 1 * 4);
+            x1 = cs_array[(NUM_CELL-1)-i][j].x + CS_X1_TO_DRAIN;
+            x2 = ME3_specialnet[(NUM_CELL-1)-i][j].x2;
+            y1 = cs_array[(NUM_CELL-1)-i][j].y + CS_Y1_TO_DRAIN;
             y2 = y1 + M4_WIDTH;
-            ME4_specialnet_drain[3-i][j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
+            ME4_specialnet_drain[(NUM_CELL-1)-i][j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
             // left top corner units
-            inst_name = "Metal4_drain_" + std::to_string(i * 2 + j + 2 * 4);
-            x1 = cs_array[i][3-j].x + CS_X1_TO_DRAIN;
+            inst_name = "Metal4_drain_" + std::to_string(i * HALF_NUM_CELL + j + 2 * 4);
+            x1 = cs_array[i][(NUM_CELL-1)-j].x + CS_X1_TO_DRAIN;
             x2 = ME3_specialnet[i][j].x2;
-            y1 = cs_array[i][3-j].y + CS_Y1_TO_DRAIN;
+            y1 = cs_array[i][(NUM_CELL-1)-j].y + CS_Y1_TO_DRAIN;
             y2 = y1 + M4_WIDTH;
-            ME4_specialnet_drain[i][3-j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
+            ME4_specialnet_drain[i][(NUM_CELL-1)-j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
             // right top corner units
-            inst_name = "Metal4_drain_" + std::to_string(i * 2 + j + 3 * 4);
-            x1 = cs_array[3-i][3-j].x + CS_X1_TO_DRAIN;
-            x2 = ME3_specialnet[3-i][j].x2;
-            y1 = cs_array[3-i][3-j].y + CS_Y1_TO_DRAIN;
+            inst_name = "Metal4_drain_" + std::to_string(i * HALF_NUM_CELL + j + 3 * 4);
+            x1 = cs_array[(NUM_CELL-1)-i][(NUM_CELL-1)-j].x + CS_X1_TO_DRAIN;
+            x2 = ME3_specialnet[(NUM_CELL-1)-i][j].x2;
+            y1 = cs_array[(NUM_CELL-1)-i][(NUM_CELL-1)-j].y + CS_Y1_TO_DRAIN;
             y2 = y1 + M4_WIDTH;
-            ME4_specialnet_drain[3-i][3-j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
+            ME4_specialnet_drain[(NUM_CELL-1)-i][(NUM_CELL-1)-j] = SpecialNet(inst_name, layer, x1, y1, x2, y2);
         }
     }
 
