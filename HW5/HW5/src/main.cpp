@@ -15,17 +15,6 @@
 #define CS_LIB_NAME "MSBCS"
 #define VIA34_LIB_NAME "Via34"
 
-std::vector<int> get_boundary(int n) {
-    int NUM_CELL = sqrt(n * 4);
-    int NUM_M3 = NUM_CELL / 2;
-    int NUM_M4 = NUM_CELL / 4;
-    int die_x1 = 0;
-    int die_y1 = 0;
-    int die_x2 = CS_WIDTH * NUM_CELL + M3_SPACING * ((NUM_M3 + 1) * NUM_CELL - 1) + M3_WIDTH * NUM_M3 * NUM_CELL;
-    int die_y2 = CS_HEIGHT * NUM_CELL + M4_SPACING * ((NUM_M4 + 1) * NUM_CELL - 1) + M4_WIDTH * NUM_M4 * NUM_CELL;
-    return {die_x1, die_y1, die_x2, die_y2};
-}
-
 int main(int argc, char *argv[]) {
     /* Check arguments */
     assert(argc == 3);
@@ -35,21 +24,23 @@ int main(int argc, char *argv[]) {
     std::string def_file_path = argv[2];
 
     /* Step 1: create die boundary */
-    std::vector<int> boundary = get_boundary(n);
-    int die_x1 = boundary[0];
-    int die_y1 = boundary[1];
-    int die_x2 = boundary[2];
-    int die_y2 = boundary[3];
+    int NUM_CELL = sqrt(n * 4);
+    int NUM_M3 = NUM_CELL / 2;
+    int NUM_M4 = NUM_CELL / 4;
+    int die_x1 = 0;
+    int die_y1 = 0;
+    int die_x2 = CS_WIDTH * NUM_CELL + M3_SPACING * ((NUM_M3 + 1) * NUM_CELL - 1) + M3_WIDTH * NUM_M3 * NUM_CELL;
+    int die_y2 = CS_HEIGHT * NUM_CELL + M4_SPACING * ((NUM_M4 + 1) * NUM_CELL - 1) + M4_WIDTH * NUM_M4 * NUM_CELL;
     Die die("CS_APR", die_x1, die_y1, die_x2, die_y2);
 
     /* Step 2: create CS array */
-    Component cs_array[4][4];
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            std::string inst_name = "Transistor" + std::to_string(i * 4 + j);
-            int off_y = M4_SPACING + M4_WIDTH;
-            int D_y = CS_HEIGHT + M4_SPACING * 2 + M4_WIDTH;
-            int D_x = CS_WIDTH + M3_SPACING * 3 + M3_WIDTH * 2;
+    Component cs_array[NUM_CELL][NUM_CELL];
+    for (int i = 0; i < NUM_CELL; i++) {
+        for (int j = 0; j < NUM_CELL; j++) {
+            std::string inst_name = "Transistor" + std::to_string(i * NUM_CELL + j);
+            int off_y = NUM_M4 * (M4_SPACING + M4_WIDTH);
+            int D_y = off_y + CS_HEIGHT + M4_SPACING;
+            int D_x = CS_WIDTH + NUM_M3 * (M3_SPACING + M3_WIDTH) + M3_SPACING;
             int x = i * D_x;
             int y = j * D_y + off_y;
             cs_array[i][j] = Component(CS_LIB_NAME, inst_name, x, y);    
