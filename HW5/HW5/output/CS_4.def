@@ -1,0 +1,156 @@
+VERSION 5.6 ;
+DIVIDERCHAR "/" ;
+BUSBITCHARS "[]" ;
+DESIGN CS_APR ;
+
+UNITS DISTANCE MICRONS 1000 ;
+
+PROPERTYDEFINITIONS
+  COMPONENTPIN text STRING ;
+END PROPERTYDEFINITIONS
+
+DIEAREA ( 0 0 ) ( 35330 33830 ) ;
+
+COMPONENTS 40 ;
+- Transistor0 MSBCS
+  + PLACED ( 0 1490 ) N ;
+- Transistor1 MSBCS
+  + PLACED ( 0 10070 ) N ;
+- Transistor2 MSBCS
+  + PLACED ( 0 18650 ) N ;
+- Transistor3 MSBCS
+  + PLACED ( 0 27230 ) N ;
+- Transistor4 MSBCS
+  + PLACED ( 8910 1490 ) N ;
+- Transistor5 MSBCS
+  + PLACED ( 8910 10070 ) N ;
+- Transistor6 MSBCS
+  + PLACED ( 8910 18650 ) N ;
+- Transistor7 MSBCS
+  + PLACED ( 8910 27230 ) N ;
+- Transistor8 MSBCS
+  + PLACED ( 17820 1490 ) N ;
+- Transistor9 MSBCS
+  + PLACED ( 17820 10070 ) N ;
+- Transistor10 MSBCS
+  + PLACED ( 17820 18650 ) N ;
+- Transistor11 MSBCS
+  + PLACED ( 17820 27230 ) N ;
+- Transistor12 MSBCS
+  + PLACED ( 26730 1490 ) N ;
+- Transistor13 MSBCS
+  + PLACED ( 26730 10070 ) N ;
+- Transistor14 MSBCS
+  + PLACED ( 26730 18650 ) N ;
+- Transistor15 MSBCS
+  + PLACED ( 26730 27230 ) N ;
+- Via34_drain2ME3_0 Via34
+  + PLACED ( 7410 5590 ) N ;
+- Via34_drain2ME3_1 Via34
+  + PLACED ( 8160 14170 ) N ;
+- Via34_drain2ME3_9 Via34
+  + PLACED ( 8160 22750 ) N ;
+- Via34_drain2ME3_8 Via34
+  + PLACED ( 7410 31330 ) N ;
+- Via34_drain2ME3_2 Via34
+  + PLACED ( 16320 5590 ) N ;
+- Via34_drain2ME3_3 Via34
+  + PLACED ( 17070 14170 ) N ;
+- Via34_drain2ME3_11 Via34
+  + PLACED ( 17070 22750 ) N ;
+- Via34_drain2ME3_10 Via34
+  + PLACED ( 16320 31330 ) N ;
+- Via34_drain2ME3_6 Via34
+  + PLACED ( 25230 5590 ) N ;
+- Via34_drain2ME3_7 Via34
+  + PLACED ( 25980 14170 ) N ;
+- Via34_drain2ME3_15 Via34
+  + PLACED ( 25980 22750 ) N ;
+- Via34_drain2ME3_14 Via34
+  + PLACED ( 25230 31330 ) N ;
+- Via34_drain2ME3_4 Via34
+  + PLACED ( 34140 5590 ) N ;
+- Via34_drain2ME3_5 Via34
+  + PLACED ( 34890 14170 ) N ;
+- Via34_drain2ME3_13 Via34
+  + PLACED ( 34890 22750 ) N ;
+- Via34_drain2ME3_12 Via34
+  + PLACED ( 34140 31330 ) N ;
+- Via34_port2ME3_0 Via34
+  + PLACED ( 7410 0 ) N ;
+- Via34_port2ME3_4 Via34
+  + PLACED ( 34140 0 ) N ;
+- Via34_port2ME3_2 Via34
+  + PLACED ( 16320 8580 ) N ;
+- Via34_port2ME3_6 Via34
+  + PLACED ( 25230 8580 ) N ;
+- Via34_port2ME3_1 Via34
+  + PLACED ( 8160 17160 ) N ;
+- Via34_port2ME3_5 Via34
+  + PLACED ( 34890 17160 ) N ;
+- Via34_port2ME3_3 Via34
+  + PLACED ( 17070 25740 ) N ;
+- Via34_port2ME3_7 Via34
+  + PLACED ( 25980 25740 ) N ;
+END COMPONENTS
+
+SPECIALNETS 28 ;
+- Metal3_0
+  + ROUTED ME3 440 ( 7630 0 ) ( * 33830 ) ;
+- Metal3_1
+  + ROUTED ME3 440 ( 8380 0 ) ( * 33830 ) ;
+- Metal3_2
+  + ROUTED ME3 440 ( 16540 0 ) ( * 33830 ) ;
+- Metal3_3
+  + ROUTED ME3 440 ( 17290 0 ) ( * 33830 ) ;
+- Metal3_4
+  + ROUTED ME3 440 ( 25450 0 ) ( * 33830 ) ;
+- Metal3_5
+  + ROUTED ME3 440 ( 26200 0 ) ( * 33830 ) ;
+- Metal3_6
+  + ROUTED ME3 440 ( 34360 0 ) ( * 33830 ) ;
+- Metal3_7
+  + ROUTED ME3 440 ( 35110 0 ) ( * 33830 ) ;
+- Metal4_drain_0
+  + ROUTED ME4 1000 ( 1260 6090 ) ( 7850 * ) ;
+- Metal4_drain_1
+  + ROUTED ME4 1000 ( 1260 14670 ) ( 8600 * ) ;
+- Metal4_drain_9
+  + ROUTED ME4 1000 ( 1260 23250 ) ( 8600 * ) ;
+- Metal4_drain_8
+  + ROUTED ME4 1000 ( 1260 31830 ) ( 7850 * ) ;
+- Metal4_drain_2
+  + ROUTED ME4 1000 ( 10170 6090 ) ( 16760 * ) ;
+- Metal4_drain_3
+  + ROUTED ME4 1000 ( 10170 14670 ) ( 17510 * ) ;
+- Metal4_drain_11
+  + ROUTED ME4 1000 ( 10170 23250 ) ( 17510 * ) ;
+- Metal4_drain_10
+  + ROUTED ME4 1000 ( 10170 31830 ) ( 16760 * ) ;
+- Metal4_drain_6
+  + ROUTED ME4 1000 ( 19080 6090 ) ( 25670 * ) ;
+- Metal4_drain_7
+  + ROUTED ME4 1000 ( 19080 14670 ) ( 26420 * ) ;
+- Metal4_drain_15
+  + ROUTED ME4 1000 ( 19080 23250 ) ( 26420 * ) ;
+- Metal4_drain_14
+  + ROUTED ME4 1000 ( 19080 31830 ) ( 25670 * ) ;
+- Metal4_drain_4
+  + ROUTED ME4 1000 ( 27990 6090 ) ( 34580 * ) ;
+- Metal4_drain_5
+  + ROUTED ME4 1000 ( 27990 14670 ) ( 35330 * ) ;
+- Metal4_drain_13
+  + ROUTED ME4 1000 ( 27990 23250 ) ( 35330 * ) ;
+- Metal4_drain_12
+  + ROUTED ME4 1000 ( 27990 31830 ) ( 34580 * ) ;
+- Metal4_port_0
+  + ROUTED ME4 1000 ( 0 500 ) ( 35330 * ) ;
+- Metal4_port_1
+  + ROUTED ME4 1000 ( 0 9080 ) ( 35330 * ) ;
+- Metal4_port_2
+  + ROUTED ME4 1000 ( 0 17660 ) ( 35330 * ) ;
+- Metal4_port_3
+  + ROUTED ME4 1000 ( 0 26240 ) ( 35330 * ) ;
+END SPECIALNETS
+
+END DESIGN
