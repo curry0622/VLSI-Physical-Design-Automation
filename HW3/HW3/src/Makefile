@@ -1,4 +1,4 @@
-CXX := /usr/local/gcc-9.3.0/bin/g++
+CXX := g++
 CXXFLAGS := -std=c++11 -O3 -march=native -pipe
 LIBS := -lm
 EXEC := ../bin/hw3
@@ -19,3 +19,7 @@ clean:
 
 judge:
 	./judge.sh
+
+draw: $(EXEC)
+	./$(EXEC) ../testcases/$(t).hardblocks ../testcases/$(t).nets  ../testcases/$(t).pl ../output/$(t).floorplan $(dsr)
+	python3 ../scripts/draw.py -hb ../testcases/$(t).hardblocks -fp ../output/$(t).floorplan -dsr $(dsr)
