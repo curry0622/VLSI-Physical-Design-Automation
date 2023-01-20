@@ -36,3 +36,17 @@ In this directory, enter the following command to judge.
 ```shell
 make judge
 ```
+
+## How to draw floorplan
+
+In this directory, enter the following command to draw the floorplan of the specifed [TESTCASE] and [DEAD_SPACE_RATIO].
+
+```shell
+make draw t=[TESTCASE] dsr=[DEAD_SPACE_RATIO]
+```
+
+e.g.
+
+```shell
+make draw t=n100 dsr=0.15
+```
